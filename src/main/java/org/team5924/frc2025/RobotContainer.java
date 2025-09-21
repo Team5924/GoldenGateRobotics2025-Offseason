@@ -262,6 +262,9 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.turnToLeftCoralStation(
                 drive, () -> -driveController.getLeftY(), () -> -driveController.getLeftX()));
+
+    driveController.rightStick().onTrue(Commands.runOnce(() -> drive.toggleSnapToHeading()));
+
     // Coral In and Out
 
     driveController.y().onTrue(new TeleopShoot(coralInAndOut).withTimeout(Seconds.of(1)));

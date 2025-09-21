@@ -31,7 +31,9 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -141,6 +143,14 @@ public class Drive extends SubsystemBase {
   private SwerveSetpoint previousSetpoint;
 
   private final Field2d field = new Field2d();
+
+  // in radians
+  private double desiredHeading = 0.0;
+  private boolean snapToHeading = false;
+
+  public boolean toggleSnapToHeading() {
+    return snapToHeading = !snapToHeading;
+  }
 
   public Drive(
       GyroIO gyroIO,
@@ -353,12 +363,46 @@ public class Drive extends SubsystemBase {
   }
 
   /**
+   * rotates the speeds towards the desired heading with a ±3 degree tolerance
+   *
+   * @param speeds input speeds that will be updated
+   * @param targetHeading the desired heading (rotation)
+   * @return updated speeds
+   */
+  public ChassisSpeeds updateSpeedsWithDesiredHeading(ChassisSpeeds speeds, double targetHeading) {
+    // reset omega
+    speeds.omegaRadiansPerSecond = 0;
+
+    // tolerance of ±3 deg
+    boolean isWithinTolerance = Math.abs(getRotation().getRadians() - targetHeading) <= 0.0523599;
+
+    if (isWithinTolerance) return speeds; // within tolerance; don't rotate
+
+    // otherwise, calculate omega
+    PIDController pid = new PIDController(3, 0, 0);
+
+    double omega = pid.calculate(MathUtil.angleModulus(getRotation().getRadians()), targetHeading);
+    omega = MathUtil.clamp(omega, -getMaxAngularSpeedRadPerSec(), getMaxAngularSpeedRadPerSec());
+    pid.close();
+
+    // update omega
+    speeds.omegaRadiansPerSecond = omega;
+
+    return speeds;
+  }
+
+  /**
    * Runs the drive at the desired velocity.
    *
    * @param speeds Speeds in meters/sec
    */
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
+
+    if (snapToHeading) {
+      speeds = updateSpeedsWithDesiredHeading(speeds, desiredHeading);
+    }
+
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     previousSetpoint =
         setpointGenerator.generateSetpoint(
