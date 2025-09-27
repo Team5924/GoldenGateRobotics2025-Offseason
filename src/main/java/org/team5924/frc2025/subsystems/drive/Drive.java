@@ -152,6 +152,15 @@ public class Drive extends SubsystemBase {
     return snapToHeading = !snapToHeading;
   }
 
+  public void setSnapToHeading(boolean snap) {
+    snapToHeading = snap;
+  }
+
+  public void setDesiredHeading(double heading)
+  {
+    desiredHeading = heading;
+  }
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,

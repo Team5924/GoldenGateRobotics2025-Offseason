@@ -251,17 +251,21 @@ public class RobotContainer {
         .whileTrue(
             new DeferredCommand(() -> DriveCommands.driveToReef(drive, false), Set.of(drive)));
 
-    driveController
-        .rightTrigger()
-        .whileTrue(
-            DriveCommands.turnToRightCoralStation(
-                drive, () -> -driveController.getLeftY(), () -> -driveController.getLeftX()));
+    // driveController
+    //     .rightTrigger()
+    //     .whileTrue(
+    //         DriveCommands.turnToRightCoralStation(
+    //             drive, () -> -driveController.getLeftY(), () -> -driveController.getLeftX()));
+    
+    // driveController
+    //     .leftTrigger()
+    //     .whileTrue(
+    //         DriveCommands.turnToLeftCoralStation(
+    //             drive, () -> -driveController.getLeftY(), () -> -driveController.getLeftX()));
 
-    driveController
-        .leftTrigger()
-        .whileTrue(
-            DriveCommands.turnToLeftCoralStation(
-                drive, () -> -driveController.getLeftY(), () -> -driveController.getLeftX()));
+    driveController.rightTrigger().onTrue(DriveCommands.lockOnCoralStation(drive, true));
+    driveController.leftTrigger().onTrue(DriveCommands.lockOnCoralStation(drive, false));
+    driveController.rightTrigger().or(driveController.leftTrigger()).onFalse(DriveCommands.unlockRotation(drive));
 
     driveController.rightStick().onTrue(Commands.runOnce(() -> drive.toggleSnapToHeading()));
 
