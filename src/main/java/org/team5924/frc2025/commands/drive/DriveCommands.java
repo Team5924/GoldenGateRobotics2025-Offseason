@@ -72,20 +72,18 @@ public class DriveCommands {
         .getTranslation();
   }
 
-  /**
-   * returns whether rotations should be flipped (same as if the alliance is red)
-   */
-  public static boolean isFlipped()
-  {
-    return DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
+  /** returns whether rotations should be flipped (same as if the alliance is red) */
+  public static boolean isFlipped() {
+    return DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().get() == Alliance.Red;
   }
 
   /**
    * gets the needed rotation to align to the corresponding coral station
+   *
    * @param right true = right coral station; false = left coral station
    */
-  public static double getCoralStationRotation(boolean right)
-  {
+  public static double getCoralStationRotation(boolean right) {
     double heading;
 
     if (isFlipped()) {
@@ -99,30 +97,25 @@ public class DriveCommands {
 
   /**
    * Locks the robot's rotation in the direction of the desired coral station
+   *
    * @param drive a refrence to the {@link Drive} subsystem
    * @param right true = right coral station; false = left coral station
    */
-  public static Command lockOnCoralStation(Drive drive, boolean right)
-  {
+  public static Command lockOnCoralStation(Drive drive, boolean right) {
     return Commands.run(
-      () -> {
-        double heading = getCoralStationRotation(right);
-        drive.setDesiredHeading(heading);
-        drive.setSnapToHeading(true);
-      }
-    );
+        () -> {
+          double heading = getCoralStationRotation(right);
+          drive.setDesiredHeading(heading);
+          drive.setSnapToHeading(true);
+        });
   }
 
-  /**
-   * Unlocks the robots rotation, stops it from snapping to the desired heading
-   */
-  public static Command unlockRotation(Drive drive)
-  {
+  /** Unlocks the robots rotation, stops it from snapping to the desired heading */
+  public static Command unlockRotation(Drive drive) {
     return Commands.run(
-      () -> {
-        drive.setSnapToHeading(false);
-      }
-    );
+        () -> {
+          drive.setSnapToHeading(false);
+        });
   }
 
   /**

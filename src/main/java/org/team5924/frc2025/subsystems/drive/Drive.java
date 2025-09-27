@@ -156,8 +156,7 @@ public class Drive extends SubsystemBase {
     snapToHeading = snap;
   }
 
-  public void setDesiredHeading(double heading)
-  {
+  public void setDesiredHeading(double heading) {
     desiredHeading = heading;
   }
 

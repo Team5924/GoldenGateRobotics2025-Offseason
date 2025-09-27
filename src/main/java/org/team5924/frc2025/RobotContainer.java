@@ -51,10 +51,10 @@ import org.team5924.frc2025.subsystems.elevator.Elevator;
 import org.team5924.frc2025.subsystems.elevator.ElevatorIO;
 import org.team5924.frc2025.subsystems.elevator.ElevatorIOTalonFXGamma;
 import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOut;
+import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOut.CoralState;
 import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOutIO;
 import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOutIOKrakenFOC;
 import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOutIOSim;
-import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOut.CoralState;
 import org.team5924.frc2025.subsystems.vision.Vision;
 import org.team5924.frc2025.subsystems.vision.VisionIO;
 import org.team5924.frc2025.subsystems.vision.VisionIOLimelight;
@@ -256,7 +256,7 @@ public class RobotContainer {
     //     .whileTrue(
     //         DriveCommands.turnToRightCoralStation(
     //             drive, () -> -driveController.getLeftY(), () -> -driveController.getLeftX()));
-    
+
     // driveController
     //     .leftTrigger()
     //     .whileTrue(
@@ -265,7 +265,10 @@ public class RobotContainer {
 
     driveController.rightTrigger().onTrue(DriveCommands.lockOnCoralStation(drive, true));
     driveController.leftTrigger().onTrue(DriveCommands.lockOnCoralStation(drive, false));
-    driveController.rightTrigger().or(driveController.leftTrigger()).onFalse(DriveCommands.unlockRotation(drive));
+    driveController
+        .rightTrigger()
+        .or(driveController.leftTrigger())
+        .onFalse(DriveCommands.unlockRotation(drive));
 
     driveController.rightStick().onTrue(Commands.runOnce(() -> drive.toggleSnapToHeading()));
 
