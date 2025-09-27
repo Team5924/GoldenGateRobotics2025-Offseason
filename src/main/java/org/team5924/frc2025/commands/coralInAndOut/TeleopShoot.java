@@ -20,8 +20,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.team5924.frc2025.RobotState;
 import org.team5924.frc2025.subsystems.elevator.Elevator.ElevatorState;
-import org.team5924.frc2025.subsystems.rollers.CoralInAndOut.CoralInAndOut;
-import org.team5924.frc2025.subsystems.rollers.CoralInAndOut.CoralInAndOut.CoralState;
+import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOut;
+import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOut.CoralState;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class TeleopShoot extends Command {
