@@ -217,15 +217,15 @@ public class RobotContainer {
             () -> -driveController.getLeftX(),
             () -> -driveController.getRightX()));
 
-    // Nope. It's slow mode now. Quarter speed
+    // Nope. It's slow mode now.
     driveController
         .a()
         .whileTrue(
             DriveCommands.joystickDrive(
                 drive,
-                () -> -driveController.getLeftY() * .25,
-                () -> -driveController.getLeftX() * .25,
-                () -> -driveController.getRightX() * .25));
+                () -> -driveController.getLeftY() * Constants.SLOW_MODE_MULTI,
+                () -> -driveController.getLeftX() * Constants.SLOW_MODE_MULTI,
+                () -> -driveController.getRightX() * Constants.SLOW_MODE_MULTI));
 
     // Switch to X pattern when X button is pressed
     driveController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));

@@ -56,6 +56,7 @@ public final class Constants {
 
   public static final boolean TUNING_MODE = false;
   public static final boolean ALLOW_ASSERTS = false;
+  public static final double SLOW_MODE_MULTI = 0.5;
 
   /* Field */
   public static final double FIELD_BORDER_MARGIN = 0.5;
