@@ -385,7 +385,7 @@ public class Drive extends SubsystemBase {
     // tolerance of ±3 deg
     double currentHeading = getRotation().getRadians();
     double error = MathUtil.angleModulus(targetHeading - currentHeading);
-    boolean isWithinTolerance = Math.abs(error) <= 3.0;
+    boolean isWithinTolerance = Math.abs(error) <= Math.toRadians(3.0);
 
     if (isWithinTolerance)
       return new ChassisSpeeds(
