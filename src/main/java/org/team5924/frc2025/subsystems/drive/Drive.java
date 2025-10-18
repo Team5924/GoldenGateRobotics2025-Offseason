@@ -383,8 +383,9 @@ public class Drive extends SubsystemBase {
    */
   public ChassisSpeeds updateSpeedsWithDesiredHeading(ChassisSpeeds speeds, double targetHeading) {
     // tolerance of ±3 deg
-    boolean isWithinTolerance =
-        Math.abs(MathUtil.angleModulus(targetHeading - getRotation().getRadians())) <= 0.0523599;
+    double currentHeading = getRotation().getRadians();
+    double error = MathUtil.angleModulus(targetHeading - currentHeading);
+    boolean isWithinTolerance = Math.abs(error) <= 3.0;
 
     if (isWithinTolerance)
       return new ChassisSpeeds(
@@ -392,16 +393,12 @@ public class Drive extends SubsystemBase {
           speeds.vyMetersPerSecond,
           0.0); // within tolerance; don't rotate
 
-    // otherwise, calculate omega
-    double omega =
-        headingPid.calculate(MathUtil.angleModulus(getRotation().getRadians()), targetHeading);
+    // calculate omega
+    double omega = headingPid.calculate(currentHeading, targetHeading);
     omega = MathUtil.clamp(omega, -getMaxAngularSpeedRadPerSec(), getMaxAngularSpeedRadPerSec());
     headingPid.close();
 
-    // update omega
-    speeds.omegaRadiansPerSecond = omega;
-
-    return speeds;
+    return new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, omega);
   }
 
   /**
