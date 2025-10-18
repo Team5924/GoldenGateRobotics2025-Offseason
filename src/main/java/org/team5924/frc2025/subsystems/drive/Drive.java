@@ -31,7 +31,9 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -142,6 +144,24 @@ public class Drive extends SubsystemBase {
 
   private final Field2d field = new Field2d();
 
+  // in radians
+  private double desiredHeading = 0.0;
+  private boolean snapToHeading = false;
+
+  PIDController headingPid = new PIDController(3, 0, 0);
+
+  public boolean toggleSnapToHeading() {
+    return snapToHeading = !snapToHeading;
+  }
+
+  public void setSnapToHeading(boolean snap) {
+    snapToHeading = snap;
+  }
+
+  public void setDesiredHeading(double heading) {
+    desiredHeading = heading;
+  }
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -228,6 +248,8 @@ public class Drive extends SubsystemBase {
             builder.addDoubleProperty("Robot Angle", () -> getRotation().getRadians(), null);
           }
         });
+
+    headingPid.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
@@ -353,12 +375,44 @@ public class Drive extends SubsystemBase {
   }
 
   /**
+   * rotates the speeds towards the desired heading with a ±3 degree tolerance
+   *
+   * @param speeds input speeds that will be updated
+   * @param targetHeading the desired heading (rotation)
+   * @return updated speeds
+   */
+  public ChassisSpeeds updateSpeedsWithDesiredHeading(ChassisSpeeds speeds, double targetHeading) {
+    // tolerance of ±3 deg
+    double currentHeading = getRotation().getRadians();
+    double error = MathUtil.angleModulus(targetHeading - currentHeading);
+    boolean isWithinTolerance = Math.abs(error) <= Math.toRadians(3.0);
+
+    if (isWithinTolerance)
+      return new ChassisSpeeds(
+          speeds.vxMetersPerSecond,
+          speeds.vyMetersPerSecond,
+          0.0); // within tolerance; don't rotate
+
+    // calculate omega
+    double omega = headingPid.calculate(currentHeading, targetHeading);
+    omega = MathUtil.clamp(omega, -getMaxAngularSpeedRadPerSec(), getMaxAngularSpeedRadPerSec());
+    headingPid.close();
+
+    return new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, omega);
+  }
+
+  /**
    * Runs the drive at the desired velocity.
    *
    * @param speeds Speeds in meters/sec
    */
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
+
+    if (snapToHeading) {
+      speeds = updateSpeedsWithDesiredHeading(speeds, desiredHeading);
+    }
+
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     previousSetpoint =
         setpointGenerator.generateSetpoint(

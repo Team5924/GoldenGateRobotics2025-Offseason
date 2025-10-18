@@ -14,7 +14,7 @@
  * If you did not, see <https://www.gnu.org/licenses>.
  */
 
-package org.team5924.frc2025.subsystems.rollers.CoralInAndOut;
+package org.team5924.frc2025.subsystems.rollers.coralInAndOut;
 
 import java.util.function.DoubleSupplier;
 import lombok.Getter;

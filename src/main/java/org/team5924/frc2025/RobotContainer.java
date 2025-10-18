@@ -50,11 +50,11 @@ import org.team5924.frc2025.subsystems.drive.ModuleIOTalonFX;
 import org.team5924.frc2025.subsystems.elevator.Elevator;
 import org.team5924.frc2025.subsystems.elevator.ElevatorIO;
 import org.team5924.frc2025.subsystems.elevator.ElevatorIOTalonFXGamma;
-import org.team5924.frc2025.subsystems.rollers.CoralInAndOut.CoralInAndOut;
-import org.team5924.frc2025.subsystems.rollers.CoralInAndOut.CoralInAndOut.CoralState;
-import org.team5924.frc2025.subsystems.rollers.CoralInAndOut.CoralInAndOutIO;
-import org.team5924.frc2025.subsystems.rollers.CoralInAndOut.CoralInAndOutIOKrakenFOC;
-import org.team5924.frc2025.subsystems.rollers.CoralInAndOut.CoralInAndOutIOSim;
+import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOut;
+import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOut.CoralState;
+import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOutIO;
+import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOutIOKrakenFOC;
+import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOutIOSim;
 import org.team5924.frc2025.subsystems.vision.Vision;
 import org.team5924.frc2025.subsystems.vision.VisionIO;
 import org.team5924.frc2025.subsystems.vision.VisionIOLimelight;
@@ -217,15 +217,15 @@ public class RobotContainer {
             () -> -driveController.getLeftX(),
             () -> -driveController.getRightX()));
 
-    // Nope. It's slow mode now. Quarter speed
+    // Nope. It's slow mode now.
     driveController
         .a()
         .whileTrue(
             DriveCommands.joystickDrive(
                 drive,
-                () -> -driveController.getLeftY() * .25,
-                () -> -driveController.getLeftX() * .25,
-                () -> -driveController.getRightX() * .25));
+                () -> -driveController.getLeftY() * Constants.SLOW_MODE_MULTI,
+                () -> -driveController.getLeftX() * Constants.SLOW_MODE_MULTI,
+                () -> -driveController.getRightX() * Constants.SLOW_MODE_MULTI));
 
     // Switch to X pattern when X button is pressed
     driveController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -251,17 +251,27 @@ public class RobotContainer {
         .whileTrue(
             new DeferredCommand(() -> DriveCommands.driveToReef(drive, false), Set.of(drive)));
 
+    // driveController
+    //     .rightTrigger()
+    //     .whileTrue(
+    //         DriveCommands.turnToRightCoralStation(
+    //             drive, () -> -driveController.getLeftY(), () -> -driveController.getLeftX()));
+
+    // driveController
+    //     .leftTrigger()
+    //     .whileTrue(
+    //         DriveCommands.turnToLeftCoralStation(
+    //             drive, () -> -driveController.getLeftY(), () -> -driveController.getLeftX()));
+
+    driveController.rightTrigger().onTrue(DriveCommands.lockOnCoralStation(drive, true));
+    driveController.leftTrigger().onTrue(DriveCommands.lockOnCoralStation(drive, false));
     driveController
         .rightTrigger()
-        .whileTrue(
-            DriveCommands.turnToRightCoralStation(
-                drive, () -> -driveController.getLeftY(), () -> -driveController.getLeftX()));
+        .or(driveController.leftTrigger())
+        .onFalse(DriveCommands.unlockRotation(drive));
 
-    driveController
-        .leftTrigger()
-        .whileTrue(
-            DriveCommands.turnToLeftCoralStation(
-                drive, () -> -driveController.getLeftY(), () -> -driveController.getLeftX()));
+    driveController.rightStick().onTrue(Commands.runOnce(() -> drive.toggleSnapToHeading()));
+
     // Coral In and Out
 
     driveController.y().onTrue(new TeleopShoot(coralInAndOut).withTimeout(Seconds.of(1)));

@@ -18,8 +18,8 @@ package org.team5924.frc2025.commands.coralInAndOut;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import org.team5924.frc2025.subsystems.rollers.CoralInAndOut.*;
-import org.team5924.frc2025.subsystems.rollers.CoralInAndOut.CoralInAndOut.CoralState;
+import org.team5924.frc2025.subsystems.rollers.coralInAndOut.*;
+import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOut.CoralState;
 
 public class RunShooter extends Command {
   private CoralInAndOut coralInAndOut;
