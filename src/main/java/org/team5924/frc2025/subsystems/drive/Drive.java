@@ -148,6 +148,8 @@ public class Drive extends SubsystemBase {
   private double desiredHeading = 0.0;
   private boolean snapToHeading = false;
 
+  PIDController headingPid = new PIDController(3, 0, 0);
+
   public boolean toggleSnapToHeading() {
     return snapToHeading = !snapToHeading;
   }
@@ -246,6 +248,8 @@ public class Drive extends SubsystemBase {
             builder.addDoubleProperty("Robot Angle", () -> getRotation().getRadians(), null);
           }
         });
+
+    headingPid.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
@@ -378,20 +382,21 @@ public class Drive extends SubsystemBase {
    * @return updated speeds
    */
   public ChassisSpeeds updateSpeedsWithDesiredHeading(ChassisSpeeds speeds, double targetHeading) {
-    // reset omega
-    speeds.omegaRadiansPerSecond = 0;
-
     // tolerance of ±3 deg
-    boolean isWithinTolerance = Math.abs(getRotation().getRadians() - targetHeading) <= 0.0523599;
+    boolean isWithinTolerance =
+        Math.abs(MathUtil.angleModulus(targetHeading - getRotation().getRadians())) <= 0.0523599;
 
-    if (isWithinTolerance) return speeds; // within tolerance; don't rotate
+    if (isWithinTolerance)
+      return new ChassisSpeeds(
+          speeds.vxMetersPerSecond,
+          speeds.vyMetersPerSecond,
+          0.0); // within tolerance; don't rotate
 
     // otherwise, calculate omega
-    PIDController pid = new PIDController(3, 0, 0);
-
-    double omega = pid.calculate(MathUtil.angleModulus(getRotation().getRadians()), targetHeading);
+    double omega =
+        headingPid.calculate(MathUtil.angleModulus(getRotation().getRadians()), targetHeading);
     omega = MathUtil.clamp(omega, -getMaxAngularSpeedRadPerSec(), getMaxAngularSpeedRadPerSec());
-    pid.close();
+    headingPid.close();
 
     // update omega
     speeds.omegaRadiansPerSecond = omega;

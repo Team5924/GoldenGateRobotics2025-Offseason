@@ -98,11 +98,11 @@ public class DriveCommands {
   /**
    * Locks the robot's rotation in the direction of the desired coral station
    *
-   * @param drive a refrence to the {@link Drive} subsystem
+   * @param drive a reference to the {@link Drive} subsystem
    * @param right true = right coral station; false = left coral station
    */
   public static Command lockOnCoralStation(Drive drive, boolean right) {
-    return Commands.run(
+    return Commands.runOnce(
         () -> {
           double heading = getCoralStationRotation(right);
           drive.setDesiredHeading(heading);
@@ -112,7 +112,7 @@ public class DriveCommands {
 
   /** Unlocks the robots rotation, stops it from snapping to the desired heading */
   public static Command unlockRotation(Drive drive) {
-    return Commands.run(
+    return Commands.runOnce(
         () -> {
           drive.setSnapToHeading(false);
         });
