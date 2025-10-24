@@ -25,12 +25,18 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
+import lombok.val;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
@@ -60,8 +66,9 @@ public final class Constants {
 
   /* Field */
   public static final double FIELD_BORDER_MARGIN = 0.5;
+  public static final AprilTagFields FIELD_TYPE = AprilTagFields.k2025ReefscapeWelded;
   public static final AprilTagFieldLayout field =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+      AprilTagFieldLayout.loadField(FIELD_TYPE);
   public static final double FIELD_WIDTH = field.getFieldWidth();
   public static final double FIELD_LENGTH = field.getFieldLength();
   public static final double CORAL_STATION_RADIANS_NORMAL = 0.959931;
@@ -127,6 +134,20 @@ public final class Constants {
   public static final boolean ALGAE_BRAKE = true; // Adjust value as needed
   public static final double ALGAE_REDUCTION = 1.0; // Adjust value as needed
 
+  /* # PhotonVision # */
+  public static final String FRONT_RIGHT_NAME = "Front Right";
+  public static final String FRONT_LEFT_NAME = "Front Left";
+  public static final String BACK_RIGHT_NAME = "Back Right";
+  public static final String BACK_LEFT_NAME = "Back Left";
+  // positive x is to the front (intake side), positive y is to the left, and positive theta is counterclockwise (when looking down at the robot)
+// TODO: perchance update these measurement values (determine whether or not the given values are accurate enough on our robot)
+  public static final Transform3d FRONT_RIGHT_TRANSFORM = new Transform3d(new Translation3d(-0.012552, -0.319809, 0.191168), new Rotation3d(0.0, Math.toRadians(-20.0), Math.toRadians(-70.0)));
+  public static final Transform3d BACK_RIGHT_TRANSFORM = new Transform3d(new Translation3d(-0.081165, -0.322330, 0.191168), new Rotation3d(0.0, Math.toRadians(-20.0), Math.toRadians(-(180.0 - 55.0))));
+  public static final Transform3d FRONT_LEFT_TRANSFORM = new Transform3d(new Translation3d(-0.012552, 0.319809, 0.191168), new Rotation3d(0.0, Math.toRadians(-20.0), Math.toRadians(70.0)));
+  public static final Transform3d BACK_LEFT_TRANSFORM = new Transform3d(new Translation3d(-0.081165, 0.322330, 0.191168), new Rotation3d(0.0, Math.toRadians(-20.0), Math.toRadians(180.0 - 55.0)));
+  public static final ArrayList<Integer> BARGE_TAG_IDS = new ArrayList<Integer>(Arrays.asList(4, 5, 14, 15));
+
+  
   /* # Vision # */
   public static String APRIL_TAG_LIMELIGHT_NAME_FRONTL = "limelight-frontl";
   public static String APRIL_TAG_LIMELIGHT_NAME_FRONTR = "limelight-frontr";
