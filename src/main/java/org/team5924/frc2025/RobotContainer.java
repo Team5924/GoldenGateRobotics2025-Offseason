@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.Set;
@@ -55,9 +56,7 @@ import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOut.Coral
 import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOutIO;
 import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOutIOKrakenFOC;
 import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOutIOSim;
-import org.team5924.frc2025.subsystems.vision.Vision;
-import org.team5924.frc2025.subsystems.vision.VisionIO;
-import org.team5924.frc2025.subsystems.vision.VisionIOLimelight;
+import org.team5924.frc2025.subsystems.visionnew.Vision;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -71,6 +70,7 @@ public class RobotContainer {
   private final Climber climber;
   private final CoralInAndOut coralInAndOut;
   private final Elevator elevator;
+  // private final Vision visionold;
   private final Vision vision;
 
   // Controller
@@ -96,7 +96,8 @@ public class RobotContainer {
         climber = new Climber(new ClimberIOTalonFX());
         coralInAndOut = new CoralInAndOut(new CoralInAndOutIOKrakenFOC());
         elevator = new Elevator(new ElevatorIOTalonFXGamma() {});
-        vision = new Vision(new VisionIOLimelight());
+        // visionold = new Vision(new VisionIOLimelight());
+        vision = new Vision();
         break;
 
       case SIM:
@@ -111,7 +112,8 @@ public class RobotContainer {
         climber = new Climber(new ClimberIOSim());
         coralInAndOut = new CoralInAndOut(new CoralInAndOutIOSim());
         elevator = new Elevator(new ElevatorIO() {});
-        vision = new Vision(new VisionIO() {});
+        // visionold = new Vision(new VisionIO() {});
+        vision = null;
         break;
 
       default:
@@ -126,7 +128,8 @@ public class RobotContainer {
         climber = new Climber(new ClimberIO() {});
         coralInAndOut = new CoralInAndOut(new CoralInAndOutIO() {});
         elevator = new Elevator(new ElevatorIO() {});
-        vision = new Vision(new VisionIO() {});
+        // visionold = new Vision(new VisionIO() {});
+        vision = null;
         break;
     }
 
@@ -314,6 +317,9 @@ public class RobotContainer {
     // Vision
     // vision.setDefaultCommand(new RunVisionPoseEstimation(drive, vision).ignoringDisable(true));
     // vision.setDefaultCommand(new RunVisionPoseEstimation(drive, vision).ignoringDisable(true));
+    if (vision != null)
+      vision.setDefaultCommand(
+        Commands.runOnce(() -> vision.periodicAddMeasurements(drive.getPoseEstimator())).ignoringDisable(true));
 
     // Climber
     // Dpad Down
