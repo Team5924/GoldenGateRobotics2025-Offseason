@@ -26,6 +26,7 @@ import org.team5924.frc2025.subsystems.elevator.Elevator.ElevatorState;
 import org.team5924.frc2025.subsystems.pivot.AlgaePivot.AlgaePivotState;
 import org.team5924.frc2025.subsystems.rollers.algae.AlgaeRoller.AlgaeRollerState;
 import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOut.CoralState;
+import org.team5924.frc2025.subsystems.rollers.intake.Intake.IntakeState;
 import org.team5924.frc2025.util.VisionFieldPoseEstimate;
 
 @Getter
@@ -72,6 +73,9 @@ public class RobotState {
 
   /* ### Coral In and Out ### */
   @Getter @Setter private CoralState coralInAndOutState = CoralState.NO_CORAL;
+
+  /* ### Intake ### */
+  @Getter @Setter private IntakeState intakeState = IntakeState.OFF;
 
   /* ### Algae Pivot ### */
   @Getter

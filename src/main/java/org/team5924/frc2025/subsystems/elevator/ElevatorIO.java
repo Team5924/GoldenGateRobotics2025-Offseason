@@ -18,6 +18,7 @@ package org.team5924.frc2025.subsystems.elevator;
 
 import org.littletonrobotics.junction.AutoLog;
 
+
 /** TODO: Add documentation. */
 public interface ElevatorIO {
   @AutoLog
