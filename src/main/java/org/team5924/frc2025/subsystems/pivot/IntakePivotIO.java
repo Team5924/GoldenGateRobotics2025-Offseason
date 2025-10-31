@@ -16,9 +16,9 @@ public interface IntakePivotIO {
 
         /* If CANcoder installed
 
-        public boolean algaePivotCANcoderConnected = true;
-        public double algaePivotCANcoderAbsolutePositionRads = 0.0;
-        public double algaePivotCANcoderRelativePositionRads = 0.0;
+        public boolean intakePivotCANcoderConnected = true;
+        public double intakePivotCANcoderAbsolutePositionRads = 0.0;
+        public double intakePivotCANcoderRelativePositionRads = 0.0;
         */
     }
 

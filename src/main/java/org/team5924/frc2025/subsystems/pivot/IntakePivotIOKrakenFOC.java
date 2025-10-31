@@ -8,17 +8,13 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -41,10 +37,10 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO{
 
 
     // PID for the Motor
-    LoggedTunableNumber intakePivotMotorkP = new LoggedTunableNumber("AlgaePivotMotorkP", 0);
-    LoggedTunableNumber intakePivotMotorkI = new LoggedTunableNumber("AlgaePivotMotorkI", 0);
-    LoggedTunableNumber intakePivotMotorkD = new LoggedTunableNumber("AlgaePivotMotorkD", 0);
-    LoggedTunableNumber intakePivotMotorkS = new LoggedTunableNumber("AlgaePivotMotorkS", 0);
+    LoggedTunableNumber intakePivotMotorkP = new LoggedTunableNumber("IntakePivotMotorkP", 0);
+    LoggedTunableNumber intakePivotMotorkI = new LoggedTunableNumber("IntakePivotMotorkI", 0);
+    LoggedTunableNumber intakePivotMotorkD = new LoggedTunableNumber("IntakePivotMotorkD", 0);
+    LoggedTunableNumber intakePivotMotorkS = new LoggedTunableNumber("IntakePivotMotorkS", 0);
 
     // Refresh on what this does, cuz im lowk dumb rn
     private final VoltageOut voltageControl =
@@ -52,12 +48,12 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO{
     private final PositionVoltage positionControl =
         new PositionVoltage(0).withUpdateFreqHz(0.0).withEnableFOC(true);
 
-    // for the CANcoder
-    LoggedTunableNumber algaePivotCANcoderMagnetOffsetRads =
+    /*  for the CANcoder
+    LoggedTunableNumber intakePivotCANcoderMagnetOffsetRads =
       new LoggedTunableNumber("AlgaePivotCANcoderOffsetRads", 0);
-    LoggedTunableNumber algaePivotSensorDiscontinuityPoint =
+    LoggedTunableNumber intakePivotSensorDiscontinuityPoint =
       new LoggedTunableNumber("AlgaePivotSensorDiscontinuityPoint", .5);
-
+    */
     public IntakePivotIOKrakenFOC() {
         intakePivotKraken = new TalonFX(Constants.INTAKE_PIVOT_CAN_ID); // TODO: Change Motor ID
 
@@ -67,7 +63,9 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO{
         krakenConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         krakenConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         krakenConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        krakenConfig.Feedback.SensorToMechanismRatio = Constants.MOTOR_TO_ALGAE_PIVOT_REDUCTION;
+        krakenConfig.Feedback.SensorToMechanismRatio = Constants.MOTOR_TO_INTAKE_PIVOT_REDUCTION;
+
+        //Kraken PID Slot Configs
 
         final Slot0Configs controllerConfigs = new Slot0Configs();
         controllerConfigs.kP = intakePivotMotorkP.getAsDouble();

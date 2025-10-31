@@ -24,6 +24,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.team5924.frc2025.subsystems.climber.Climber.ClimberState;
 import org.team5924.frc2025.subsystems.elevator.Elevator.ElevatorState;
 import org.team5924.frc2025.subsystems.pivot.AlgaePivot.AlgaePivotState;
+import org.team5924.frc2025.subsystems.pivot.IntakePivot.IntakePivotState;
 import org.team5924.frc2025.subsystems.rollers.algae.AlgaeRoller.AlgaeRollerState;
 import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOut.CoralState;
 import org.team5924.frc2025.subsystems.rollers.intake.Intake.IntakeState;
@@ -76,6 +77,9 @@ public class RobotState {
 
   /* ### Intake ### */
   @Getter @Setter private IntakeState intakeState = IntakeState.OFF;
+
+  /*### Intake Pivot ### */
+  @Getter @Setter private IntakePivotState intakePivotState = IntakePivotState.INTAKE_FEED; // Intake Default State Subject to Change
 
   /* ### Algae Pivot ### */
   @Getter

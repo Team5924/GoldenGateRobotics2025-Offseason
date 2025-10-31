@@ -37,4 +37,5 @@ public class IntakeIOKrakenFOC extends GenericRollerSystemIOKrakenFOC implements
         super.runVolts(intakeVolts);
         alignerSystem.runVolts(alignerVolts);
     }
+    
 }

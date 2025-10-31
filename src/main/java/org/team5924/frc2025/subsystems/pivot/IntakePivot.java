@@ -1,22 +1,14 @@
 package org.team5924.frc2025.subsystems.pivot;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
-
 import lombok.Getter;
 
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import org.littletonrobotics.junction.Logger;
 
 import org.team5924.frc2025.RobotState;
-import org.team5924.frc2025.subsystems.pivot.AlgaePivot.AlgaePivotState;
 import org.team5924.frc2025.Constants;
 import org.team5924.frc2025.util.Elastic.Notification;
 import org.team5924.frc2025.util.Elastic.Notification.NotificationLevel;
@@ -30,7 +22,7 @@ public class IntakePivot extends SubsystemBase{
 
     public static final LoggedTunableNumber PIV_POS_TOLERANCE = 
         new LoggedTunableNumber("IntakePivot/PosTolerance",0.02);
-    private final IntakePivotIOInputsAutoLogged pivotInput = new IntakePivotIOAutoLogged();
+    private final IntakePivotIOInputsAutoLogged pivotInput = new IntakePivotIOInputsAutoLogged();
 
 
     // Intake Preset Positions
@@ -75,6 +67,10 @@ public class IntakePivot extends SubsystemBase{
         Logger.recordOutput("IntakePivot/TargetRads", goalState.rads);
 
         intakePivotMotorDisconnected.set(!pivotInput.intakePivotMotorConnected);
+
+        /* if (!pivotInput.intakePivotMotorConnected){
+            Elastic.sendNotification(intakePivotMotorDisconnectedNotification);
+        } */
 
     }
 
