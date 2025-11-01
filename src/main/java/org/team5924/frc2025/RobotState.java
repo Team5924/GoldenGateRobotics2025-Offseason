@@ -67,7 +67,7 @@ public class RobotState {
   @Getter @Setter private Rotation2d yawPosition = new Rotation2d();
   @Getter @Setter private double yawVelocityRadPerSec = 0.0;
 
-  @Getter @Setter private ElevatorState elevatorState = ElevatorState.MANUAL;
+  @Getter @Setter private ElevatorState elevatorState = ElevatorState.Down;
   @Getter @Setter private double elevatorPositionMeters = 0;
 
   /* ### Coral In and Out ### */

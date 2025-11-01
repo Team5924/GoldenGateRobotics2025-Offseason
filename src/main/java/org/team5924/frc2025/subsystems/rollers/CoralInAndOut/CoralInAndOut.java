@@ -141,14 +141,14 @@ public class CoralInAndOut extends GenericRollerSystem<CoralInAndOut.CoralState>
           RobotState.getInstance().setCoralInAndOutState(CoralState.SHOOTING_L4);
         }
       }
-      case SHOOTING_L1 -> {
-        if (RobotState.getInstance().getElevatorState().equals(ElevatorState.L1)
-            && RobotState.getInstance()
-                .getCoralInAndOutState()
-                .equals(CoralState.STORED_CORAL_IN_SHOOTER)) {
-          RobotState.getInstance().setCoralInAndOutState(CoralState.SHOOTING_L1);
-        }
-      }
+      // case SHOOTING_L1 -> {
+      //   if (RobotState.getInstance().getElevatorState().equals(ElevatorState.L1)
+      //       && RobotState.getInstance()
+      //           .getCoralInAndOutState()
+      //           .equals(CoralState.STORED_CORAL_IN_SHOOTER)) {
+      //     RobotState.getInstance().setCoralInAndOutState(CoralState.SHOOTING_L1);
+      //   }
+      // }
       case SPIT_BACK -> RobotState.getInstance().setCoralInAndOutState(CoralState.SPIT_BACK);
     }
   }

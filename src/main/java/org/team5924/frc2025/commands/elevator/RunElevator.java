@@ -45,20 +45,20 @@ public class RunElevator extends Command {
   @Override
   public void execute() {
     switch (RobotState.getInstance().getElevatorState()) {
-      case MOVING -> {
-        if (elevator.isAtSetpoint()) {
-          RobotState.getInstance().setElevatorState(elevator.getGoalState());
-        }
-      }
-      case MANUAL -> {
-        elevator.setVoltage(
-            Math.abs(joystickY.getAsDouble()) > 0.05 ? (-joystickY.getAsDouble() * 6) : 0.0);
-      }
-      case INTAKE -> elevator.setGoalState(ElevatorState.INTAKE);
-      case L1 -> elevator.setGoalState(ElevatorState.L1);
-      case L2 -> elevator.setGoalState(ElevatorState.L2);
-      case L3 -> elevator.setGoalState(ElevatorState.L3);
-      case L4 -> elevator.setGoalState(ElevatorState.L4);
+      // case MOVING -> {
+      //   if (elevator.isAtSetpoint()) {
+      //     RobotState.getInstance().setElevatorState(elevator.getGoalState());
+      //   }
+      // }
+      // case MANUAL -> {
+      //   elevator.setVoltage(
+      //       Math.abs(joystickY.getAsDouble()) > 0.05 ? (-joystickY.getAsDouble() * 6) : 0.0);
+      // }
+      // case INTAKE -> elevator.setGoalState(ElevatorState.INTAKE);
+      // case L1 -> elevator.setGoalState(ElevatorState.L1);
+      // case L2 -> elevator.setGoalState(ElevatorState.L2);
+      // case L3 -> elevator.setGoalState(ElevatorState.L3);
+      // case L4 -> elevator.setGoalState(ElevatorState.L4);
       default -> {}
     }
     // elevator.setVoltage(-joystickY.getAsDouble() * 5);

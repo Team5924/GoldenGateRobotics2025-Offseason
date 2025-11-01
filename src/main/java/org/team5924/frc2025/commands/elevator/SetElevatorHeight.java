@@ -41,7 +41,7 @@ public class SetElevatorHeight extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elevator.setGoalState(goalState);
+    // elevator.setGoalState(goalState);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

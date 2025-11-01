@@ -49,7 +49,7 @@ import org.team5924.frc2025.subsystems.drive.ModuleIOSim;
 import org.team5924.frc2025.subsystems.drive.ModuleIOTalonFX;
 import org.team5924.frc2025.subsystems.elevator.Elevator;
 import org.team5924.frc2025.subsystems.elevator.ElevatorIO;
-import org.team5924.frc2025.subsystems.elevator.ElevatorIOTalonFXGamma;
+import org.team5924.frc2025.subsystems.elevator.ElevatorIOTalonFX;
 import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOut;
 import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOut.CoralState;
 import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOutIO;
@@ -95,7 +95,7 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstantsGamma.BackRight));
         climber = new Climber(new ClimberIOTalonFX());
         coralInAndOut = new CoralInAndOut(new CoralInAndOutIOKrakenFOC());
-        elevator = new Elevator(new ElevatorIOTalonFXGamma() {});
+        elevator = new Elevator(new ElevatorIOTalonFX() {});
         vision = new Vision(new VisionIOLimelight());
         break;
 
@@ -137,25 +137,25 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Coral In Intake",
         Commands.runOnce(() -> coralInAndOut.setGoalState(CoralState.STORED_CORAL_IN_INTAKE)));
-    NamedCommands.registerCommand(
-        "Elevator Height L4",
-        Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.L4)));
-    NamedCommands.registerCommand(
-        "Elevator Height L3",
-        Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.L3)));
-    NamedCommands.registerCommand(
-        "Elevator Height Intake",
-        Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.INTAKE)));
-    NamedCommands.registerCommand(
-        "Elevator Height Zero",
-        Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.STOW)));
+    // NamedCommands.registerCommand(
+    //     "Elevator Height L4",
+    //     Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.L4)));
+    // NamedCommands.registerCommand(
+    //     "Elevator Height L3",
+    //     Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.L3)));
+    // NamedCommands.registerCommand(
+    //     "Elevator Height Intake",
+    //     Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.INTAKE)));
+    // NamedCommands.registerCommand(
+    //     "Elevator Height Zero",
+    //     Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.STOW)));
 
-    new EventTrigger("Elevator Height L4 Trigger")
-        .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.L4)));
-    new EventTrigger("Elevator Height Intake Trigger")
-        .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.INTAKE)));
-    new EventTrigger("Elevator Height Zero Trigger")
-        .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.STOW)));
+    // new EventTrigger("Elevator Height L4 Trigger")
+    //     .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.L4)));
+    // new EventTrigger("Elevator Height Intake Trigger")
+    //     .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.INTAKE)));
+    // new EventTrigger("Elevator Height Zero Trigger")
+    //     .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.STOW)));
 
     // Set up auto routines
     boolean isCompetition = true;
@@ -292,24 +292,24 @@ public class RobotContainer {
 
     // Elevator
     elevator.setDefaultCommand(new RunElevator(elevator, operatorController::getLeftY));
-    operatorController
-        .a()
-        .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.STOW)));
-    operatorController
-        .b()
-        .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.L2)));
-    operatorController
-        .x()
-        .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.L3)));
-    operatorController
-        .y()
-        .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.L4)));
-    operatorController
-        .leftBumper()
-        .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.MANUAL)));
-    operatorController
-        .rightBumper()
-        .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.INTAKE)));
+    // operatorController
+    //     .a()
+    //     .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.STOW)));
+    // operatorController
+    //     .b()
+    //     .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.L2)));
+    // operatorController
+    //     .x()
+    //     .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.L3)));
+    // operatorController
+    //     .y()
+    //     .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.L4)));
+    // operatorController
+    //     .leftBumper()
+    //     .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.MANUAL)));
+    // operatorController
+    //     .rightBumper()
+    //     .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.INTAKE)));
 
     // Vision
     // vision.setDefaultCommand(new RunVisionPoseEstimation(drive, vision).ignoringDisable(true));

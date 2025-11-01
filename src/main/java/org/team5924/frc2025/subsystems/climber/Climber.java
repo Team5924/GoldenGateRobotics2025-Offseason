@@ -84,13 +84,13 @@ public class Climber extends SubsystemBase {
 
     // If the robot's state is STOW && the cage is within range && algae pivot is STOW &&
     // elevator height is below L1 elevator height, then set the robot's state to READY_TO_CLIMB
-    if (getGoalState() == ClimberState.STOW
-        && isCageInClimber()
-        && RobotState.getInstance().getAlgaePivotState() == AlgaePivotState.INTAKE_FLOOR
-        && RobotState.getInstance().getElevatorPositionMeters()
-            <= (ElevatorState.L1).getHeightMeters().getAsDouble() + 0.02) {
-      setGoalState(ClimberState.READY_TO_CLIMB);
-    }
+    // if (getGoalState() == ClimberState.STOW
+    //     && isCageInClimber()
+    //     && RobotState.getInstance().getAlgaePivotState() == AlgaePivotState.INTAKE_FLOOR
+    //     && RobotState.getInstance().getElevatorPositionMeters()
+    //         <= (ElevatorState.L1).getHeightMeters().getAsDouble() + 0.02) {
+    //   setGoalState(ClimberState.READY_TO_CLIMB);
+    // }
 
     if (getGoalState() != lastState) {
       stateTimer.reset();

@@ -66,7 +66,7 @@ import org.team5924.frc2025.util.LoggedTunableNumber;
 /** TODO: Need to rezero elevator on min height. */
 
 /** Add your docs here. */
-public class ElevatorIOTalonFXGamma implements ElevatorIO {
+public class ElevatorIOTalonFX implements ElevatorIO {
   /* Motor Hardware */
   private final TalonFX leftTalon;
   private final TalonFX rightTalon;
@@ -91,17 +91,17 @@ public class ElevatorIOTalonFXGamma implements ElevatorIO {
 
   /* Gains */
   LoggedTunableNumber kA = new LoggedTunableNumber("Elevator/kA", 0.00);
-  LoggedTunableNumber kS = new LoggedTunableNumber("Elevator/kS", 0.13);
-  LoggedTunableNumber kV = new LoggedTunableNumber("Elevator/kV", .44);
-  LoggedTunableNumber kP = new LoggedTunableNumber("Elevator/kP", 7);
+  LoggedTunableNumber kS = new LoggedTunableNumber("Elevator/kS", 0.00);
+  LoggedTunableNumber kV = new LoggedTunableNumber("Elevator/kV", 0.00);
+  LoggedTunableNumber kP = new LoggedTunableNumber("Elevator/kP", 70.0);
   LoggedTunableNumber kI = new LoggedTunableNumber("Elevator/kI", 0);
-  LoggedTunableNumber kD = new LoggedTunableNumber("Elevator/kD", 0.07);
-  LoggedTunableNumber kG = new LoggedTunableNumber("Elevator/kG", 0.34);
+  LoggedTunableNumber kD = new LoggedTunableNumber("Elevator/kD", 0);
+  LoggedTunableNumber kG = new LoggedTunableNumber("Elevator/kG", 0.37);
 
   LoggedTunableNumber motionAcceleration =
-      new LoggedTunableNumber("Elevator/MotionAcceleration", 400);
+      new LoggedTunableNumber("Elevator/MotionAcceleration", 14);
   LoggedTunableNumber motionCruiseVelocity =
-      new LoggedTunableNumber("Elevator/MotionCruiseVelocity", 400);
+      new LoggedTunableNumber("Elevator/MotionCruiseVelocity", 3);
   LoggedTunableNumber motionJerk = new LoggedTunableNumber("Elevator/MotionJerk", 1000);
 
   /* Status Signals */
@@ -141,7 +141,7 @@ public class ElevatorIOTalonFXGamma implements ElevatorIO {
   private final Alert candiPin2FloatAlert =
       new Alert("Elevator CANdiPin2 is floating. Check connection.", Alert.AlertType.kWarning);
 
-  public ElevatorIOTalonFXGamma() {
+  public ElevatorIOTalonFX() {
     leftTalon = new TalonFX(Constants.ELEVATOR_LEFT_TALON_ID);
     rightTalon = new TalonFX(Constants.ELEVATOR_RIGHT_TALON_ID);
     elevatorCANCoder = new CANcoder(Constants.ELEVATOR_CANCODER_ID);
