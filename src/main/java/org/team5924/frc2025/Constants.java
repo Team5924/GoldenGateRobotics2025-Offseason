@@ -97,6 +97,11 @@ public final class Constants {
   public static final double MOTOR_TO_ALGAE_PIVOT_REDUCTION = 62.5; // TODO: most likely change
   public static final int ALGAE_PIVOT_CANCODER_ID = 45;
 
+  /* # Arm Pivot # */
+  public static final int ARM_PIVOT_CAN_ID = 0; // TODO: update value
+  public static final double MOTOR_TO_ARM_PIVOT_REDUCTION = 0; // TODO: update value
+  public static final int ARM_PIVOT_CANCODER_ID = 0; // TODO: update value
+
   /* Coral Handoff */
   public static final int CORAL_HANDOFF_CAN_ID = 32;
   public static final String CORAL_HANDOFF_BUS = "rio";
