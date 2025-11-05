@@ -171,6 +171,7 @@ public class ClimberIOTalonFX implements ClimberIO {
       config.ProximityThreshold = Constants.CLIMBER_CANRANGE_PROXIMITY_THRESHOLD;
       config.ProximityHysteresis = Constants.CLIMBER_CANRANGE_PROXIMITY_HYSTERESIS;
       config.MinSignalStrengthForValidMeasurement = Constants.CLIMBER_CANRANGE_SIGNAL_STRENGTH;
+      canrange.getConfigurator().apply(config);
 
       canrangeIsDetected = canrange.getIsDetected();
       canrangeSupplyVoltage = canrange.getSupplyVoltage();

@@ -114,7 +114,7 @@ public class Climber extends SubsystemBase {
 
   public void setState(ClimberState newState) {
     switch (newState) {
-      case LINEUP_FORWARD, STOPPED -> RobotState.getInstance().setClimberState(newState);
+      case LINEUP_FORWARD, LINEUP_BACKWARD, STOPPED -> RobotState.getInstance().setClimberState(newState);
       case HANGING -> {
         if (RobotState.getInstance().getClimberState() == ClimberState.LINEUP_BACKWARD
             && atGoal()) {
