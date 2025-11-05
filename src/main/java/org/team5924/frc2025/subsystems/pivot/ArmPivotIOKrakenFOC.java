@@ -86,7 +86,7 @@ public class ArmPivotIOKrakenFOC implements ArmPivotIO{
         controllerConfig.kD = armPivotMotorkD.getAsDouble();
         controllerConfig.kS = armPivotMotorkS.getAsDouble();
         armPivotKraken.getConfigurator().apply(krakenConfig);
-        armPivotKraken.getConfigurator().apply(controllerConfig);
+        armPivotKraken.getConfigurator().apply(controllerConfig, 1.0);
 
         armPivotCANcoderAbsolutePositionRotations = armPivotCANcoder.getAbsolutePosition();
         armPivotCANcoderRelativePositionRotations = armPivotCANcoder.getPosition();
