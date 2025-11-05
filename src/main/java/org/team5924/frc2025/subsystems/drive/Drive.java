@@ -320,62 +320,6 @@ public class Drive extends SubsystemBase {
     RobotState.getInstance().setOdometryPose(getPose());
 
     field.setRobotPose(getPose());
-
-    // VisionFieldPoseEstimate visionPoseFrontLeft =
-    //     RobotState.getInstance().getEstimatedPoseFrontLeft();
-    // VisionFieldPoseEstimate visionPoseFrontRight =
-    //     RobotState.getInstance().getEstimatedPoseFrontRight();
-    // VisionFieldPoseEstimate visionPoseBack = RobotState.getInstance().getEstimatedPoseBack();
-
-    // if (visionPoseFrontLeft != null && visionPoseFrontRight == null && visionPoseBack == null) {
-    //   addVisionMeasurement(
-    //       visionPoseFrontLeft.getVisionRobotPoseMeters(),
-    //       visionPoseFrontLeft.getTimestampSeconds(),
-    //       visionPoseFrontLeft.getVisionMeasurementStdDevs());
-    //   RobotState.getInstance().setEstimatedPoseFrontLeft(null);
-    // } else if (visionPoseFrontRight != null
-    //     && visionPoseFrontLeft == null
-    //     && visionPoseBack == null) {
-    //   addVisionMeasurement(
-    //       visionPoseFrontRight.getVisionRobotPoseMeters(),
-    //       visionPoseFrontRight.getTimestampSeconds(),
-    //       visionPoseFrontRight.getVisionMeasurementStdDevs());
-    //   RobotState.getInstance().setEstimatedPoseFrontRight(null);
-    // } else if (visionPoseBack != null
-    //     && visionPoseFrontLeft == null
-    //     && visionPoseFrontRight == null) {
-    //   addVisionMeasurement(
-    //       visionPoseBack.getVisionRobotPoseMeters(),
-    //       visionPoseBack.getTimestampSeconds(),
-    //       visionPoseBack.getVisionMeasurementStdDevs());
-    //   RobotState.getInstance().setEstimatedPoseBack(null);
-    // } else {
-    //   VisionFieldPoseEstimate latestPose = visionPoseFrontLeft;
-
-    //   if (visionPoseFrontRight != null
-    //       && (latestPose == null
-    //           || visionPoseFrontRight.getTimestampSeconds() > latestPose.getTimestampSeconds()))
-    // {
-    //     latestPose = visionPoseFrontRight;
-    //   }
-
-    //   if (visionPoseBack != null
-    //       && (latestPose == null
-    //           || visionPoseBack.getTimestampSeconds() > latestPose.getTimestampSeconds())) {
-    //     latestPose = visionPoseBack;
-    //   }
-
-    //   if (latestPose != null) {
-    //     addVisionMeasurement(
-    //         latestPose.getVisionRobotPoseMeters(),
-    //         latestPose.getTimestampSeconds(),
-    //         latestPose.getVisionMeasurementStdDevs());
-
-    //     RobotState.getInstance().setEstimatedPoseFrontLeft(null);
-    //     RobotState.getInstance().setEstimatedPoseFrontRight(null);
-    //     RobotState.getInstance().setEstimatedPoseBack(null);
-    //   }
-    // }
   }
 
   /**
