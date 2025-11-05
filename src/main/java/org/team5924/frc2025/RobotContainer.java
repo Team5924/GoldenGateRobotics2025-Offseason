@@ -315,7 +315,7 @@ public class RobotContainer {
     // vision.setDefaultCommand(new RunVisionPoseEstimation(drive, vision).ignoringDisable(true));
     if (vision != null)
       vision.setDefaultCommand(
-          Commands.runOnce(() -> vision.periodicAddMeasurements(drive.getPoseEstimator()))
+          Commands.run(() -> vision.periodicAddMeasurements(drive.getPoseEstimator()))
               .ignoringDisable(true));
 
     // Climber

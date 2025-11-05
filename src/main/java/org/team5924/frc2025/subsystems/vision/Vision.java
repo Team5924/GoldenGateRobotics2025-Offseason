@@ -39,7 +39,7 @@ public class Vision extends SubsystemBase implements VisionIO {
    * Camera class inheriting from PhotonCamera that contain its offset relative to the robot and a
    * poseEstimator
    */
-  public class Camera extends PhotonCamera {
+  public static class Camera extends PhotonCamera {
     public final Transform3d robotToCamera;
     public final PhotonPoseEstimator poseEstimator;
 
@@ -65,6 +65,10 @@ public class Vision extends SubsystemBase implements VisionIO {
           new Camera(Constants.BACK_RIGHT_NAME, Constants.BACK_RIGHT_TRANSFORM),
           new Camera(Constants.BACK_LEFT_NAME, Constants.BACK_LEFT_TRANSFORM)
         };
+    
+    for (int i = 0; i < inputs.length; ++i) {
+      inputs[i] = new VisionIOCameraInputsAutoLogged();
+    }
   }
 
   // TODO: add camera disconnected alerts sometime later
@@ -122,8 +126,10 @@ public class Vision extends SubsystemBase implements VisionIO {
       ArrayList<PhotonPipelineResult> results = filterResults(camera.getAllUnreadResults());
 
       // update the inputs with the most recent result
-      PhotonPipelineResult mostRecentResult = results.get(results.size() - 1);
-      updateInputsWithResult(mostRecentResult, i);
+      if (!results.isEmpty()) {
+        PhotonPipelineResult mostRecentResult = results.get(results.size() - 1);
+        updateInputsWithResult(mostRecentResult, i);
+      }
 
       // get the estimated poses, loop through them, and include each good estimate in the vision
       // measurement calculation
@@ -140,7 +146,7 @@ public class Vision extends SubsystemBase implements VisionIO {
     }
   }
 
-  /** Returns whether or not all the cemeras are connected */
+  /** Returns whether or not all the cameras are connected */
   public boolean allCamerasConnected() {
     for (Camera camera : cameras) {
       if (!camera.isConnected()) return false;
@@ -148,10 +154,10 @@ public class Vision extends SubsystemBase implements VisionIO {
     return true;
   }
 
-  /** Filters out results from each camera that inlcude barge positions */
+  /** Filters out results from each camera that include barge positions */
   private ArrayList<PhotonPipelineResult> filterResults(List<PhotonPipelineResult> results) {
     ArrayList<PhotonPipelineResult> updatedResults = new ArrayList<PhotonPipelineResult>(results);
-    for (int i = 0; i < results.size(); ++i) {
+    for (int i = 0; i < results.size() - 1; ++i) {
       if (removeResult(results.get(i))) updatedResults.remove(i);
     }
     return updatedResults;
@@ -179,9 +185,9 @@ public class Vision extends SubsystemBase implements VisionIO {
 
   /** Returns whether or not a position is within the field */
   private boolean isInsideField(Translation2d position) {
-    return position.getX() < -Constants.FIELD_BORDER_MARGIN
-        || position.getX() > Constants.FIELD_LENGTH + Constants.FIELD_BORDER_MARGIN
-        || position.getY() < -Constants.FIELD_BORDER_MARGIN
-        || position.getY() > Constants.FIELD_WIDTH + Constants.FIELD_BORDER_MARGIN;
+    return position.getX() >= -Constants.FIELD_BORDER_MARGIN
+        && position.getX() <= Constants.FIELD_LENGTH + Constants.FIELD_BORDER_MARGIN
+        && position.getY() >= -Constants.FIELD_BORDER_MARGIN
+        && position.getY() <= Constants.FIELD_WIDTH + Constants.FIELD_BORDER_MARGIN;
   }
 }

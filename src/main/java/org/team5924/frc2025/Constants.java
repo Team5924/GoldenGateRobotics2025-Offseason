@@ -159,7 +159,7 @@ public final class Constants {
   public static final ArrayList<Integer> BARGE_TAG_IDS =
       new ArrayList<Integer>(Arrays.asList(4, 5, 14, 15));
 
-  /* # Vision - oldd # */
+  /* # Vision - old # */
   public static String APRIL_TAG_LIMELIGHT_NAME_FRONTL = "limelight-frontl";
   public static String APRIL_TAG_LIMELIGHT_NAME_FRONTR = "limelight-frontr";
   public static String APRIL_TAG_LIMELIGHT_NAME_BACK = "limelight-back";
