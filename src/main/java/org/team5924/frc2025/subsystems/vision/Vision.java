@@ -65,7 +65,7 @@ public class Vision extends SubsystemBase implements VisionIO {
           new Camera(Constants.BACK_RIGHT_NAME, Constants.BACK_RIGHT_TRANSFORM),
           new Camera(Constants.BACK_LEFT_NAME, Constants.BACK_LEFT_TRANSFORM)
         };
-    
+
     for (int i = 0; i < inputs.length; ++i) {
       inputs[i] = new VisionIOCameraInputsAutoLogged();
     }
@@ -140,7 +140,7 @@ public class Vision extends SubsystemBase implements VisionIO {
                 || (pose.strategy == PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY
                     && pose.targetsUsed.get(0).poseAmbiguity < 0.05
                     && pose.targetsUsed.get(0).area > 0.25))) {
-          estimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
+          estimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);  // don't need stds
         }
       }
     }
@@ -157,7 +157,7 @@ public class Vision extends SubsystemBase implements VisionIO {
   /** Filters out results from each camera that include barge positions */
   private ArrayList<PhotonPipelineResult> filterResults(List<PhotonPipelineResult> results) {
     ArrayList<PhotonPipelineResult> updatedResults = new ArrayList<PhotonPipelineResult>(results);
-    for (int i = 0; i < results.size() - 1; ++i) {
+    for (int i = results.size() - 1; i >= 0; --i) {
       if (removeResult(results.get(i))) updatedResults.remove(i);
     }
     return updatedResults;
