@@ -24,8 +24,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
 import org.team5924.frc2025.RobotState;
-import org.team5924.frc2025.subsystems.elevator.Elevator.ElevatorState;
-import org.team5924.frc2025.subsystems.pivot.AlgaePivot.AlgaePivotState;
 import org.team5924.frc2025.util.LoggedTunableNumber;
 
 @Setter

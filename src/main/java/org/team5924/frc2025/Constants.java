@@ -30,8 +30,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
-import lombok.val;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
@@ -115,7 +113,7 @@ public final class Constants {
   public static final double GEAR_RATIO = 4.0;
 
   public static final double ZERO_VOLTAGE = -0.2;
-  public static final double ZERO_MIN_CURRENT = 1.7; //amps
+  public static final double ZERO_MIN_CURRENT = 1.7; // amps
 
   public static final double SETPOINT_THRESHOLD = 0.01;
   public static final double LAZIER_SETPOINT_THRESHOLD = 0.03;
@@ -133,16 +131,14 @@ public final class Constants {
   public static final int ELEVATOR_CANDI_ID = 39;
   public static final String ELEVATOR_CANDI_BUS = "rio";
   public static final double MOTOR_TO_ELEVATOR_REDUCTION = 4.00;
-  public static final double CANCODER_TO_ELEVATOR_REDUCTION = GEAR_RATIO / (SPOOL_RADIUS * 2 * Math.PI);
+  public static final double CANCODER_TO_ELEVATOR_REDUCTION =
+      GEAR_RATIO / (SPOOL_RADIUS * 2 * Math.PI);
   public static final InvertedValue ELEVATOR_LEFT_INVERSION = InvertedValue.Clockwise_Positive;
   public static final Distance SPROCKET_RADIUS = Inches.of(.6405);
   public static final double ELEVATOR_CANCODER_OFFSET = 0.00; // TODO: Check and change if needed
 
-
   // arm
   public static final double CORAL_CENTER_OFFSET = Units.inchesToMeters(9.5);
-
-
 
   /* Algae Rollers*/
   public static final int ALGAE_TALON_ID = 35;

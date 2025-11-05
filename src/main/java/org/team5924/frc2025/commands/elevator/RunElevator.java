@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.DoubleSupplier;
 import org.team5924.frc2025.RobotState;
 import org.team5924.frc2025.subsystems.elevator.Elevator;
-import org.team5924.frc2025.subsystems.elevator.Elevator.ElevatorState;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class RunElevator extends Command {
