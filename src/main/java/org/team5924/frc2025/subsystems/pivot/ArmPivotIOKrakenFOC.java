@@ -47,13 +47,13 @@ public class ArmPivotIOKrakenFOC implements ArmPivotIO{
     private final PositionVoltage positionControl =
       new PositionVoltage(0).withUpdateFreqHz(0.0).withEnableFOC(true);
 
-    LoggedTunableNumber armPivotMotorkP = new LoggedTunableNumber("ArmPivotMotorkP", 0);
-    LoggedTunableNumber armPivotMotorkI = new LoggedTunableNumber("ArmPivotMotorkI", 0);
-    LoggedTunableNumber armPivotMotorkD = new LoggedTunableNumber("ArmPivotMotorkD", 0);
-    LoggedTunableNumber armPivotMotorkS = new LoggedTunableNumber("ArmPivotMotorkS", 0);
-    LoggedTunableNumber armPivotCANcoderMagnetOffsetRads =
+    private final LoggedTunableNumber armPivotMotorkP = new LoggedTunableNumber("ArmPivotMotorkP", 0);
+    private final LoggedTunableNumber armPivotMotorkI = new LoggedTunableNumber("ArmPivotMotorkI", 0);
+    private final LoggedTunableNumber armPivotMotorkD = new LoggedTunableNumber("ArmPivotMotorkD", 0);
+    private final LoggedTunableNumber armPivotMotorkS = new LoggedTunableNumber("ArmPivotMotorkS", 0);
+    private final LoggedTunableNumber armPivotCANcoderMagnetOffsetRads =
       new LoggedTunableNumber("ArmPivotCANcoderOffsetRads", 0);
-    LoggedTunableNumber armPivotSensorDiscontinuityPoint =
+    private final LoggedTunableNumber armPivotSensorDiscontinuityPoint =
       new LoggedTunableNumber("ArmPivotSensorDiscontinuityPoint", .5);
 
 
