@@ -37,10 +37,9 @@ import org.team5924.frc2025.commands.coralInAndOut.TeleopShoot;
 import org.team5924.frc2025.commands.drive.DriveCommands;
 import org.team5924.frc2025.commands.elevator.RunElevator;
 import org.team5924.frc2025.generated.TunerConstantsGamma;
-import org.team5924.frc2025.subsystems.climber.Climber;
-import org.team5924.frc2025.subsystems.climber.ClimberIO;
-import org.team5924.frc2025.subsystems.climber.ClimberIOSim;
-import org.team5924.frc2025.subsystems.climber.ClimberIOTalonFX;
+import org.team5924.frc2025.subsystems.climberold.Climber;
+import org.team5924.frc2025.subsystems.climberold.ClimberIO;
+import org.team5924.frc2025.subsystems.climberold.ClimberIOTalonFX;
 import org.team5924.frc2025.subsystems.drive.Drive;
 import org.team5924.frc2025.subsystems.drive.GyroIO;
 import org.team5924.frc2025.subsystems.drive.GyroIOPigeon2;
@@ -108,7 +107,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstantsGamma.FrontRight),
                 new ModuleIOSim(TunerConstantsGamma.BackLeft),
                 new ModuleIOSim(TunerConstantsGamma.BackRight));
-        climber = new Climber(new ClimberIOSim());
+        climber = new Climber(new ClimberIO() {});
         coralInAndOut = new CoralInAndOut(new CoralInAndOutIOSim());
         elevator = new Elevator(new ElevatorIO() {});
         vision = new Vision(new VisionIO() {});
