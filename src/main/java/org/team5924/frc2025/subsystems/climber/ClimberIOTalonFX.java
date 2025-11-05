@@ -125,7 +125,6 @@ public class ClimberIOTalonFX implements ClimberIO {
       BaseStatusSignal.setUpdateFrequencyForAll(50, cancoderPosition, cancoderSupplyVoltage);
 
       cancoder.optimizeBusUtilization(0, 1.0);
-      cancoder.setPosition(0);
     }
 
     // Grab motor

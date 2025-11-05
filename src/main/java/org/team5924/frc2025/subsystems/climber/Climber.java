@@ -29,17 +29,17 @@ import org.team5924.frc2025.util.LoggedTunableNumber;
 public class Climber extends SubsystemBase {
   public enum ClimberState {
     STOPPED(
-        new LoggedTunableNumber("Climber/StoppedAngle", 100.0),
+        new LoggedTunableNumber("Climber/StoppedAngle", Math.toRadians(100.0)),
         new LoggedTunableNumber("Climber/StoppedVoltage", 0.0)),
 
     LINEUP_FORWARD(
-        new LoggedTunableNumber("Climber/LineupForwardAngle", 0.0),
+        new LoggedTunableNumber("Climber/LineupForwardAngle", Math.toRadians(0.0)),
         new LoggedTunableNumber("Climber/LineupForwardVoltage", 3.0)),
     LINEUP_BACKWARD(
-        new LoggedTunableNumber("Climber/LineupBackwardAngle", 0.0),
+        new LoggedTunableNumber("Climber/LineupBackwardAngle", Math.toRadians(0.0)),
         new LoggedTunableNumber("Climber/LineupBackwardVoltage", 3.0)),
     HANGING(
-        new LoggedTunableNumber("Climber/HangingAngle", 160.0),
+        new LoggedTunableNumber("Climber/HangingAngle", Math.toRadians(160.0)),
         new LoggedTunableNumber("Climber/HangingVoltage", 12.0));
 
     public final LoggedTunableNumber angle;
@@ -87,7 +87,6 @@ public class Climber extends SubsystemBase {
 
         if (inputs.cancoderPosition < PASS_ANGLE_CHECK) {
           setState(ClimberState.LINEUP_BACKWARD);
-          // System.out.println("Climber/LineupForwardStartedFlip");
         }
       }
       case LINEUP_BACKWARD -> {
@@ -114,7 +113,8 @@ public class Climber extends SubsystemBase {
 
   public void setState(ClimberState newState) {
     switch (newState) {
-      case LINEUP_FORWARD, LINEUP_BACKWARD, STOPPED -> RobotState.getInstance().setClimberState(newState);
+      case LINEUP_FORWARD, LINEUP_BACKWARD, STOPPED ->
+          RobotState.getInstance().setClimberState(newState);
       case HANGING -> {
         if (RobotState.getInstance().getClimberState() == ClimberState.LINEUP_BACKWARD
             && atGoal()) {
