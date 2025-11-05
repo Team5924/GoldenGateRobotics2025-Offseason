@@ -79,7 +79,7 @@ public class IntakePivot extends SubsystemBase{
         return pivotInput.intakePivotPositionRads / Constants.MOTOR_TO_INTAKE_PIVOT_REDUCTION;
     }
 
-    public boolean isAtStepoint(){
+    public boolean isAtSetpoint(){
         return Math.abs(getIntakePivotPosRads() - this.goalState.rads.getAsDouble()) < PIV_POS_TOLERANCE.getAsDouble();
     }
     public void setVoltage(double voltage){
