@@ -30,8 +30,8 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 
 public class ArmPivotIOKrakenFOC implements ArmPivotIO{
-    private static TalonFX armPivotKraken;
-    private static CANcoder armPivotCANcoder;
+    private TalonFX armPivotKraken;
+    private CANcoder armPivotCANcoder;
 
     private final StatusSignal<Angle> armPivotCANcoderAbsolutePositionRotations;
     private final StatusSignal<Angle> armPivotCANcoderRelativePositionRotations;
