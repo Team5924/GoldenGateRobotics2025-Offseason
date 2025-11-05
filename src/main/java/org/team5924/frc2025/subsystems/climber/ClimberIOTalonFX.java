@@ -21,13 +21,11 @@ import static edu.wpi.first.units.Units.Radians;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
-import com.ctre.phoenix6.configs.ProximityParamsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -58,10 +56,6 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final StatusSignal<Current> grabSupplyCurrent;
   private final StatusSignal<Current> grabTorqueCurrent;
   private final StatusSignal<Temperature> grabTempCelsius;
-
-  private final CANrange canrange;
-  private final StatusSignal<Boolean> canrangeIsDetected;
-  private final StatusSignal<Voltage> canrangeSupplyVoltage;
 
   // Single shot for voltage mode, robot loop will call continuously
   private final VoltageOut voltageOut = new VoltageOut(0.0).withEnableFOC(true).withUpdateFreqHz(0);
@@ -160,25 +154,6 @@ public class ClimberIOTalonFX implements ClimberIO {
       grabTalon.optimizeBusUtilization(0, 1.0);
       grabTalon.setPosition(0);
     }
-
-    // CANrange
-    {
-      canrange = new CANrange(Constants.CLIMBER_CANRANGE_ID);
-
-      // Configure
-      ProximityParamsConfigs config = new ProximityParamsConfigs();
-      config.ProximityThreshold = Constants.CLIMBER_CANRANGE_PROXIMITY_THRESHOLD;
-      config.ProximityHysteresis = Constants.CLIMBER_CANRANGE_PROXIMITY_HYSTERESIS;
-      config.MinSignalStrengthForValidMeasurement = Constants.CLIMBER_CANRANGE_SIGNAL_STRENGTH;
-      canrange.getConfigurator().apply(config);
-
-      canrangeIsDetected = canrange.getIsDetected();
-      canrangeSupplyVoltage = canrange.getSupplyVoltage();
-
-      BaseStatusSignal.setUpdateFrequencyForAll(50, canrangeIsDetected, canrangeSupplyVoltage);
-
-      canrange.optimizeBusUtilization(0, 1.0);
-    }
   }
 
   @Override
@@ -226,13 +201,6 @@ public class ClimberIOTalonFX implements ClimberIO {
       inputs.grabSupplyCurrentAmps = grabSupplyCurrent.getValueAsDouble();
       inputs.grabTorqueCurrentAmps = grabTorqueCurrent.getValueAsDouble();
       inputs.grabTempCelsius = grabTempCelsius.getValueAsDouble();
-    }
-
-    {
-      inputs.canrangeConnected =
-          BaseStatusSignal.refreshAll(canrangeIsDetected, canrangeSupplyVoltage).isOK();
-      inputs.canrangeIsDetected = canrangeIsDetected.getValue();
-      inputs.canrangeSupplyVoltage = canrangeSupplyVoltage.getValueAsDouble();
     }
   }
 

@@ -18,8 +18,6 @@ package org.team5924.frc2025.subsystems.climber;
 
 import com.ctre.phoenix6.controls.CoastOut;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team5924.frc2025.Constants;
@@ -58,8 +56,6 @@ public class Climber extends SubsystemBase {
   private final ClimberIO io;
 
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
-
-  private final Debouncer canRangeDebouncer = new Debouncer(0.25, DebounceType.kBoth);
 
   public Climber(ClimberIO io) {
     this.io = io;
@@ -125,8 +121,9 @@ public class Climber extends SubsystemBase {
     }
   }
 
+  // * simply return true because not using a canrange */
   public boolean isHoldingCage() {
-    return canRangeDebouncer.calculate(inputs.canrangeIsDetected);
+    return true;
   }
 
   public boolean atGoal() {

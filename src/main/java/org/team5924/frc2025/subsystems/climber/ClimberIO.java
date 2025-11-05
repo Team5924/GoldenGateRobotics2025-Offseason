@@ -42,10 +42,6 @@ public interface ClimberIO {
     public double grabSupplyCurrentAmps = 0.0;
     public double grabTorqueCurrentAmps = 0.0;
     public double grabTempCelsius = 0.0;
-
-    public boolean canrangeConnected = true;
-    public boolean canrangeIsDetected = false;
-    public double canrangeSupplyVoltage = 0.0;
   }
 
   /**

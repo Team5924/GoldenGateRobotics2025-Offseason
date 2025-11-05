@@ -93,12 +93,6 @@ public final class Constants {
   public static final int GRABBER_STATOR_CURRENT_LIMIT = 35;
   public static final InvertedValue GRABBER_INVERT = InvertedValue.Clockwise_Positive;
 
-  /* Climber canrange */
-  public static final int CLIMBER_CANRANGE_ID = 43;
-  public static final double CLIMBER_CANRANGE_PROXIMITY_THRESHOLD = 0.05;
-  public static final double CLIMBER_CANRANGE_PROXIMITY_HYSTERESIS = 0.01;
-  public static final double CLIMBER_CANRANGE_SIGNAL_STRENGTH = 7000;
-
   /* # Rollers # */
   /* Coral In-And-Out */
   public static final int CORAL_IN_AND_OUT_CAN_ID = 33;
