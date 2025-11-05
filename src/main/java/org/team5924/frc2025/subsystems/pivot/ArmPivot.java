@@ -62,7 +62,7 @@ public class ArmPivot extends SubsystemBase{
         Logger.processInputs("ArmPivot", inputs);
 
         Logger.recordOutput("ArmPivot/GoalState", goalState.toString());
-        Logger.recordOutput("ArmPivot/TargetRads", goalState.rads);
+        Logger.recordOutput("ArmPivot/TargetRads", goalState.rads.getAsDouble());
 
         armPivotMotorDisconnected.set(!inputs.armPivotMotorConnected);
 
