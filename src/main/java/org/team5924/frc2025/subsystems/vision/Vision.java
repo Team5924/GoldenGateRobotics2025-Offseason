@@ -16,223 +16,178 @@
 
 package org.team5924.frc2025.subsystems.vision;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 import org.team5924.frc2025.Constants;
-import org.team5924.frc2025.RobotState;
-import org.team5924.frc2025.util.FiducialObservation;
-import org.team5924.frc2025.util.MegatagPoseEstimate;
-import org.team5924.frc2025.util.VisionFieldPoseEstimate;
 
-public class Vision extends SubsystemBase {
-  /** Creates a new Vision. */
-  private final VisionIO io;
+public class Vision extends SubsystemBase implements VisionIO {
+  private final VisionIOCameraInputsAutoLogged inputs[] = new VisionIOCameraInputsAutoLogged[4];
 
-  private double lastVisionTimestamp = 0;
+  /**
+   * Camera class inheriting from PhotonCamera that contain its offset relative to the robot and a
+   * poseEstimator
+   */
+  public static class Camera extends PhotonCamera {
+    public final Transform3d robotToCamera;
+    public final PhotonPoseEstimator poseEstimator;
 
-  private final VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
-
-  // private final BooleanSubscriber allianceSubscriber =
-  //     NetworkTableInstance.getDefault()
-  //         .getTable("FMSInfo")
-  //         .getBooleanTopic("IsRedAlliance")
-  //         .subscribe(true);
-  // private boolean previousAllianceSubscriberValue = true;
-
-  public Vision(VisionIO io) {
-    this.io = io;
+    public Camera(String initialName, Transform3d robotToCamera) {
+      super(initialName);
+      this.robotToCamera = robotToCamera;
+      poseEstimator =
+          new PhotonPoseEstimator(
+              AprilTagFieldLayout.loadField(Constants.FIELD_TYPE),
+              PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+              robotToCamera);
+    }
   }
+
+  private final Camera[] cameras;
+
+  public Vision() {
+    // initialize all the cameras
+    cameras =
+        new Camera[] {
+          new Camera(Constants.FRONT_RIGHT_NAME, Constants.FRONT_RIGHT_TRANSFORM),
+          new Camera(Constants.FRONT_LEFT_NAME, Constants.FRONT_LEFT_TRANSFORM),
+          new Camera(Constants.BACK_RIGHT_NAME, Constants.BACK_RIGHT_TRANSFORM),
+          new Camera(Constants.BACK_LEFT_NAME, Constants.BACK_LEFT_TRANSFORM)
+        };
+
+    for (int i = 0; i < inputs.length; ++i) {
+      inputs[i] = new VisionIOCameraInputsAutoLogged();
+    }
+  }
+
+  // TODO: add camera disconnected alerts sometime later
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    io.updateInputs(inputs);
-    Logger.processInputs("Vision", inputs);
-
-    updateVision(
-        inputs.frontLeftLimelightSeesTarget,
-        inputs.frontLeftFiducials,
-        inputs.megatag2PoseEstimateFrontLeft,
-        false);
-
-    updateVision(
-        inputs.frontRightLimelightSeesTarget,
-        inputs.frontRightFiducials,
-        inputs.megatag2PoseEstimateFrontRight,
-        true);
-
-    updateVision(
-        inputs.backLimelightSeesTarget,
-        inputs.backFiducials,
-        inputs.megatag2PoseEstimateBack,
-        false);
-
-    // boolean isRedAlliance = allianceSubscriber.get();
-    // if (isRedAlliance != previousAllianceSubscriberValue) {
-    //   previousAllianceSubscriberValue = isRedAlliance;
-    //   RobotState.getInstance().setRedAlliance(isRedAlliance);
-    // }
+    updateInputs(inputs);
+    for (int i = 0; i < inputs.length; ++i) Logger.processInputs("Vision - Camera " + i, inputs[i]);
   }
 
-  private void updateVision(
-      boolean cameraSeesTarget,
-      FiducialObservation[] cameraFiducialObservations,
-      MegatagPoseEstimate megatag2PoseEstimate,
-      Boolean isFrontRightLL) {
-    if (megatag2PoseEstimate != null) {
-      // System.out.println("Megatag2PoseEstimate is not null");
-      boolean filterOut =
-          megatag2PoseEstimate.pose.getX() < -Constants.FIELD_BORDER_MARGIN
-              || megatag2PoseEstimate.pose.getX()
-                  > Constants.FIELD_LENGTH + Constants.FIELD_BORDER_MARGIN
-              || megatag2PoseEstimate.pose.getY() < -Constants.FIELD_BORDER_MARGIN
-              || megatag2PoseEstimate.pose.getY()
-                  > Constants.FIELD_WIDTH + Constants.FIELD_BORDER_MARGIN;
-      if (cameraSeesTarget && !filterOut) {
-        Optional<VisionFieldPoseEstimate> megatag2Estimate =
-            processMegatag2PoseEstimate(megatag2PoseEstimate);
+  /** Updates AdvantageKit inputs */
+  @Override
+  public void updateInputs(VisionIOCameraInputs[] inputsArray) {
+    for (int i = 0; i < inputsArray.length; ++i) {
+      // References to the camera and its corresponding inputs
+      Camera camera = cameras[i];
+      VisionIOCameraInputs inputs = inputsArray[i];
 
-        if (megatag2Estimate.isPresent()) {
-          if (isFrontRightLL) {
-            Logger.recordOutput(
-                "Vision/Front/" + "Megatag2Estimate",
-                megatag2Estimate.get().getVisionRobotPoseMeters());
-            RobotState.getInstance().setEstimatedPoseFrontRight(megatag2Estimate.get());
-          } else if (megatag2PoseEstimate.isFrontLimelight) {
-            Logger.recordOutput(
-                "Vision/Front/" + "Megatag2Estimate",
-                megatag2Estimate.get().getVisionRobotPoseMeters());
-            RobotState.getInstance().setEstimatedPoseFrontLeft(megatag2Estimate.get());
-          } else {
-            Logger.recordOutput(
-                "Vision/Back/" + "Megatag2Estimate",
-                megatag2Estimate.get().getVisionRobotPoseMeters());
-            RobotState.getInstance().setEstimatedPoseBack(megatag2Estimate.get());
-          }
+      // Update the inputs
+      inputs.isConnected = camera.isConnected();
+      inputs.robotToCamera = camera.robotToCamera;
+    }
+  }
+
+  /**
+   * Updates AdvantageKit inputs for a camera index given a PhotonPipeline result
+   *
+   * @param results the results from the camera
+   * @param cameraIndex the index of the camera
+   */
+  private void updateInputsWithResult(PhotonPipelineResult results, int cameraIndex) {
+    VisionIOCameraInputs in = inputs[cameraIndex];
+
+    in.targetCount = results.getTargets().size();
+
+    if (in.targetCount == 0) {
+      // no targets; set the values relating to targets to -1 to avoid confusion
+      in.bestTargetPoseAmbiguity = -1;
+      in.bestTargetArea = -1;
+      return;
+    }
+
+    PhotonTrackedTarget bestTarget = results.getBestTarget();
+    in.bestTargetPoseAmbiguity = bestTarget.poseAmbiguity;
+    in.bestTargetArea = bestTarget.area;
+  }
+
+  // ----- Vision calculation stuff here and below -----
+
+  /** Periodically adds measurements from each camera to the estimator */
+  public void periodicAddMeasurements(SwerveDrivePoseEstimator estimator) {
+    for (int i = 0; i < cameras.length; ++i) {
+      Camera camera = cameras[i];
+      ArrayList<PhotonPipelineResult> results = filterResults(camera.getAllUnreadResults());
+
+      // update the inputs with the most recent result
+      if (!results.isEmpty()) {
+        PhotonPipelineResult mostRecentResult = results.get(results.size() - 1);
+        updateInputsWithResult(mostRecentResult, i);
+      }
+
+      // get the estimated poses, loop through them, and include each good estimate in the vision
+      // measurement calculation
+      ArrayList<EstimatedRobotPose> estimatedPoses = getEstimatedPoses(camera, results);
+      for (EstimatedRobotPose pose : estimatedPoses) {
+        if (isInsideField(pose.estimatedPose.getTranslation().toTranslation2d())
+            && (pose.strategy == PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
+                || (pose.strategy == PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY
+                    && pose.targetsUsed.get(0).poseAmbiguity < 0.05
+                    && pose.targetsUsed.get(0).area > 0.25))) {
+          estimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);  // don't need stds
         }
       }
     }
   }
 
-  private Optional<VisionFieldPoseEstimate> processMegatag2PoseEstimate(
-      MegatagPoseEstimate poseEstimate) {
-    Pose2d loggedRobotPose = RobotState.getInstance().getOdometryPose();
-    Pose2d measuredPose = poseEstimate.pose;
-    if (poseEstimate.avgTagDist > 3) {
-      System.out.println("Returning optional.empty");
-      return Optional.empty();
+  /** Returns whether or not all the cameras are connected */
+  public boolean allCamerasConnected() {
+    for (Camera camera : cameras) {
+      if (!camera.isConnected()) return false;
+    }
+    return true;
+  }
+
+  /** Filters out results from each camera that include barge positions */
+  private ArrayList<PhotonPipelineResult> filterResults(List<PhotonPipelineResult> results) {
+    ArrayList<PhotonPipelineResult> updatedResults = new ArrayList<PhotonPipelineResult>(results);
+    for (int i = results.size() - 1; i >= 0; --i) {
+      if (removeResult(results.get(i))) updatedResults.remove(i);
+    }
+    return updatedResults;
+  }
+
+  /** Returns whether or not to remove the result (which is if it uses barge aprilTags) */
+  private boolean removeResult(PhotonPipelineResult result) {
+    for (PhotonTrackedTarget target : result.getTargets()) {
+      if (Constants.BARGE_TAG_IDS.contains(target.getFiducialId())) return true;
+    }
+    return false;
+  }
+
+  /** Gets and returns the estimated poses from a camera */
+  private ArrayList<EstimatedRobotPose> getEstimatedPoses(
+      Camera camera, ArrayList<PhotonPipelineResult> results) {
+    ArrayList<EstimatedRobotPose> poses = new ArrayList<EstimatedRobotPose>();
+    for (PhotonPipelineResult result : results) {
+      Optional<EstimatedRobotPose> pose = camera.poseEstimator.update(result);
+      if (pose.isPresent()) poses.add(pose.get());
     }
 
-    double poseDelta = measuredPose.getTranslation().getDistance(loggedRobotPose.getTranslation());
-
-    // TODO: Tag filtering?
-
-    double xyStdDev;
-    // if (poseEstimate.fiducialIds.length > 0) {
-    // multiple targets detected
-    if (poseEstimate.fiducialIds.length >= 2 && poseEstimate.avgTagArea > 0.1) {
-
-      xyStdDev = 0.2;
-    }
-    // we detect at least one of our speaker tags and we're close to it.
-    else if (
-    /* TODO: doesSeeReefTag() && */ poseEstimate.avgTagArea > 0.2) {
-
-      xyStdDev = 0.5;
-    }
-    // 1 target with large area and close to estimated pose
-    else if (poseEstimate.avgTagArea > 0.8 && poseDelta < 0.5) {
-      xyStdDev = 0.5;
-
-    }
-    // 1 target farther away and estimated pose is close
-    else if (poseEstimate.avgTagArea > 0.1 && poseDelta < 0.3) {
-
-      xyStdDev = 1.0;
-    } else if (poseEstimate.fiducialIds.length > 1) {
-
-      xyStdDev = 1.2;
-    } else {
-
-      xyStdDev = 2.4;
-    }
-
-    Logger.recordOutput("Vision/Front/" + "Megatag2StdDev", xyStdDev);
-    Logger.recordOutput("Vision/Front/" + "Megatag2AvgTagArea", poseEstimate.avgTagArea);
-    Logger.recordOutput("Vision/Front/" + "Megatag2PoseDifference", poseDelta);
-
-    Matrix<N3, N1> visionMeasurementStdDevs =
-        VecBuilder.fill(xyStdDev, xyStdDev, Units.degreesToRadians(3600));
-    measuredPose = new Pose2d(measuredPose.getTranslation(), loggedRobotPose.getRotation());
-
-    return Optional.of(
-        new VisionFieldPoseEstimate(
-            measuredPose, poseEstimate.timestampSeconds, visionMeasurementStdDevs));
-    // }
-
-    // System.out.println("Returning optional.empty");
-    // return Optional.empty();
+    return poses;
   }
 
-  public MegatagPoseEstimate getBotPose2dBlue() {
-    if (inputs.megatag2PoseEstimateFrontLeft == null && inputs.megatag2PoseEstimateBack == null) {
-      return null;
-    }
-    if (inputs.megatag2PoseEstimateFrontLeft == null) {
-      return inputs.megatag2PoseEstimateBack;
-    }
-    if (inputs.megatag2PoseEstimateBack == null) {
-      return inputs.megatag2PoseEstimateFrontLeft;
-    }
-    if (inputs.lowestTagAmbiguityFrontLeft < inputs.lowestTagAmbiguityBack) {
-      return inputs.megatag2PoseEstimateFrontLeft;
-    } else {
-      return inputs.megatag2PoseEstimateBack;
-    }
-  }
-
-  public double getLatencySecondsFrontLeft() {
-    return inputs.frontLeftAprilTagCaptureLatencySeconds
-        + inputs.frontLeftAprilTagPipelineLatencySeconds;
-  }
-
-  public double getLatencySecondsBack() {
-    return inputs.backAprilTagCaptureLatencySeconds + inputs.backAprilTagPipelineLatencySeconds;
-  }
-
-  public double getLatencySecondsFrontRight() {
-    return inputs.frontRightAprilTagCaptureLatencySeconds
-        + inputs.frontRightAprilTagPipelineLatencySeconds;
-  }
-
-  public double getLowestTagAmbiguityFrontLeft() {
-    return inputs.lowestTagAmbiguityFrontLeft;
-  }
-
-  public double getLowestTagAmbiguityBack() {
-    return inputs.lowestTagAmbiguityBack;
-  }
-
-  public double getLowestTagAmbiguityFrontRight() {
-    return inputs.lowestTagAmbiguityFrontRight;
-  }
-
-  public int getNumberFiducialsSpottedFrontLeft() {
-    return inputs.frontLeftFiducials.length;
-  }
-
-  public int getNumberFiducialsSpottedBack() {
-    return inputs.backFiducials.length;
-  }
-
-  public int getNumberFiducialsSpottedFrontRight() {
-    return inputs.frontRightFiducials.length;
+  /** Returns whether or not a position is within the field */
+  private boolean isInsideField(Translation2d position) {
+    return position.getX() >= -Constants.FIELD_BORDER_MARGIN
+        && position.getX() <= Constants.FIELD_LENGTH + Constants.FIELD_BORDER_MARGIN
+        && position.getY() >= -Constants.FIELD_BORDER_MARGIN
+        && position.getY() <= Constants.FIELD_WIDTH + Constants.FIELD_BORDER_MARGIN;
   }
 }

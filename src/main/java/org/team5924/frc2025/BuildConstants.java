@@ -19,15 +19,15 @@ package org.team5924.frc2025;
 /** Automatically generated file containing build version information. */
 public final class BuildConstants {
   public static final String MAVEN_GROUP = "";
-  public static final String MAVEN_NAME = "GoldenGateRobotics2025";
+  public static final String MAVEN_NAME = "GoldenGateRobotics2025-Offseason";
   public static final String VERSION = "unspecified";
-  public static final int GIT_REVISION = 278;
-  public static final String GIT_SHA = "8a97b9bcca84ee0e6c261e9b9b75f4c35d489a50";
-  public static final String GIT_DATE = "2025-10-18 17:31:25 EDT";
-  public static final String GIT_BRANCH = "86-drive-heading";
-  public static final String BUILD_DATE = "2025-10-18 17:40:58 EDT";
-  public static final long BUILD_UNIX_TIME = 1760823658603L;
-  public static final int DIRTY = 1;
+  public static final int GIT_REVISION = 287;
+  public static final String GIT_SHA = "6d5be626fb0f019e5bd1cc0a4e4a0c4edf5745b4";
+  public static final String GIT_DATE = "2025-11-04 22:59:19 EST";
+  public static final String GIT_BRANCH = "offseason-vision";
+  public static final String BUILD_DATE = "2025-11-04 23:37:02 EST";
+  public static final long BUILD_UNIX_TIME = 1762317422464L;
+  public static final int DIRTY = 0;
 
   private BuildConstants() {}
 }
