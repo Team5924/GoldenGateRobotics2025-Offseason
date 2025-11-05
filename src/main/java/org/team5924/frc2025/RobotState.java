@@ -21,7 +21,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import lombok.Getter;
 import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.team5924.frc2025.subsystems.climberold.Climber.ClimberState;
 import org.team5924.frc2025.subsystems.elevator.Elevator.ElevatorState;
 import org.team5924.frc2025.subsystems.pivot.AlgaePivot.AlgaePivotState;
 import org.team5924.frc2025.subsystems.rollers.algae.AlgaeRoller.AlgaeRollerState;
@@ -58,11 +57,6 @@ public class RobotState {
   @Getter
   @Setter
   private VisionFieldPoseEstimate estimatedPoseFrontRight = new VisionFieldPoseEstimate();
-
-  /* ### Climber ### */
-  @Setter
-  @AutoLogOutput(key = "RobotState/ClimberStateOLD")
-  private ClimberState climberStateOLD = ClimberState.STOW;
 
   @Setter
   @AutoLogOutput(key = "RobotState/ClimberState")
