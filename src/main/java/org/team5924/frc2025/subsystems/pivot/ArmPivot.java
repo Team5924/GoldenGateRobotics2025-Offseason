@@ -16,8 +16,8 @@ import lombok.Getter;
 public class ArmPivot extends SubsystemBase{
     private final ArmPivotIO io;
 
-    private LoggedTunableNumber armPivotTolerance = 
-         new LoggedTunableNumber("ArmPivotToleranceRads",0); // Subject to change
+    private final LoggedTunableNumber armPivotTolerance = 
+         new LoggedTunableNumber("ArmPivotToleranceRads", 0); // Subject to change
     private final ArmPivotIOInputsAutoLogged inputs = new ArmPivotIOInputsAutoLogged();
     public enum ArmPivotState{
         // TODO: Tune all these values
