@@ -32,10 +32,10 @@ public class Climber extends SubsystemBase {
 
     LINEUP_FORWARD(
         new LoggedTunableNumber("Climber/LineupForwardAngle", Math.toRadians(0.0)),
-        new LoggedTunableNumber("Climber/LineupForwardVoltage", 4.0)),
+        new LoggedTunableNumber("Climber/LineupForwardVoltage", 4.0)), // TODO: MIGHT BE NEGATIVE
     LINEUP_BACKWARD(
         new LoggedTunableNumber("Climber/LineupBackwardAngle", Math.toRadians(0.0)),
-        new LoggedTunableNumber("Climber/LineupBackwardVoltage", 2.0)),
+        new LoggedTunableNumber("Climber/LineupBackwardVoltage", 2.0)), // TODO: MIGHT BE NEGATIVE
     HANGING(
         new LoggedTunableNumber("Climber/HangingAngle", Math.toRadians(99.0)),
         new LoggedTunableNumber("Climber/HangingVoltage", 12.0));
