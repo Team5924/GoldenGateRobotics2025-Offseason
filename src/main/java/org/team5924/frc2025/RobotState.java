@@ -24,7 +24,6 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.team5924.frc2025.subsystems.climber.Climber.ClimberState;
 import org.team5924.frc2025.subsystems.pivot.IntakePivot.IntakePivotState;
 import org.team5924.frc2025.subsystems.rollers.intake.Intake.IntakeState;
-import org.team5924.frc2025.util.VisionFieldPoseEstimate;
 
 @Getter
 public class RobotState {
@@ -41,22 +40,6 @@ public class RobotState {
   @Setter
   private Pose2d odometryPose = new Pose2d();
 
-  /* Vision Pose */
-  @AutoLogOutput(key = "RobotState/EstimatedPoseLeft")
-  @Getter
-  @Setter
-  private VisionFieldPoseEstimate estimatedPoseFrontLeft = new VisionFieldPoseEstimate();
-
-  @AutoLogOutput(key = "RobotState/EstimatedPoseBack")
-  @Getter
-  @Setter
-  private VisionFieldPoseEstimate estimatedPoseBack = new VisionFieldPoseEstimate();
-
-  @AutoLogOutput(key = "RobotState/EstimatedPoseRight")
-  @Getter
-  @Setter
-  private VisionFieldPoseEstimate estimatedPoseFrontRight = new VisionFieldPoseEstimate();
-
   @Setter
   @AutoLogOutput(key = "RobotState/ClimberState")
   private ClimberState climberState = ClimberState.STOPPED;
@@ -71,8 +54,4 @@ public class RobotState {
   @Getter @Setter
   private IntakePivotState intakePivotState =
       IntakePivotState.MOVING; // Intake Default State Subject to Change
-
-  /* ### Vision ### */
-  @Getter @Setter private int limelightImuMode = 0;
-  @Getter @Setter private boolean isRedAlliance = true;
 }

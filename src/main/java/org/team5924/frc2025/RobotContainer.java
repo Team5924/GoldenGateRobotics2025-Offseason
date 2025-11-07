@@ -183,13 +183,11 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
-    
 
     // TODO: add bindings for the climber!!!!!
 
     // climber -> deploy down, spinn + drive into cage, lifts up inside
     // operator -> dpad
-
 
     // TODO intake
     // TODO intake pivot
