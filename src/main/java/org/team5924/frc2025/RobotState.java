@@ -79,7 +79,9 @@ public class RobotState {
   @Getter @Setter private IntakeState intakeState = IntakeState.OFF;
 
   /*### Intake Pivot ### */
-  @Getter @Setter private IntakePivotState intakePivotState = IntakePivotState.INTAKE_FEED; // Intake Default State Subject to Change
+  @Getter @Setter
+  private IntakePivotState intakePivotState =
+      IntakePivotState.MOVING; // Intake Default State Subject to Change
 
   /* ### Algae Pivot ### */
   @Getter
