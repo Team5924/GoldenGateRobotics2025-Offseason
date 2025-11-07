@@ -24,41 +24,9 @@ import com.pathplanner.lib.path.Waypoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import java.util.ArrayList;
 import java.util.List;
-import org.team5924.frc2025.Constants;
 
 /** Add your docs here. */
 public class Pathing {
-  public static List<Pose2d> getClosestPose(Pose2d currentPose, boolean isLeftTarget) {
-    // Optional<Alliance> alliance = DriverStation.getAlliance();
-    List<List<Pose2d>> rightAllianceBranchPairs =
-        /*(alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red)
-        ? Constants.Reef.redBranchRight2d
-        : */ Constants.Reef.branchRight2d;
-    List<List<Pose2d>> leftAllianceBranchPairs =
-        /*(alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red)
-        ? Constants.Reef.redBranchLeft2d
-        : */ Constants.Reef.branchLeft2d;
-
-    if (isLeftTarget) {
-      ArrayList<Pose2d> leftBranchPoses = new ArrayList<>();
-      for (var posePair : leftAllianceBranchPairs) {
-        leftBranchPoses.add(posePair.get(1));
-        // Get 1 because it's the "shooting" pose
-      }
-
-      Pose2d nearestPose = currentPose.nearest(leftBranchPoses);
-      return leftAllianceBranchPairs.get(leftBranchPoses.indexOf(nearestPose));
-    } else {
-      ArrayList<Pose2d> rightBranchPoses = new ArrayList<>();
-      for (var posePair : rightAllianceBranchPairs) {
-        rightBranchPoses.add(posePair.get(1));
-        // Get 1 because it's the "shooting" pose
-      }
-
-      Pose2d nearestPose = currentPose.nearest(rightBranchPoses);
-      return rightAllianceBranchPairs.get(rightBranchPoses.indexOf(nearestPose));
-    }
-  }
 
   // creates a path with a single waypoint which is the destination
   public static PathPlannerPath createPath(Pose2d currentPose, List<Pose2d> destinationPoses) {
