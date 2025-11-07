@@ -25,10 +25,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import java.util.Set;
 import org.team5924.frc2025.commands.drive.DriveCommands;
 import org.team5924.frc2025.generated.TunerConstantsGamma;
 import org.team5924.frc2025.subsystems.climber.Climber;
@@ -40,6 +38,12 @@ import org.team5924.frc2025.subsystems.drive.GyroIOPigeon2;
 import org.team5924.frc2025.subsystems.drive.ModuleIO;
 import org.team5924.frc2025.subsystems.drive.ModuleIOSim;
 import org.team5924.frc2025.subsystems.drive.ModuleIOTalonFX;
+import org.team5924.frc2025.subsystems.pivot.IntakePivot;
+import org.team5924.frc2025.subsystems.pivot.IntakePivotIO;
+import org.team5924.frc2025.subsystems.pivot.IntakePivotIOKrakenFOC;
+import org.team5924.frc2025.subsystems.rollers.intake.Intake;
+import org.team5924.frc2025.subsystems.rollers.intake.IntakeIO;
+import org.team5924.frc2025.subsystems.rollers.intake.IntakeIOKrakenFOC;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -51,6 +55,8 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Climber climber;
+  private final Intake intake;
+  private final IntakePivot intakePivot;
 
   // Controller
   private final CommandXboxController driveController = new CommandXboxController(0);
@@ -73,6 +79,8 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstantsGamma.BackLeft),
                 new ModuleIOTalonFX(TunerConstantsGamma.BackRight));
         climber = new Climber(new ClimberIOTalonFX());
+        intake = new Intake(new IntakeIOKrakenFOC());
+        intakePivot = new IntakePivot(new IntakePivotIOKrakenFOC());
         break;
 
       case SIM:
@@ -85,6 +93,8 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstantsGamma.BackLeft),
                 new ModuleIOSim(TunerConstantsGamma.BackRight));
         climber = new Climber(new ClimberIO() {});
+        intake = new Intake(new IntakeIO() {});
+        intakePivot = new IntakePivot(new IntakePivotIO() {});
         break;
 
       default:
@@ -97,6 +107,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         climber = new Climber(new ClimberIO() {});
+        intake = new Intake(new IntakeIO() {});
+        intakePivot = new IntakePivot(new IntakePivotIO() {});
         break;
     }
 
@@ -171,16 +183,29 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+    
 
-    driveController
-        .leftBumper()
-        .whileTrue(
-            new DeferredCommand(() -> DriveCommands.driveToReef(drive, true), Set.of(drive)));
+    // TODO: add bindings for the climber!!!!!
 
-    driveController
-        .rightBumper()
-        .whileTrue(
-            new DeferredCommand(() -> DriveCommands.driveToReef(drive, false), Set.of(drive)));
+    // climber -> deploy down, spinn + drive into cage, lifts up inside
+    // operator -> dpad
+
+
+    // TODO intake
+    // TODO intake pivot
+
+    // driver hold right trigger/release -> ground intake down + spin/up
+    // operator y -> shoot
+
+    // driveController
+    //     .leftBumper()
+    //     .whileTrue(
+    //         new DeferredCommand(() -> DriveCommands.driveToReef(drive, true), Set.of(drive)));
+
+    // driveController
+    //     .rightBumper()
+    //     .whileTrue(
+    //         new DeferredCommand(() -> DriveCommands.driveToReef(drive, false), Set.of(drive)));
 
     // driveController
     //     .rightTrigger()
@@ -194,14 +219,14 @@ public class RobotContainer {
     //         DriveCommands.turnToLeftCoralStation(
     //             drive, () -> -driveController.getLeftY(), () -> -driveController.getLeftX()));
 
-    driveController.rightTrigger().onTrue(DriveCommands.lockOnCoralStation(drive, true));
-    driveController.leftTrigger().onTrue(DriveCommands.lockOnCoralStation(drive, false));
-    driveController
-        .rightTrigger()
-        .or(driveController.leftTrigger())
-        .onFalse(DriveCommands.unlockRotation(drive));
+    // driveController.rightTrigger().onTrue(DriveCommands.lockOnCoralStation(drive, true));
+    // driveController.leftTrigger().onTrue(DriveCommands.lockOnCoralStation(drive, false));
+    // driveController
+    //     .rightTrigger()
+    //     .or(driveController.leftTrigger())
+    //     .onFalse(DriveCommands.unlockRotation(drive));
 
-    driveController.rightStick().onTrue(Commands.runOnce(() -> drive.toggleSnapToHeading()));
+    // driveController.rightStick().onTrue(Commands.runOnce(() -> drive.toggleSnapToHeading()));
 
     // // Coral In and Out
 
@@ -268,8 +293,6 @@ public class RobotContainer {
     // //     .pov(180)
     // //     .or(driveController.pov(0))
     // //     .onFalse(Commands.runOnce(() -> climber.handleNoInputState()));
-
-    // TODO: add bindings for the climber!!!!!
   }
 
   /**

@@ -93,18 +93,6 @@ public final class Constants {
   public static final int GRABBER_STATOR_CURRENT_LIMIT = 35;
   public static final InvertedValue GRABBER_INVERT = InvertedValue.Clockwise_Positive;
 
-  /* # Rollers # */
-  /* Coral In-And-Out */
-  public static final int CORAL_IN_AND_OUT_CAN_ID = 33;
-  public static final String CORAL_IN_AND_OUT_BUS = "rio";
-  public static final int CORAL_IN_AND_OUT_CURRENT_LIMIT = 40;
-  public static final boolean CORAL_IN_AND_OUT_INVERT = false;
-  public static final boolean CORAL_IN_AND_OUT_BRAKE = true;
-  public static final double CORAL_IN_AND_OUT_REDUCTION = 24.0 / 12.0;
-  public static final double CORAL_IN_AND_OUT_SIM_MOI = 0.001;
-  public static final int CORAL_INTAKE_LASER_CAN_ID = 10;
-  public static final int CORAL_SHOOTER_LASER_CAN_ID = 11;
-
   /* Intake */
   public static final int INTAKE_CAN_ID = 51;
   public static final String INTAKE_OUT_BUS = "rio";
@@ -124,11 +112,6 @@ public final class Constants {
   public static final boolean ALIGNER_BRAKE = true;
   public static final double ALIGNER_REDUCTION = 1.0;
 
-  /* # Pivot # */
-  public static final int ALGAE_PIVOT_TALON_ID = 34;
-  public static final double MOTOR_TO_ALGAE_PIVOT_REDUCTION = 62.5; // TODO: most likely change
-  public static final int ALGAE_PIVOT_CANCODER_ID = 45;
-
   /* # Intake Pivot # */
   public static final int INTAKE_PIVOT_CAN_ID = 64;
   public static final String INTAKE_PIVOT_OUT_BUS = "rio";
@@ -137,36 +120,6 @@ public final class Constants {
   public static final NeutralModeValue INTAKE_PIVOT_BRAKE = NeutralModeValue.Brake;
   public static final double MOTOR_TO_INTAKE_PIVOT_REDUCTION =
       1.0 / ((12.0 / 40.0) * (18.0 / 46.0) * (18.0 / 60.0) * (12.0 / 32.0));
-
-  /* Coral Handoff */
-  public static final int CORAL_HANDOFF_CAN_ID = 32;
-  public static final String CORAL_HANDOFF_BUS = "rio";
-  public static final int CORAL_HANDOFF_CURRENT_LIMIT = 40;
-  public static final boolean CORAL_HANDOFF_INVERT = false;
-  public static final boolean CORAL_HANDOFF_BRAKE = false;
-  public static final double CORAL_HANDOFF_REDUCTION = 24.0 / 12.0;
-  public static final double CORAL_HANDOFF_SIM_MOI = 0.001;
-  // TODO: Fill out Coral Handoff Constants with real values - all need to be fixed
-
-  /* # Elevator # */
-  public static final int ELEVATOR_LEFT_TALON_ID = 30;
-  public static final int ELEVATOR_RIGHT_TALON_ID = 31;
-  public static final int ELEVATOR_CANCODER_ID = 40; // TODO: Check and change if needed
-  public static final int ELEVATOR_CANDI_ID = 39;
-  public static final String ELEVATOR_CANDI_BUS = "rio";
-  public static final double MOTOR_TO_ELEVATOR_REDUCTION = 4.00;
-  public static final double CANCODER_TO_ELEVATOR_REDUCTION = 1.0;
-  public static final InvertedValue ELEVATOR_LEFT_INVERSION = InvertedValue.Clockwise_Positive;
-  public static final Distance SPROCKET_RADIUS = Inches.of(.6405);
-  public static final double ELEVATOR_CANCODER_OFFSET = 0.00; // TODO: Check and change if needed
-
-  /* Algae Rollers*/
-  public static final int ALGAE_TALON_ID = 35;
-  public static final String ALGAE_BUS = "rio";
-  public static final int ALGAE_CURRENT_LIMIT = 40; // Adjust value as needed
-  public static final boolean ALGAE_INVERT = false; // Adjust value as needed
-  public static final boolean ALGAE_BRAKE = true; // Adjust value as needed
-  public static final double ALGAE_REDUCTION = 1.0; // Adjust value as needed
 
   /* # Vision # */
   public static String APRIL_TAG_LIMELIGHT_NAME_FRONTL = "limelight-frontl";
