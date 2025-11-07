@@ -30,15 +30,15 @@ public class Climber extends SubsystemBase {
         new LoggedTunableNumber("Climber/StoppedAngle", Math.toRadians(98.0)),
         new LoggedTunableNumber("Climber/StoppedVoltage", 0.0)),
 
-    LINEUP_FORWARD(
+    LINEUP_FORWARD( // lines up before grabbing onto cage
         new LoggedTunableNumber("Climber/LineupForwardAngle", Math.toRadians(0.0)),
-        new LoggedTunableNumber("Climber/LineupForwardVoltage", 4.0)), // TODO: MIGHT BE NEGATIVE
-    LINEUP_BACKWARD(
+        new LoggedTunableNumber("Climber/LineupForwardVoltage", 4.0)),
+    LINEUP_BACKWARD( // lines up + grabbing onto cage, pre-transition to hanging
         new LoggedTunableNumber("Climber/LineupBackwardAngle", Math.toRadians(0.0)),
-        new LoggedTunableNumber("Climber/LineupBackwardVoltage", 2.0)), // TODO: MIGHT BE NEGATIVE
-    HANGING(
+        new LoggedTunableNumber("Climber/LineupBackwardVoltage", 2.0)),
+    HANGING( // after grabbing onto cage, goes back up
         new LoggedTunableNumber("Climber/HangingAngle", Math.toRadians(99.0)),
-        new LoggedTunableNumber("Climber/HangingVoltage", 12.0));
+        new LoggedTunableNumber("Climber/HangingVoltage", 12.0)); // TODO: MIGHT BE NEGATIVE
 
     public final LoggedTunableNumber angle;
     public final LoggedTunableNumber forwardsVoltage;
@@ -92,7 +92,8 @@ public class Climber extends SubsystemBase {
         } else {
           io.runClimbVolts(state.forwardsVoltage.getAsDouble());
         }
-        if (isHoldingCage()) {
+        if (isHoldingCage()) { // TODO: might have to comment this out and transition to hanging
+          // manually
           setState(ClimberState.HANGING);
         }
         io.runGrabVolts(12.0);
