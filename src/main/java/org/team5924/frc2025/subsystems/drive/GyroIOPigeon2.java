@@ -27,14 +27,14 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import java.util.Queue;
 import org.team5924.frc2025.RobotState;
-import org.team5924.frc2025.generated.TunerConstantsGamma;
+import org.team5924.frc2025.generated.TunerConstants;
 
 /** IO implementation for Pigeon 2. */
 public class GyroIOPigeon2 implements GyroIO {
   private final Pigeon2 pigeon =
       new Pigeon2(
-          TunerConstantsGamma.DrivetrainConstants.Pigeon2Id,
-          TunerConstantsGamma.DrivetrainConstants.CANBusName);
+          TunerConstants.DrivetrainConstants.Pigeon2Id,
+          TunerConstants.DrivetrainConstants.CANBusName);
   private final StatusSignal<Angle> yaw = pigeon.getYaw();
   private final Queue<Double> yawPositionQueue;
   private final Queue<Double> yawTimestampQueue;
