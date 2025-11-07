@@ -16,24 +16,32 @@
 
 package org.team5924.frc2025.subsystems.climber;
 
+import com.ctre.phoenix6.controls.CoastOut;
 import org.littletonrobotics.junction.AutoLog;
 import org.team5924.frc2025.Constants;
-import org.team5924.frc2025.util.LaserCAN_Measurement;
 
 public interface ClimberIO {
   @AutoLog
   public static class ClimberIOInputs {
-    public boolean rotateMotorConnected = true;
-    public double rotatePositionRads = 0.0;
-    public double rotateVelocityRadsPerSec = 0.0;
-    public double rotateAppliedVoltage = 0.0;
-    public double rotateSupplyCurrentAmps = 0.0;
-    public double rotateTorqueCurrentAmps = 0.0;
-    public double rotateTempCelsius = 0.0;
+    public boolean climbMotorConnected = true;
+    public double climbPositionRads = 0.0;
+    public double climbVelocityRadsPerSec = 0.0;
+    public double climbAppliedVoltage = 0.0;
+    public double climbSupplyCurrentAmps = 0.0;
+    public double climbTorqueCurrentAmps = 0.0;
+    public double climbTempCelsius = 0.0;
 
-    // Climber LaserCAN
-    public LaserCAN_Measurement laserCanMeasurement = new LaserCAN_Measurement();
-    public boolean laserCanConnected = true;
+    public boolean cancoderConnected = true;
+    public double cancoderPosition = 0.0;
+    public double cancoderSupplyVoltage = 0.0;
+
+    public boolean grabMotorConnected = true;
+    public double grabPositionRads = 0.0;
+    public double grabVelocityRadsPerSec = 0.0;
+    public double grabAppliedVoltage = 0.0;
+    public double grabSupplyCurrentAmps = 0.0;
+    public double grabTorqueCurrentAmps = 0.0;
+    public double grabTempCelsius = 0.0;
   }
 
   /**
@@ -44,20 +52,33 @@ public interface ClimberIO {
   public default void updateInputs(ClimberIOInputs inputs) {}
 
   /**
-   * Runs the motor at the specified voltage
+   * Runs the climb motor at the specified voltage
    *
    * @param volts Voltage to apply
    */
-  public default void runVolts(double volts) {}
+  public default void runClimbVolts(double volts) {}
+
+  public default void setClimbControl(CoastOut control) {}
 
   /**
-   * Sets the target angle for the climber
+   * Runs the grab motor at the specified voltage
+   *
+   * @param volts Voltage to apply
+   */
+  public default void runGrabVolts(double volts) {}
+
+  /**
+   * Sets the target angle for the climber motor
    *
    * @param rads Target angle in radians, must be between {@link Constants}.CLIMBER_MIN_RADS and
    *     {@link Constants}.CLIMBER_MAX_RADS
    * @throws IllegalArgumentException if value does not fall in range
    */
-  public default void setAngle(double rads) {}
+  public default void setClimbAngle(double rads) {}
+
+  public default void disableClimbTalon() {}
+
+  public default void disableGrabTalon() {}
 
   /** stops the motor */
   default void stop() {}

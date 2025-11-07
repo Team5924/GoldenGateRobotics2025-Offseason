@@ -21,6 +21,7 @@ import static edu.wpi.first.units.Units.Meters;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -71,14 +72,26 @@ public final class Constants {
   /* Climber */
   public static final int CLIMBER_CAN_ID = 40;
   public static final String CLIMBER_BUS = "drive";
-  public static final int CLIMBER_CURRENT_LIMIT = 40;
+  public static final int CLIMBER_SUPPLY_CURRENT_LIMIT = 60;
+  public static final int CLIMBER_STATOR_CURRENT_LIMIT = 60;
   public static final InvertedValue CLIMBER_INVERT = InvertedValue.CounterClockwise_Positive;
   public static final NeutralModeValue CLIMBER_NEUTRAL_MODE = NeutralModeValue.Brake;
-  public static final double CLIMBER_REDUCTION = 58.3; // TODO: correct for now, check again later
-  public static final double CLIMBER_SIM_MOI = 0.001;
-  public static final double CLIMBER_MIN_RADS = -Math.PI / 2; // TODO: get real min
-  public static final double CLIMBER_MAX_RADS = Math.PI / 2; // TODO: get real max
-  public static final int CLIMBER_LASER_CAN_ID = 42;
+  public static final double CLIMBER_REDUCTION = 60;
+  public static final double CLIMBER_MIN_RADS = Math.toRadians(-55);
+  public static final double CLIMBER_MAX_RADS = Math.toRadians(100);
+
+  /* Climber cancoder */
+  public static final int CLIMBER_CANCODER_ID = 41;
+  public static final double CLIMBER_CANCODER_MAGNET_OFFSET = -0.244384765625;
+  public static final SensorDirectionValue CLIMBER_CANCODER_SENSOR_DIRECTION =
+      SensorDirectionValue.Clockwise_Positive;
+  public static final double CLIMBER_CANCODER_SENSOR_DISCONTINUITY_POINT = 0.5;
+
+  /* Grabber */
+  public static final int GRABBER_CAN_ID = 42;
+  public static final int GRABBER_SUPPLY_CURRENT_LIMIT = 35;
+  public static final int GRABBER_STATOR_CURRENT_LIMIT = 35;
+  public static final InvertedValue GRABBER_INVERT = InvertedValue.Clockwise_Positive;
 
   /* # Rollers # */
   /* Coral In-And-Out */

@@ -61,10 +61,9 @@ public class RobotState {
   @Setter
   private VisionFieldPoseEstimate estimatedPoseFrontRight = new VisionFieldPoseEstimate();
 
-  /* ### Climber ### */
   @Setter
   @AutoLogOutput(key = "RobotState/ClimberState")
-  private ClimberState climberState = ClimberState.STOW;
+  private ClimberState climberState = ClimberState.STOPPED;
 
   @Getter @Setter private Rotation2d yawPosition = new Rotation2d();
   @Getter @Setter private double yawVelocityRadPerSec = 0.0;

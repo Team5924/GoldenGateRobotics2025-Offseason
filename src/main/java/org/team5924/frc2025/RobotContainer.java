@@ -39,7 +39,6 @@ import org.team5924.frc2025.commands.elevator.RunElevator;
 import org.team5924.frc2025.generated.TunerConstantsGamma;
 import org.team5924.frc2025.subsystems.climber.Climber;
 import org.team5924.frc2025.subsystems.climber.ClimberIO;
-import org.team5924.frc2025.subsystems.climber.ClimberIOSim;
 import org.team5924.frc2025.subsystems.climber.ClimberIOTalonFX;
 import org.team5924.frc2025.subsystems.drive.Drive;
 import org.team5924.frc2025.subsystems.drive.GyroIO;
@@ -108,7 +107,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstantsGamma.FrontRight),
                 new ModuleIOSim(TunerConstantsGamma.BackLeft),
                 new ModuleIOSim(TunerConstantsGamma.BackRight));
-        climber = new Climber(new ClimberIOSim());
+        climber = new Climber(new ClimberIO() {});
         coralInAndOut = new CoralInAndOut(new CoralInAndOutIOSim());
         elevator = new Elevator(new ElevatorIO() {});
         vision = new Vision(new VisionIO() {});
@@ -317,20 +316,23 @@ public class RobotContainer {
 
     // Climber
     // Dpad Down
-    driveController
-        .pov(180)
-        .onTrue(Commands.runOnce(() -> climber.setGoalState(Climber.ClimberState.CLIMB)));
+    // driveController
+    //     .pov(180)
+    //     .onTrue(Commands.runOnce(() -> climber.setGoalState(Climber.ClimberState.CLIMB)));
 
-    // Dpad Up
-    driveController
-        .pov(0)
-        .onTrue(Commands.runOnce(() -> climber.setGoalState(Climber.ClimberState.REVERSE_CLIMB)));
+    // // Dpad Up
+    // driveController
+    //     .pov(0)
+    //     .onTrue(Commands.runOnce(() ->
+    // climber.setGoalState(Climber.ClimberState.REVERSE_CLIMB)));
 
-    // No Dpad Up or Dpad Down
-    driveController
-        .pov(180)
-        .or(driveController.pov(0))
-        .onFalse(Commands.runOnce(() -> climber.handleNoInputState()));
+    // // No Dpad Up or Dpad Down
+    // driveController
+    //     .pov(180)
+    //     .or(driveController.pov(0))
+    //     .onFalse(Commands.runOnce(() -> climber.handleNoInputState()));
+
+    // TODO: add bindings for the climber!!!!!
   }
 
   /**
