@@ -22,11 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.team5924.frc2025.subsystems.climber.Climber.ClimberState;
-import org.team5924.frc2025.subsystems.elevator.Elevator.ElevatorState;
-import org.team5924.frc2025.subsystems.pivot.AlgaePivot.AlgaePivotState;
 import org.team5924.frc2025.subsystems.pivot.IntakePivot.IntakePivotState;
-import org.team5924.frc2025.subsystems.rollers.algae.AlgaeRoller.AlgaeRollerState;
-import org.team5924.frc2025.subsystems.rollers.coralInAndOut.CoralInAndOut.CoralState;
 import org.team5924.frc2025.subsystems.rollers.intake.Intake.IntakeState;
 import org.team5924.frc2025.util.VisionFieldPoseEstimate;
 
@@ -68,12 +64,6 @@ public class RobotState {
   @Getter @Setter private Rotation2d yawPosition = new Rotation2d();
   @Getter @Setter private double yawVelocityRadPerSec = 0.0;
 
-  @Getter @Setter private ElevatorState elevatorState = ElevatorState.MANUAL;
-  @Getter @Setter private double elevatorPositionMeters = 0;
-
-  /* ### Coral In and Out ### */
-  @Getter @Setter private CoralState coralInAndOutState = CoralState.NO_CORAL;
-
   /* ### Intake ### */
   @Getter @Setter private IntakeState intakeState = IntakeState.OFF;
 
@@ -81,17 +71,6 @@ public class RobotState {
   @Getter @Setter
   private IntakePivotState intakePivotState =
       IntakePivotState.MOVING; // Intake Default State Subject to Change
-
-  /* ### Algae Pivot ### */
-  @Getter
-  @Setter
-  @AutoLogOutput(key = "RobotState/AlgaePivotState")
-  private AlgaePivotState algaePivotState = AlgaePivotState.INTAKE_FLOOR;
-
-  @Getter
-  @Setter
-  @AutoLogOutput(key = "RobotState/AlgaeRollerState")
-  private AlgaeRollerState algaeRollerState = AlgaeRollerState.NO_ALGAE;
 
   /* ### Vision ### */
   @Getter @Setter private int limelightImuMode = 0;
