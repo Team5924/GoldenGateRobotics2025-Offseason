@@ -105,10 +105,38 @@ public final class Constants {
   public static final int CORAL_INTAKE_LASER_CAN_ID = 10;
   public static final int CORAL_SHOOTER_LASER_CAN_ID = 11;
 
+  /* Intake */
+  public static final int INTAKE_CAN_ID = 51;
+  public static final String INTAKE_OUT_BUS = "rio";
+  public static final int INTAKE_CURRENT_LIMIT = 60;
+  public static final boolean INTAKE_INVERT = true;
+  public static final boolean INTAKE_BRAKE = true;
+  public static final double INTAKE_REDUCTION = 1.0;
+
+  public static final int INTAKE_BEAM_BREAK_ID = 52;
+  public static final boolean INTAKE_BEAM_BREAK = false;
+
+  /* Aligner */
+  public static final int ALIGNER_CAN_ID = 53;
+  public static final String ALIGNER_OUT_BUS = "rio";
+  public static final int ALIGNER_CURRENT_LIMIT = 60;
+  public static final boolean ALIGNER_INVERT = true;
+  public static final boolean ALIGNER_BRAKE = true;
+  public static final double ALIGNER_REDUCTION = 1.0;
+
   /* # Pivot # */
   public static final int ALGAE_PIVOT_TALON_ID = 34;
   public static final double MOTOR_TO_ALGAE_PIVOT_REDUCTION = 62.5; // TODO: most likely change
   public static final int ALGAE_PIVOT_CANCODER_ID = 45;
+
+  /* # Intake Pivot # */
+  public static final int INTAKE_PIVOT_CAN_ID = 64;
+  public static final String INTAKE_PIVOT_OUT_BUS = "rio";
+  public static final int INTAKE_PIVOT_CURRENT_LIMIT = 60;
+  public static final InvertedValue INTAKE_PIVOT_INVERT = InvertedValue.Clockwise_Positive;
+  public static final NeutralModeValue INTAKE_PIVOT_BRAKE = NeutralModeValue.Brake;
+  public static final double MOTOR_TO_INTAKE_PIVOT_REDUCTION =
+      1.0 / ((12.0 / 40.0) * (18.0 / 46.0) * (18.0 / 60.0) * (12.0 / 32.0));
 
   /* Coral Handoff */
   public static final int CORAL_HANDOFF_CAN_ID = 32;
