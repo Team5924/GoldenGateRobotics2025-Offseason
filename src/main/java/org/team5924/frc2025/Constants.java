@@ -96,16 +96,19 @@ public final class Constants {
   public static final int INTAKE_CAN_ID = 0; // TODO: IMPORTANT UPDATE VALUE
   public static final String INTAKE_OUT_BUS = "rio";
   public static final int INTAKE_CURRENT_LIMIT = 40; // TODO: UPDATE VAUE
-  public static final boolean INTAKE_INVERT = false;
+  public static final boolean INTAKE_INVERT = true;
   public static final boolean INTAKE_BRAKE = true;
   public static final double INTAKE_REDUCTION = 24.0 / 12.0; // TODO: UPDATE VALUE
   public static final double INTAKE_SIM_MOI = 0.001;
+
+  public static final int INTAKE_BEAM_BREAK_ID = 0; // TODO: IMPORTANT UPDATE VALUE
+  public static final boolean INTAKE_BEAM_BREAK = false;
 
   /* Aligner */
   public static final int ALIGNER_CAN_ID = 0; // TODO: IMPORTANT UPDATE VALUE
   public static final String ALIGNER_OUT_BUS = "rio";
   public static final int ALIGNER_CURRENT_LIMIT = 40; // TODO: UPDATE VAUE
-  public static final boolean ALIGNER_INVERT = false;
+  public static final boolean ALIGNER_INVERT = true;
   public static final boolean ALIGNER_BRAKE = true;
   public static final double ALIGNER_REDUCTION = 1.0 ; // TODO: UPDATE VALUE
   public static final double ALIGNER_SIM_MOI = 0.001;
