@@ -82,7 +82,7 @@ public class Climber extends SubsystemBase {
         io.runClimbVolts(state.forwardsVoltage.getAsDouble());
         io.disableGrabTalon();
 
-        if (inputs.cancoderPosition < PASS_ANGLE_CHECK) {
+        if (inputs.climbPositionRads < PASS_ANGLE_CHECK) {
           setState(ClimberState.LINEUP_BACKWARD);
         }
       }
@@ -129,7 +129,7 @@ public class Climber extends SubsystemBase {
 
   public boolean atGoal() {
     double goal = clamp(RobotState.getInstance().getClimberState().angle.getAsDouble());
-    return inputs.cancoderPosition >= goal;
+    return inputs.climbPositionRads >= goal;
   }
 
   private static double clamp(double angle) {

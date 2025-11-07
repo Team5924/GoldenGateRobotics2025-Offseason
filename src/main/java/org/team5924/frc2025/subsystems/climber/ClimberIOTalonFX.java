@@ -20,12 +20,10 @@ import static edu.wpi.first.units.Units.Radians;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -45,9 +43,9 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final StatusSignal<Current> climbTorqueCurrent;
   private final StatusSignal<Temperature> climbTempCelsius;
 
-  private final CANcoder cancoder;
-  private final StatusSignal<Angle> cancoderPosition;
-  private final StatusSignal<Voltage> cancoderSupplyVoltage;
+  // private final CANcoder cancoder;
+  // private final StatusSignal<Angle> cancoderPosition;
+  // private final StatusSignal<Voltage> cancoderSupplyVoltage;
 
   private final TalonFX grabTalon;
   private final StatusSignal<Angle> grabPosition;
@@ -102,20 +100,20 @@ public class ClimberIOTalonFX implements ClimberIO {
 
     // CANcoder
     {
-      cancoder = new CANcoder(Constants.CLIMBER_CANCODER_ID, Constants.CLIMBER_BUS);
+      // cancoder = new CANcoder(Constants.CLIMBER_CANCODER_ID, Constants.CLIMBER_BUS);
 
-      // Configure
-      MagnetSensorConfigs config = new MagnetSensorConfigs();
-      config.MagnetOffset = Constants.CLIMBER_CANCODER_MAGNET_OFFSET;
-      config.SensorDirection = Constants.CLIMBER_CANCODER_SENSOR_DIRECTION;
-      config.AbsoluteSensorDiscontinuityPoint =
-          Constants.CLIMBER_CANCODER_SENSOR_DISCONTINUITY_POINT;
-      cancoder.getConfigurator().apply(config);
+      // // Configure
+      // MagnetSensorConfigs config = new MagnetSensorConfigs();
+      // config.MagnetOffset = Constants.CLIMBER_CANCODER_MAGNET_OFFSET;
+      // config.SensorDirection = Constants.CLIMBER_CANCODER_SENSOR_DIRECTION;
+      // config.AbsoluteSensorDiscontinuityPoint =
+      //     Constants.CLIMBER_CANCODER_SENSOR_DISCONTINUITY_POINT;
+      // cancoder.getConfigurator().apply(config);
 
-      cancoderPosition = cancoder.getAbsolutePosition();
-      cancoderSupplyVoltage = cancoder.getSupplyVoltage();
+      // cancoderPosition = cancoder.getAbsolutePosition();
+      // cancoderSupplyVoltage = cancoder.getSupplyVoltage();
 
-      BaseStatusSignal.setUpdateFrequencyForAll(50, cancoderPosition, cancoderSupplyVoltage);
+      // BaseStatusSignal.setUpdateFrequencyForAll(50, cancoderPosition, cancoderSupplyVoltage);
     }
 
     // Grab motor
@@ -175,10 +173,10 @@ public class ClimberIOTalonFX implements ClimberIO {
     }
 
     {
-      inputs.cancoderConnected =
-          BaseStatusSignal.refreshAll(cancoderPosition, cancoderSupplyVoltage).isOK();
-      inputs.cancoderPosition = Units.rotationsToRadians(cancoderPosition.getValueAsDouble());
-      inputs.cancoderSupplyVoltage = cancoderSupplyVoltage.getValueAsDouble();
+      // inputs.cancoderConnected =
+      //     BaseStatusSignal.refreshAll(cancoderPosition, cancoderSupplyVoltage).isOK();
+      // inputs.cancoderPosition = Units.rotationsToRadians(cancoderPosition.getValueAsDouble());
+      // inputs.cancoderSupplyVoltage = cancoderSupplyVoltage.getValueAsDouble();
     }
 
     {

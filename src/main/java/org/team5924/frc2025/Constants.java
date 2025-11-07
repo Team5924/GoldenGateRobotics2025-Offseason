@@ -18,7 +18,6 @@ package org.team5924.frc2025;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -69,31 +68,31 @@ public final class Constants {
   public static final double CLIMBER_MAX_RADS = Math.toRadians(100);
 
   /* Climber cancoder */
-  public static final int CLIMBER_CANCODER_ID = 41;
-  public static final double CLIMBER_CANCODER_MAGNET_OFFSET = -0.244384765625;
-  public static final SensorDirectionValue CLIMBER_CANCODER_SENSOR_DIRECTION =
-      SensorDirectionValue.Clockwise_Positive;
-  public static final double CLIMBER_CANCODER_SENSOR_DISCONTINUITY_POINT = 0.5;
+  // public static final int CLIMBER_CANCODER_ID = 41;
+  // public static final double CLIMBER_CANCODER_MAGNET_OFFSET = -0.244384765625;
+  // public static final SensorDirectionValue CLIMBER_CANCODER_SENSOR_DIRECTION =
+  //     SensorDirectionValue.Clockwise_Positive;
+  // public static final double CLIMBER_CANCODER_SENSOR_DISCONTINUITY_POINT = 0.5;
 
   /* Grabber */
-  public static final int GRABBER_CAN_ID = 42;
+  public static final int GRABBER_CAN_ID = 41;
   public static final int GRABBER_SUPPLY_CURRENT_LIMIT = 35;
   public static final int GRABBER_STATOR_CURRENT_LIMIT = 35;
   public static final InvertedValue GRABBER_INVERT = InvertedValue.Clockwise_Positive;
 
   /* Intake */
-  public static final int INTAKE_CAN_ID = 51;
+  public static final int INTAKE_CAN_ID = 30;
   public static final String INTAKE_OUT_BUS = "rio";
   public static final int INTAKE_CURRENT_LIMIT = 60;
   public static final boolean INTAKE_INVERT = true;
   public static final boolean INTAKE_BRAKE = true;
   public static final double INTAKE_REDUCTION = 1.0;
 
-  public static final int INTAKE_BEAM_BREAK_ID = 52;
-  public static final boolean INTAKE_BEAM_BREAK = false;
+  // public static final int INTAKE_BEAM_BREAK_ID = 52;
+  // public static final boolean INTAKE_BEAM_BREAK = false;
 
   /* Aligner */
-  public static final int ALIGNER_CAN_ID = 53;
+  public static final int ALIGNER_CAN_ID = 31;
   public static final String ALIGNER_OUT_BUS = "rio";
   public static final int ALIGNER_CURRENT_LIMIT = 60;
   public static final boolean ALIGNER_INVERT = true;
@@ -101,7 +100,7 @@ public final class Constants {
   public static final double ALIGNER_REDUCTION = 1.0;
 
   /* # Intake Pivot # */
-  public static final int INTAKE_PIVOT_CAN_ID = 64;
+  public static final int INTAKE_PIVOT_CAN_ID = 32;
   public static final String INTAKE_PIVOT_OUT_BUS = "rio";
   public static final int INTAKE_PIVOT_CURRENT_LIMIT = 60;
   public static final InvertedValue INTAKE_PIVOT_INVERT = InvertedValue.Clockwise_Positive;

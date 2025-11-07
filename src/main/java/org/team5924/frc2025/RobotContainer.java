@@ -39,13 +39,13 @@ import org.team5924.frc2025.subsystems.drive.ModuleIO;
 import org.team5924.frc2025.subsystems.drive.ModuleIOSim;
 import org.team5924.frc2025.subsystems.drive.ModuleIOTalonFX;
 import org.team5924.frc2025.subsystems.pivot.IntakePivot;
+import org.team5924.frc2025.subsystems.pivot.IntakePivot.IntakePivotState;
 import org.team5924.frc2025.subsystems.pivot.IntakePivotIO;
 import org.team5924.frc2025.subsystems.pivot.IntakePivotIOKrakenFOC;
-import org.team5924.frc2025.subsystems.pivot.IntakePivot.IntakePivotState;
 import org.team5924.frc2025.subsystems.rollers.intake.Intake;
+import org.team5924.frc2025.subsystems.rollers.intake.Intake.IntakeState;
 import org.team5924.frc2025.subsystems.rollers.intake.IntakeIO;
 import org.team5924.frc2025.subsystems.rollers.intake.IntakeIOKrakenFOC;
-import org.team5924.frc2025.subsystems.rollers.intake.Intake.IntakeState;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -186,8 +186,6 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-
-
     // climber -> deploy down, spinn + drive into cage, lifts up inside
     //      controlled w/ operator dpad
 
@@ -199,30 +197,44 @@ public class RobotContainer {
         .povDown()
         .onTrue(Commands.runOnce(() -> climber.setState(Climber.ClimberState.HANGING)));
 
-
-
     // driver hold right trigger/release -> ground intake down + spin/up
     // operator y -> shoot
 
-    driveController.rightTrigger().onTrue(Commands.runOnce(() -> {
-        intake.setGoalState(IntakeState.IN);
-        intakePivot.setGoalState(IntakePivotState.INTAKE_FLOOR);
-    }));
+    driveController
+        .rightTrigger()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  intake.setGoalState(IntakeState.IN);
+                  intakePivot.setGoalState(IntakePivotState.INTAKE_FLOOR);
+                }));
 
-    driveController.rightTrigger().onFalse(Commands.runOnce(() -> {
-        intake.setGoalState(IntakeState.OFF);
-        intakePivot.setGoalState(IntakePivotState.MOVING);
-    }));
+    driveController
+        .rightTrigger()
+        .onFalse(
+            Commands.runOnce(
+                () -> {
+                  intake.setGoalState(IntakeState.OFF);
+                  intakePivot.setGoalState(IntakePivotState.MOVING);
+                }));
 
-    operatorController.y().onTrue(Commands.runOnce(() -> {
-        intake.setGoalState(IntakeState.TROUGH_OUT);
-        intakePivot.setGoalState(IntakePivotState.SCORE_TROUGH);
-    }));
+    operatorController
+        .y()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  intake.setGoalState(IntakeState.TROUGH_OUT);
+                  intakePivot.setGoalState(IntakePivotState.SCORE_TROUGH);
+                }));
 
-    operatorController.y().onFalse(Commands.runOnce(() -> {
-        intake.setGoalState(IntakeState.OFF);
-        intakePivot.setGoalState(IntakePivotState.MOVING);
-    }));
+    operatorController
+        .y()
+        .onFalse(
+            Commands.runOnce(
+                () -> {
+                  intake.setGoalState(IntakeState.OFF);
+                  intakePivot.setGoalState(IntakePivotState.MOVING);
+                }));
   }
 
   /**

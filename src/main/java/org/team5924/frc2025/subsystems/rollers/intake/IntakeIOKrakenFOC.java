@@ -29,7 +29,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.DigitalInput;
 import org.team5924.frc2025.Constants;
 
 public class IntakeIOKrakenFOC implements IntakeIO {
@@ -49,7 +48,7 @@ public class IntakeIOKrakenFOC implements IntakeIO {
   private final StatusSignal<Current> alignerTorqueCurrent;
   private final StatusSignal<Temperature> alignerTempCelsius;
 
-  private final DigitalInput beamBreakSensor;
+  // private final DigitalInput beamBreakSensor;
 
   private static final int intakeId = Constants.INTAKE_CAN_ID;
   private static final int alignerId = Constants.ALIGNER_CAN_ID;
@@ -133,7 +132,7 @@ public class IntakeIOKrakenFOC implements IntakeIO {
     }
 
     {
-      beamBreakSensor = new DigitalInput(Constants.INTAKE_BEAM_BREAK_ID);
+      // beamBreakSensor = new DigitalInput(Constants.INTAKE_BEAM_BREAK_ID);
     }
   }
 
@@ -175,7 +174,7 @@ public class IntakeIOKrakenFOC implements IntakeIO {
     inputs.alignerTorqueCurrentAmps = alignerTorqueCurrent.getValueAsDouble();
     inputs.alignerTempCelsius = alignerTempCelsius.getValueAsDouble();
 
-    inputs.beamBreakUnbroken = beamBreakSensor.get();
+    // inputs.beamBreakUnbroken = beamBreakSensor.get();
   }
 
   @Override
