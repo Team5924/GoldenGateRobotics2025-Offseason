@@ -72,8 +72,8 @@ public final class Constants {
   /* Climber */
   public static final int CLIMBER_CAN_ID = 40;
   public static final String CLIMBER_BUS = "drive";
-  public static final int CLIMBER_SUPPLY_CURRENT_LIMIT = 100;
-  public static final int CLIMBER_STATOR_CURRENT_LIMIT = 100;
+  public static final int CLIMBER_SUPPLY_CURRENT_LIMIT = 60;
+  public static final int CLIMBER_STATOR_CURRENT_LIMIT = 60;
   public static final InvertedValue CLIMBER_INVERT = InvertedValue.CounterClockwise_Positive;
   public static final NeutralModeValue CLIMBER_NEUTRAL_MODE = NeutralModeValue.Brake;
   public static final double CLIMBER_REDUCTION = 60;

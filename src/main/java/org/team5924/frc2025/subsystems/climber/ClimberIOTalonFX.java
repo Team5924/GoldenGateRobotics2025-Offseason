@@ -97,7 +97,6 @@ public class ClimberIOTalonFX implements ClimberIO {
           climbTempCelsius);
 
       // Disables status signals not called for update above
-      climbTalon.optimizeBusUtilization(0, 1.0);
       climbTalon.setPosition(0);
     }
 
@@ -117,8 +116,6 @@ public class ClimberIOTalonFX implements ClimberIO {
       cancoderSupplyVoltage = cancoder.getSupplyVoltage();
 
       BaseStatusSignal.setUpdateFrequencyForAll(50, cancoderPosition, cancoderSupplyVoltage);
-
-      cancoder.optimizeBusUtilization(0, 1.0);
     }
 
     // Grab motor
@@ -151,7 +148,6 @@ public class ClimberIOTalonFX implements ClimberIO {
           grabTempCelsius);
 
       // Disables status signals not called for update above
-      grabTalon.optimizeBusUtilization(0, 1.0);
       grabTalon.setPosition(0);
     }
   }

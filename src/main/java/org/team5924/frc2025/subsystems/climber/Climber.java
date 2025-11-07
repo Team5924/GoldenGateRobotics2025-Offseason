@@ -27,17 +27,17 @@ import org.team5924.frc2025.util.LoggedTunableNumber;
 public class Climber extends SubsystemBase {
   public enum ClimberState {
     STOPPED(
-        new LoggedTunableNumber("Climber/StoppedAngle", Math.toRadians(100.0)),
+        new LoggedTunableNumber("Climber/StoppedAngle", Math.toRadians(98.0)),
         new LoggedTunableNumber("Climber/StoppedVoltage", 0.0)),
 
     LINEUP_FORWARD(
         new LoggedTunableNumber("Climber/LineupForwardAngle", Math.toRadians(0.0)),
-        new LoggedTunableNumber("Climber/LineupForwardVoltage", 3.0)),
+        new LoggedTunableNumber("Climber/LineupForwardVoltage", 4.0)),
     LINEUP_BACKWARD(
         new LoggedTunableNumber("Climber/LineupBackwardAngle", Math.toRadians(0.0)),
-        new LoggedTunableNumber("Climber/LineupBackwardVoltage", 3.0)),
+        new LoggedTunableNumber("Climber/LineupBackwardVoltage", 2.0)),
     HANGING(
-        new LoggedTunableNumber("Climber/HangingAngle", Math.toRadians(160.0)),
+        new LoggedTunableNumber("Climber/HangingAngle", Math.toRadians(99.0)),
         new LoggedTunableNumber("Climber/HangingVoltage", 12.0));
 
     public final LoggedTunableNumber angle;
@@ -63,6 +63,7 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
+    handleCurrentState();
     io.updateInputs(inputs);
   }
 
