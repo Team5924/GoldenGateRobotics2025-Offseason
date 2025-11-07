@@ -40,9 +40,6 @@ import org.team5924.frc2025.subsystems.drive.GyroIOPigeon2;
 import org.team5924.frc2025.subsystems.drive.ModuleIO;
 import org.team5924.frc2025.subsystems.drive.ModuleIOSim;
 import org.team5924.frc2025.subsystems.drive.ModuleIOTalonFX;
-import org.team5924.frc2025.subsystems.vision.Vision;
-import org.team5924.frc2025.subsystems.vision.VisionIO;
-import org.team5924.frc2025.subsystems.vision.VisionIOLimelight;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -54,7 +51,6 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Climber climber;
-  private final Vision vision;
 
   // Controller
   private final CommandXboxController driveController = new CommandXboxController(0);
@@ -77,7 +73,6 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstantsGamma.BackLeft),
                 new ModuleIOTalonFX(TunerConstantsGamma.BackRight));
         climber = new Climber(new ClimberIOTalonFX());
-        vision = new Vision(new VisionIOLimelight());
         break;
 
       case SIM:
@@ -90,7 +85,6 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstantsGamma.BackLeft),
                 new ModuleIOSim(TunerConstantsGamma.BackRight));
         climber = new Climber(new ClimberIO() {});
-        vision = new Vision(new VisionIO() {});
         break;
 
       default:
@@ -103,7 +97,6 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         climber = new Climber(new ClimberIO() {});
-        vision = new Vision(new VisionIO() {});
         break;
     }
 
