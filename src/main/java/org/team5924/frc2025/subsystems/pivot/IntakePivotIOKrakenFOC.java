@@ -52,10 +52,13 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
 
   // PID for the Motor
   LoggedTunableNumber intakePivotMotorkP =
-      new LoggedTunableNumber("IntakePivot/MotorkP", 0); // TODO: tune these pleaese
+      new LoggedTunableNumber("IntakePivot/MotorkP", 5); // TODO: tune these pleaese
   LoggedTunableNumber intakePivotMotorkI = new LoggedTunableNumber("IntakePivot/MotorkI", 0);
   LoggedTunableNumber intakePivotMotorkD = new LoggedTunableNumber("IntakePivot/MotorkD", 0);
   LoggedTunableNumber intakePivotMotorkS = new LoggedTunableNumber("IntakePivot/MotorkS", 0);
+  LoggedTunableNumber intakePivotMotorkG = new LoggedTunableNumber("IntakePivot/MotorkG", 0.11);
+  LoggedTunableNumber intakePivotMotorkV = new LoggedTunableNumber("IntakePivot/MotorkV", 10.08);
+  LoggedTunableNumber intakePivotMotorkA = new LoggedTunableNumber("IntakePivot/MotorkA", 0.03);
 
   // Refresh on what this does, cuz im lowk dumb rn
   private final VoltageOut voltageControl =
@@ -87,6 +90,9 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
     controllerConfigs.kI = intakePivotMotorkI.getAsDouble();
     controllerConfigs.kD = intakePivotMotorkD.getAsDouble();
     controllerConfigs.kS = intakePivotMotorkS.getAsDouble();
+    controllerConfigs.kG = intakePivotMotorkG.getAsDouble();
+    controllerConfigs.kV = intakePivotMotorkV.getAsDouble();
+    controllerConfigs.kA = intakePivotMotorkA.getAsDouble();
 
     intakePivotPosition = intakePivotKraken.getPosition();
     intakePivotVelocity = intakePivotKraken.getVelocity();
@@ -111,8 +117,7 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
                 intakePivotTempCelsius)
             .isOK();
 
-    input.intakePivotPositionRads =
-        intakePivotPosition.getValue().in(Radians) / Constants.MOTOR_TO_INTAKE_PIVOT_REDUCTION;
+    input.intakePivotPositionRads = intakePivotPosition.getValue().in(Radians);
     input.intakePivotVelocityRadsPerSec = intakePivotVelocity.getValue().in(RadiansPerSecond);
     input.intakePivotAppliedVolts = intakePivotAppliedVolts.getValue().in(Volts);
     input.intakePivotSupplyCurrentAmps = intakePivotSupplyCurrent.getValue().in(Amps);

@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.team5924.frc2025.commands.drive.DriveCommands;
+import org.team5924.frc2025.commands.intakePivot.RunIntakePivot;
 import org.team5924.frc2025.generated.TunerConstants;
 import org.team5924.frc2025.subsystems.climber.Climber;
 import org.team5924.frc2025.subsystems.climber.ClimberIO;
@@ -232,8 +233,7 @@ public class RobotContainer {
     // operator y -> shoot
 
     // operator left joystick -> control intake pivot
-    intakePivot.setDefaultCommand(
-        intakePivot.transitionToOperatorControlState(() -> operatorController.getLeftY()));
+    intakePivot.setDefaultCommand(new RunIntakePivot(intakePivot, operatorController::getLeftY));
 
     // hold right trigger -> deploy ground intake
     driveController
@@ -252,28 +252,24 @@ public class RobotContainer {
             Commands.runOnce(
                 () -> {
                   intake.setGoalState(IntakeState.OFF);
-                  RobotState.getInstance().setIntakePivotState(IntakePivotState.MOVING);
+                  intakePivot.setGoalState(IntakePivotState.STOW);
                 }));
 
-    // operator press y -> score trough
+    // operator press y -> move to score trough
     operatorController
         .y()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  intake.setGoalState(IntakeState.TROUGH_OUT);
-                  intakePivot.setGoalState(IntakePivotState.SCORE_TROUGH);
-                }));
+        .onTrue(Commands.runOnce(() -> intakePivot.setGoalState(IntakePivotState.SCORE_TROUGH)));
 
-    // operator release y -> back to normal state
+    // operator release y -> back to normal rotation
     operatorController
         .y()
-        .onFalse(
-            Commands.runOnce(
-                () -> {
-                  intake.setGoalState(IntakeState.OFF);
-                  RobotState.getInstance().setIntakePivotState(IntakePivotState.MOVING);
-                }));
+        .onFalse(Commands.runOnce(() -> intakePivot.setGoalState(IntakePivotState.STOW)));
+
+    // operator press/release b -> turn on/off intake to score trough
+    operatorController
+        .b()
+        .onTrue(Commands.runOnce(() -> intake.setGoalState(IntakeState.TROUGH_OUT)));
+    operatorController.b().onFalse(Commands.runOnce(() -> intake.setGoalState(IntakeState.OFF)));
   }
 
   /**
