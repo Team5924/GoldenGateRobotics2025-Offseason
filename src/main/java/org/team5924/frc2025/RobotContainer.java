@@ -17,7 +17,6 @@
 package org.team5924.frc2025;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -115,21 +114,21 @@ public class RobotContainer {
         break;
     }
 
-    NamedCommands.registerCommand(
-        "Run Shooter",
-        Commands.runOnce(
-            () -> {
-              intake.setGoalState(IntakeState.TROUGH_OUT);
-              intakePivot.setGoalState(IntakePivotState.SCORE_TROUGH);
-            }));
+    // NamedCommands.registerCommand(
+    //     "Run Shooter",
+    //     Commands.runOnce(
+    //         () -> {
+    //           intake.setGoalState(IntakeState.TROUGH_OUT);
+    //           intakePivot.setGoalState(IntakePivotState.SCORE_TROUGH);
+    //         }));
 
-    NamedCommands.registerCommand(
-        "Stop Shooter",
-        Commands.runOnce(
-            () -> {
-              intake.setGoalState(IntakeState.OFF);
-              RobotState.getInstance().setIntakePivotState(IntakePivotState.MOVING);
-            }));
+    // NamedCommands.registerCommand(
+    //     "Stop Shooter",
+    //     Commands.runOnce(
+    //         () -> {
+    //           intake.setGoalState(IntakeState.OFF);
+    //           RobotState.getInstance().setIntakePivotState(IntakePivotState.MOVING);
+    //         }));
 
     // Set up auto routines
     boolean isCompetition = true;

@@ -111,5 +111,5 @@ public final class Constants {
   public static final double INTAKE_PIVOT_MIN_RADS = -Math.PI; // TODO: test and set these values
   public static final double INTAKE_PIVOT_MAX_RADS = Math.PI;
 
-  public static final double INTAKE_PIVOT_JOYSTICK_DEADZONE = 0.05;
+  public static final double INTAKE_PIVOT_JOYSTICK_DEADZONE = 0.1;
 }

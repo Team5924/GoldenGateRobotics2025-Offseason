@@ -26,7 +26,6 @@ import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 import org.team5924.frc2025.Constants;
 import org.team5924.frc2025.RobotState;
-import org.team5924.frc2025.subsystems.pivot.IntakePivot.IntakePivotState;
 import org.team5924.frc2025.util.Elastic.Notification;
 import org.team5924.frc2025.util.Elastic.Notification.NotificationLevel;
 import org.team5924.frc2025.util.LoggedTunableNumber;
@@ -41,13 +40,13 @@ public class IntakePivot extends SubsystemBase {
 
   // Intake Preset Positions
   public enum IntakePivotState {
-    INTAKE_FLOOR(new LoggedTunableNumber("IntakePivotFloorRads", Math.toRadians(126.0))),
-    SCORE_TROUGH(new LoggedTunableNumber("IntakePivotTroughScoreRads", Math.toRadians(25.639507))),
-    MOVING(new LoggedTunableNumber("IntakePivotMoving", 0)),
+    INTAKE_FLOOR(new LoggedTunableNumber("IntakePivot/FloorRads", Math.toRadians(126.0))),
+    SCORE_TROUGH(new LoggedTunableNumber("IntakePivot/TroughScoreRads", Math.toRadians(25.639507))),
+    MOVING(new LoggedTunableNumber("IntakePivot/Moving", 0)),
 
     // speed at which the intake pivot moves when controlled by the operator (in volts)
     OPERATOR_CONTROL(
-        new LoggedTunableNumber("IntakePivotOperatorRads", 3)); // TODO: test and update
+        new LoggedTunableNumber("IntakePivot/OperatorRads", 3)); // TODO: test and update
 
     private final LoggedTunableNumber rads;
 
@@ -97,8 +96,7 @@ public class IntakePivot extends SubsystemBase {
         () -> {
           joystickInput = input.getAsDouble();
           if (Math.abs(joystickInput) > Constants.INTAKE_PIVOT_JOYSTICK_DEADZONE)
-            ;
-          setGoalState(IntakePivotState.OPERATOR_CONTROL);
+            setGoalState(IntakePivotState.OPERATOR_CONTROL);
         });
   }
 
@@ -106,6 +104,7 @@ public class IntakePivot extends SubsystemBase {
     if (!goalState.equals(IntakePivotState.OPERATOR_CONTROL)) return;
     if (Math.abs(joystickInput) <= Constants.INTAKE_PIVOT_JOYSTICK_DEADZONE) {
       RobotState.getInstance().setIntakePivotState(IntakePivotState.MOVING);
+      return;
     }
 
     setVoltage(IntakePivotState.OPERATOR_CONTROL.rads.getAsDouble() * joystickInput);

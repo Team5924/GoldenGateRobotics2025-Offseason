@@ -52,10 +52,10 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
 
   // PID for the Motor
   LoggedTunableNumber intakePivotMotorkP =
-      new LoggedTunableNumber("IntakePivotMotorkP", 0); // TODO: tune these pleaese
-  LoggedTunableNumber intakePivotMotorkI = new LoggedTunableNumber("IntakePivotMotorkI", 0);
-  LoggedTunableNumber intakePivotMotorkD = new LoggedTunableNumber("IntakePivotMotorkD", 0);
-  LoggedTunableNumber intakePivotMotorkS = new LoggedTunableNumber("IntakePivotMotorkS", 0);
+      new LoggedTunableNumber("IntakePivot/MotorkP", 0); // TODO: tune these pleaese
+  LoggedTunableNumber intakePivotMotorkI = new LoggedTunableNumber("IntakePivot/MotorkI", 0);
+  LoggedTunableNumber intakePivotMotorkD = new LoggedTunableNumber("IntakePivot/MotorkD", 0);
+  LoggedTunableNumber intakePivotMotorkS = new LoggedTunableNumber("IntakePivot/MotorkS", 0);
 
   // Refresh on what this does, cuz im lowk dumb rn
   private final VoltageOut voltageControl =
