@@ -154,23 +154,23 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // // Default command, normal field-relative drive
-    // drive.setDefaultCommand(
-    //     DriveCommands.joystickDrive(
-    //         drive,
-    //         () -> -driveController.getLeftY(),
-    //         () -> -driveController.getLeftX(),
-    //         () -> -driveController.getRightX()));
+    // Default command, normal field-relative drive
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> -driveController.getLeftY(),
+            () -> -driveController.getLeftX(),
+            () -> -driveController.getRightX()));
 
-    // // Nope. It's slow mode now.
-    // driveController
-    //     .a()
-    //     .whileTrue(
-    //         DriveCommands.joystickDrive(
-    //             drive,
-    //             () -> -driveController.getLeftY() * Constants.SLOW_MODE_MULTI,
-    //             () -> -driveController.getLeftX() * Constants.SLOW_MODE_MULTI,
-    //             () -> -driveController.getRightX() * Constants.SLOW_MODE_MULTI));
+    // Nope. It's slow mode now.
+    driveController
+        .a()
+        .whileTrue(
+            DriveCommands.joystickDrive(
+                drive,
+                () -> -driveController.getLeftY() * Constants.SLOW_MODE_MULTI,
+                () -> -driveController.getLeftX() * Constants.SLOW_MODE_MULTI,
+                () -> -driveController.getRightX() * Constants.SLOW_MODE_MULTI));
 
     // Switch to X pattern when X button is pressed
     driveController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));

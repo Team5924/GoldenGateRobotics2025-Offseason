@@ -20,6 +20,7 @@ import com.ctre.phoenix6.controls.CoastOut;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import lombok.Setter;
 import org.team5924.frc2025.Constants;
 import org.team5924.frc2025.RobotState;
 import org.team5924.frc2025.util.LoggedTunableNumber;
@@ -56,6 +57,8 @@ public class Climber extends SubsystemBase {
   private final ClimberIO io;
 
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
+
+  @Setter private boolean isHoldingCageManual = false;
 
   public Climber(ClimberIO io) {
     this.io = io;

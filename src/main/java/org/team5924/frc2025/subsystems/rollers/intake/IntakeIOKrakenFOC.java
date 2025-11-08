@@ -166,9 +166,9 @@ public class IntakeIOKrakenFOC implements IntakeIO {
                 alignerTempCelsius)
             .isOK();
     inputs.alignerPositionRads =
-        Units.rotationsToRadians(alignerPosition.getValueAsDouble()) / intakeReduction;
+        Units.rotationsToRadians(alignerPosition.getValueAsDouble()) / alignerReduction;
     inputs.alignerVelocityRadsPerSec =
-        Units.rotationsToRadians(alignerVelocity.getValueAsDouble()) / intakeReduction;
+        Units.rotationsToRadians(alignerVelocity.getValueAsDouble()) / alignerReduction;
     inputs.alignerAppliedVoltage = alignerAppliedVoltage.getValueAsDouble();
     inputs.alignerSupplyCurrentAmps = alignerSupplyCurrent.getValueAsDouble();
     inputs.alignerTorqueCurrentAmps = alignerTorqueCurrent.getValueAsDouble();
