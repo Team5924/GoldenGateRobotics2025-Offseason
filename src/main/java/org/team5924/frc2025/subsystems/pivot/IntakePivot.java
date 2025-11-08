@@ -45,7 +45,7 @@ public class IntakePivot extends SubsystemBase {
 
     // speed at which the intake pivot moves when controlled by the operator (in volts)
     OPERATOR_CONTROL(
-        new LoggedTunableNumber("IntakePivot/OperatorRads", 3)); // TODO: test and update
+        new LoggedTunableNumber("IntakePivot/OperatorRads", 4.5)); // TODO: test and update
 
     private final LoggedTunableNumber rads;
 

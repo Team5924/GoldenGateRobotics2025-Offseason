@@ -67,6 +67,8 @@ public final class Constants {
   public static final double CLIMBER_MIN_RADS = Math.toRadians(-55);
   public static final double CLIMBER_MAX_RADS = Math.toRadians(100);
 
+  public static final boolean CLIMBER_REQUIRE_AT_GOAL = false;
+
   /* Climber cancoder */
   // public static final int CLIMBER_CANCODER_ID = 41;
   // public static final double CLIMBER_CANCODER_MAGNET_OFFSET = -0.244384765625;

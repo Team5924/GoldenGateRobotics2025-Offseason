@@ -210,12 +210,7 @@ public class RobotContainer {
     // dPad up -> deploy climber forward
     operatorController
         .povUp()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  climber.setHoldingCageManual(false);
-                  climber.setState(Climber.ClimberState.LINEUP_FORWARD);
-                }));
+        .onTrue(Commands.runOnce(() -> climber.setState(ClimberState.LINEUP)));
 
     // dPad down -> lift climber up
     operatorController
@@ -225,17 +220,7 @@ public class RobotContainer {
     // x -> undo deploy climber
     operatorController
         .x()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  climber.setHoldingCageManual(false);
-                  climber.setState(Climber.ClimberState.STOPPED);
-                }));
-
-    // operator left trigger -> undo deploy climber
-    // operatorController
-    //     .leftTrigger()
-    //     .onTrue(Commands.runOnce(() -> climber.setState(Climber.ClimberState.STOPPED)));
+        .onTrue(Commands.runOnce(() -> climber.setState(Climber.ClimberState.STOPPED)));
 
     // driver hold right trigger/release -> ground intake down + spin/up
     // operator y -> shoot

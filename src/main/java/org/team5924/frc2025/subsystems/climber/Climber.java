@@ -20,7 +20,6 @@ import com.ctre.phoenix6.controls.CoastOut;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
 import org.team5924.frc2025.Constants;
 import org.team5924.frc2025.RobotState;
@@ -32,15 +31,12 @@ public class Climber extends SubsystemBase {
         new LoggedTunableNumber("Climber/StoppedAngle", Math.toRadians(98.0)),
         new LoggedTunableNumber("Climber/StoppedVoltage", 0.0)),
 
-    LINEUP_FORWARD( // lines up before grabbing onto cage
+    LINEUP( // lines up before grabbing onto cage
         new LoggedTunableNumber("Climber/LineupForwardAngle", Math.toRadians(0.0)),
-        new LoggedTunableNumber("Climber/LineupForwardVoltage", 4.0)),
-    LINEUP_BACKWARD( // lines up + grabbing onto cage, pre-transition to hanging
-        new LoggedTunableNumber("Climber/LineupBackwardAngle", Math.toRadians(0.0)),
-        new LoggedTunableNumber("Climber/LineupBackwardVoltage", 2.0)),
+        new LoggedTunableNumber("Climber/LineupForwardVoltage", -1.0)), // -4
     HANGING( // after grabbing onto cage, goes back up
         new LoggedTunableNumber("Climber/HangingAngle", Math.toRadians(99.0)),
-        new LoggedTunableNumber("Climber/HangingVoltage", -12.0)); // TODO: MIGHT BE NEGATIVE
+        new LoggedTunableNumber("Climber/HangingVoltage", 1.0)); // 12
 
     public final LoggedTunableNumber angle;
     public final LoggedTunableNumber forwardsVoltage;
@@ -51,7 +47,7 @@ public class Climber extends SubsystemBase {
     }
   }
 
-  private static final double PASS_ANGLE_CHECK = 0.0;
+  // private static final double PASS_ANGLE_CHECK = 0.0;
 
   private final CoastOut coastNeutralRequest = new CoastOut();
 
@@ -59,7 +55,8 @@ public class Climber extends SubsystemBase {
 
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
 
-  @Setter private boolean isHoldingCageManual = false;
+  private final LoggedTunableNumber CLIMBER_POSITION_TOLERANCE =
+      new LoggedTunableNumber("Climber/Position Tolerance", Math.toRadians(2.0));
 
   public Climber(ClimberIO io) {
     this.io = io;
@@ -89,22 +86,11 @@ public class Climber extends SubsystemBase {
         }
         io.disableGrabTalon();
       }
-      case LINEUP_FORWARD -> {
-        io.runClimbVolts(state.forwardsVoltage.getAsDouble());
-        io.disableGrabTalon();
-
-        if (inputs.climbPositionRads < PASS_ANGLE_CHECK) {
-          setState(ClimberState.LINEUP_BACKWARD);
-        }
-      }
-      case LINEUP_BACKWARD -> {
+      case LINEUP -> {
         if (atGoal()) {
           io.disableClimbTalon();
         } else {
           io.runClimbVolts(state.forwardsVoltage.getAsDouble());
-        }
-        if (isHoldingCage()) {
-          setState(ClimberState.HANGING);
         }
         io.runGrabVolts(12.0);
       }
@@ -120,12 +106,15 @@ public class Climber extends SubsystemBase {
   }
 
   public void setState(ClimberState newState) {
+    if (Constants.CLIMBER_REQUIRE_AT_GOAL) {
+      RobotState.getInstance().setClimberState(newState);
+      return;
+    }
+
     switch (newState) {
-      case LINEUP_FORWARD, LINEUP_BACKWARD, STOPPED ->
-          RobotState.getInstance().setClimberState(newState);
+      case LINEUP, STOPPED -> RobotState.getInstance().setClimberState(newState);
       case HANGING -> {
-        if (RobotState.getInstance().getClimberState() == ClimberState.LINEUP_BACKWARD
-            && atGoal()) {
+        if (RobotState.getInstance().getClimberState().equals(ClimberState.LINEUP) && atGoal()) {
           RobotState.getInstance().setClimberState(newState);
         }
       }
@@ -140,7 +129,8 @@ public class Climber extends SubsystemBase {
 
   public boolean atGoal() {
     double goal = clamp(RobotState.getInstance().getClimberState().angle.getAsDouble());
-    return inputs.climbPositionRads >= goal;
+    double distanceToGoal = Math.abs(inputs.climbPositionRads - goal);
+    return distanceToGoal <= CLIMBER_POSITION_TOLERANCE.getAsDouble();
   }
 
   private static double clamp(double angle) {
