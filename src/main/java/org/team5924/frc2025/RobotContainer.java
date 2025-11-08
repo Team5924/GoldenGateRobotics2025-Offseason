@@ -234,7 +234,7 @@ public class RobotContainer {
 
     // operator left joystick -> control intake pivot
     intakePivot.setDefaultCommand(
-        intakePivot.transitionToOperatorControlState(() -> operatorController.getRightY()));
+        intakePivot.transitionToOperatorControlState(() -> operatorController.getLeftY()));
 
     // hold right trigger -> deploy ground intake
     driveController
