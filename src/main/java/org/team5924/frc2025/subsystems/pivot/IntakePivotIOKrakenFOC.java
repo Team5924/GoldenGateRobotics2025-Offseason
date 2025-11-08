@@ -24,6 +24,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -50,15 +51,21 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
   private final StatusSignal<Current> intakePivotTorqueCurrent;
   private final StatusSignal<Temperature> intakePivotTempCelsius;
 
-  // PID for the Motor
-  LoggedTunableNumber intakePivotMotorkP =
-      new LoggedTunableNumber("IntakePivot/MotorkP", 5); // TODO: tune these pleaese
+  // PID for the Motor  // TODO: tune these pleaese
+  LoggedTunableNumber intakePivotMotorkP = new LoggedTunableNumber("IntakePivot/MotorkP", 5);
   LoggedTunableNumber intakePivotMotorkI = new LoggedTunableNumber("IntakePivot/MotorkI", 0);
   LoggedTunableNumber intakePivotMotorkD = new LoggedTunableNumber("IntakePivot/MotorkD", 0);
   LoggedTunableNumber intakePivotMotorkS = new LoggedTunableNumber("IntakePivot/MotorkS", 0);
   LoggedTunableNumber intakePivotMotorkG = new LoggedTunableNumber("IntakePivot/MotorkG", 0.11);
   LoggedTunableNumber intakePivotMotorkV = new LoggedTunableNumber("IntakePivot/MotorkV", 10.08);
   LoggedTunableNumber intakePivotMotorkA = new LoggedTunableNumber("IntakePivot/MotorkA", 0.03);
+
+  // TODO: tone these yaep
+  LoggedTunableNumber motionAcceleration =
+      new LoggedTunableNumber("IntakePivot/MotionAcceleration", 400);
+  LoggedTunableNumber motionCruiseVelocity =
+      new LoggedTunableNumber("IntakePivot/MotionCruiseVelocity", 400);
+  LoggedTunableNumber motionJerk = new LoggedTunableNumber("IntakePivot/MotionJerk", 1000);
 
   // Refresh on what this does, cuz im lowk dumb rn
   private final VoltageOut voltageControl =
@@ -103,6 +110,15 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
 
     intakePivotKraken.getConfigurator().apply(krakenConfig, 1.0);
     intakePivotKraken.getConfigurator().apply(controllerConfigs, 1.0);
+
+
+    // // Motion magic
+    // final MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
+    // motionMagicConfigs.MotionMagicAcceleration = motionAcceleration.get();
+    // motionMagicConfigs.MotionMagicCruiseVelocity = motionCruiseVelocity.get();
+    // motionMagicConfigs.MotionMagicJerk = motionJerk.get();
+
+    // intakePivotKraken.getConfigurator().apply(motionMagicConfigs);
   }
 
   @Override
