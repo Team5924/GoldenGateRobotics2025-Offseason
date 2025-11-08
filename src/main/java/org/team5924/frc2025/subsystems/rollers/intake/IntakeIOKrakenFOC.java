@@ -54,11 +54,12 @@ public class IntakeIOKrakenFOC implements IntakeIO {
   private static final int alignerId = Constants.ALIGNER_CAN_ID;
   private static final String bus = Constants.INTAKE_OUT_BUS;
   private static final int currentLimitAmps = Constants.INTAKE_CURRENT_LIMIT;
-  private static final boolean invert = Constants.INTAKE_INVERT;
+  private static final boolean intakeInvert = Constants.INTAKE_INVERT;
   private static final boolean intakeBrake = Constants.INTAKE_BRAKE;
   private static final boolean alignerBrake = Constants.ALIGNER_BRAKE;
   private static final double intakeReduction = Constants.INTAKE_REDUCTION;
   private static final double alignerReduction = Constants.ALIGNER_REDUCTION;
+  private static final boolean alignerInvert = Constants.ALIGNER_INVERT;
 
   private final VoltageOut voltageOut = new VoltageOut(0.0).withEnableFOC(true).withUpdateFreqHz(0);
 
@@ -70,7 +71,7 @@ public class IntakeIOKrakenFOC implements IntakeIO {
       // Configure TalonFX
       TalonFXConfiguration config = new TalonFXConfiguration();
       config.MotorOutput.Inverted =
-          invert ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+          intakeInvert ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
       config.MotorOutput.NeutralMode =
           intakeBrake ? NeutralModeValue.Brake : NeutralModeValue.Coast;
       config.CurrentLimits.SupplyCurrentLimit = currentLimitAmps;
@@ -104,7 +105,9 @@ public class IntakeIOKrakenFOC implements IntakeIO {
       // Configure TalonFX
       TalonFXConfiguration config = new TalonFXConfiguration();
       config.MotorOutput.Inverted =
-          invert ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+          alignerInvert
+              ? InvertedValue.Clockwise_Positive
+              : InvertedValue.CounterClockwise_Positive;
       config.MotorOutput.NeutralMode =
           alignerBrake ? NeutralModeValue.Brake : NeutralModeValue.Coast;
       config.CurrentLimits.SupplyCurrentLimit = currentLimitAmps;

@@ -42,7 +42,7 @@ public final class Constants {
     REPLAY
   }
 
-  public static final boolean TUNING_MODE = true;
+  public static final boolean TUNING_MODE = false;
   public static final boolean ALLOW_ASSERTS = false;
   public static final double SLOW_MODE_MULTI = 0.5;
 
@@ -83,7 +83,7 @@ public final class Constants {
   /* Intake */
   public static final int INTAKE_CAN_ID = 30;
   public static final String INTAKE_OUT_BUS = "rio";
-  public static final int INTAKE_CURRENT_LIMIT = 60;
+  public static final int INTAKE_CURRENT_LIMIT = 100;
   public static final boolean INTAKE_INVERT = true;
   public static final boolean INTAKE_BRAKE = true;
   public static final double INTAKE_REDUCTION = 1.0;
@@ -95,7 +95,7 @@ public final class Constants {
   public static final int ALIGNER_CAN_ID = 31;
   public static final String ALIGNER_OUT_BUS = "rio";
   public static final int ALIGNER_CURRENT_LIMIT = 60;
-  public static final boolean ALIGNER_INVERT = true;
+  public static final boolean ALIGNER_INVERT = false;
   public static final boolean ALIGNER_BRAKE = true;
   public static final double ALIGNER_REDUCTION = 1.0;
 

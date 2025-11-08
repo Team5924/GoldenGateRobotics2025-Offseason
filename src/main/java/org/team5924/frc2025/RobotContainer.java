@@ -17,6 +17,7 @@
 package org.team5924.frc2025;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -31,6 +32,7 @@ import org.team5924.frc2025.commands.drive.DriveCommands;
 import org.team5924.frc2025.commands.intakePivot.RunIntakePivot;
 import org.team5924.frc2025.generated.TunerConstants;
 import org.team5924.frc2025.subsystems.climber.Climber;
+import org.team5924.frc2025.subsystems.climber.Climber.ClimberState;
 import org.team5924.frc2025.subsystems.climber.ClimberIO;
 import org.team5924.frc2025.subsystems.climber.ClimberIOTalonFX;
 import org.team5924.frc2025.subsystems.drive.Drive;
@@ -115,32 +117,31 @@ public class RobotContainer {
         break;
     }
 
-    // NamedCommands.registerCommand(
-    //     "Run Shooter",
-    //     Commands.runOnce(
-    //         () -> {
-    //           intake.setGoalState(IntakeState.TROUGH_OUT);
-    //           intakePivot.setGoalState(IntakePivotState.SCORE_TROUGH);
-    //         }));
-
-    // NamedCommands.registerCommand(
-    //     "Stop Shooter",
-    //     Commands.runOnce(
-    //         () -> {
-    //           intake.setGoalState(IntakeState.OFF);
-    //           RobotState.getInstance().setIntakePivotState(IntakePivotState.MOVING);
-    //         }));
-
     // Set up auto routines
     boolean isCompetition = true;
 
     // Build an auto chooser. This will use Commands.none() as the default option.
     // As an example, this will only show autos that start with "comp" while at
     // competition as defined by the programmer
-    autoChooser =
-        AutoBuilder.buildAutoChooserWithOptionsModifier(
-            (stream) ->
-                isCompetition ? stream.filter(auto -> auto.getName().startsWith("2")) : stream);
+    autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier((stream) -> stream);
+    // (stream) ->
+    //     isCompetition ? stream.filter(auto -> auto.getName().startsWith("2")) : stream);
+
+    NamedCommands.registerCommand(
+        "Run Shooter",
+        Commands.runOnce(
+            () -> {
+              intake.setGoalState(IntakeState.TROUGH_OUT);
+              intakePivot.setGoalState(IntakePivotState.SCORE_TROUGH);
+            }));
+
+    NamedCommands.registerCommand(
+        "Stop Shooter",
+        Commands.runOnce(
+            () -> {
+              intake.setGoalState(IntakeState.OFF);
+              RobotState.getInstance().setIntakePivotState(IntakePivotState.MOVING);
+            }));
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -160,7 +161,7 @@ public class RobotContainer {
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    // Configure the button bindings
+    // Configure the button bindingsa
     configureButtonBindings();
   }
 
@@ -217,7 +218,9 @@ public class RobotContainer {
                 }));
 
     // dPad down -> lift climber up
-    operatorController.povDown().onTrue(Commands.runOnce(() -> climber.setHoldingCageManual(true)));
+    operatorController
+        .povDown()
+        .onTrue(Commands.runOnce(() -> climber.setState(ClimberState.HANGING)));
 
     // x -> undo deploy climber
     operatorController
@@ -229,6 +232,11 @@ public class RobotContainer {
                   climber.setState(Climber.ClimberState.STOPPED);
                 }));
 
+    // operator left trigger -> undo deploy climber
+    // operatorController
+    //     .leftTrigger()
+    //     .onTrue(Commands.runOnce(() -> climber.setState(Climber.ClimberState.STOPPED)));
+
     // driver hold right trigger/release -> ground intake down + spin/up
     // operator y -> shoot
 
@@ -236,23 +244,23 @@ public class RobotContainer {
     intakePivot.setDefaultCommand(new RunIntakePivot(intakePivot, operatorController::getLeftY));
 
     // hold right trigger -> deploy ground intake
-    driveController
+    operatorController
         .rightTrigger()
         .onTrue(
             Commands.runOnce(
                 () -> {
                   intake.setGoalState(IntakeState.IN);
-                  intakePivot.setGoalState(IntakePivotState.INTAKE_FLOOR);
+                  //   intakePivot.setGoalState(IntakePivotState.INTAKE_FLOOR);
                 }));
 
     // release right trigger -> ground intake up
-    driveController
+    operatorController
         .rightTrigger()
         .onFalse(
             Commands.runOnce(
                 () -> {
                   intake.setGoalState(IntakeState.OFF);
-                  intakePivot.setGoalState(IntakePivotState.STOW);
+                  //   intakePivot.setGoalState(IntakePivotState.STOW);
                 }));
 
     // operator press y -> move to score trough

@@ -145,7 +145,7 @@ public class ClimberIOTalonFX implements ClimberIO {
           grabTempCelsius);
 
       // Disables status signals not called for update above
-      grabTalon.setPosition(0);
+      // grabTalon.setPosition(0);
     }
   }
 

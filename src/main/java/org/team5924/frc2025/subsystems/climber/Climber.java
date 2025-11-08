@@ -21,6 +21,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import lombok.Setter;
+import org.littletonrobotics.junction.Logger;
 import org.team5924.frc2025.Constants;
 import org.team5924.frc2025.RobotState;
 import org.team5924.frc2025.util.LoggedTunableNumber;
@@ -39,7 +40,7 @@ public class Climber extends SubsystemBase {
         new LoggedTunableNumber("Climber/LineupBackwardVoltage", 2.0)),
     HANGING( // after grabbing onto cage, goes back up
         new LoggedTunableNumber("Climber/HangingAngle", Math.toRadians(99.0)),
-        new LoggedTunableNumber("Climber/HangingVoltage", 12.0)); // TODO: MIGHT BE NEGATIVE
+        new LoggedTunableNumber("Climber/HangingVoltage", -12.0)); // TODO: MIGHT BE NEGATIVE
 
     public final LoggedTunableNumber angle;
     public final LoggedTunableNumber forwardsVoltage;
@@ -68,6 +69,13 @@ public class Climber extends SubsystemBase {
   public void periodic() {
     handleCurrentState();
     io.updateInputs(inputs);
+
+    Logger.recordOutput("Climber/CurrentState", RobotState.getInstance().getClimberState());
+    Logger.recordOutput("Climber/CurrentRads", inputs.climbPositionRads);
+    Logger.recordOutput("Climber/TargetRads", RobotState.getInstance().getClimberState().angle);
+    Logger.recordOutput(
+        "Climber/TargetVoltage", RobotState.getInstance().getClimberState().forwardsVoltage);
+    Logger.recordOutput("Climber/AtGoal", atGoal());
   }
 
   public void handleCurrentState() {

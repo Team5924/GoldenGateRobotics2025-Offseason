@@ -26,12 +26,12 @@ public class Intake extends SubsystemBase {
   public enum IntakeState {
     IN( // used for ground intake
         new LoggedTunableNumber("Intake/IntakeMotor/InVoltage", -6.0),
-        new LoggedTunableNumber("Intake/AlignerMotor/InVoltage", -8.0)),
+        new LoggedTunableNumber("Intake/AlignerMotor/InVoltage", 8.0)),
     SLOW_IN( // used for source intake (?) and holding inside
         new LoggedTunableNumber("Intake/IntakeMotor/SlowInVoltage", -2.0),
-        new LoggedTunableNumber("Intake/AlignerMotor/SlowInVoltage", -3.0)),
+        new LoggedTunableNumber("Intake/AlignerMotor/SlowInVoltage", 3.0)),
     TROUGH_OUT(
-        new LoggedTunableNumber("Intake/IntakeMotor/TroughOutVoltage", 3.25),
+        new LoggedTunableNumber("Intake/IntakeMotor/TroughOutVoltage", 8.0), // was 3.25
         new LoggedTunableNumber("Intake/AlignerMotor/TroughOutVoltage", 0.0)),
     OUT(
         new LoggedTunableNumber("Intake/IntakeMotor/OutVoltage", 8.0),
