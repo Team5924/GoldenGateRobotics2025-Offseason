@@ -31,7 +31,7 @@ public class Intake extends SubsystemBase {
         new LoggedTunableNumber("Intake/IntakeMotor/SlowInVoltage", -2.0),
         new LoggedTunableNumber("Intake/AlignerMotor/SlowInVoltage", 3.0)),
     TROUGH_OUT(
-        new LoggedTunableNumber("Intake/IntakeMotor/TroughOutVoltage", 8.0), // was 3.25
+        new LoggedTunableNumber("Intake/IntakeMotor/TroughOutVoltage", 12),
         new LoggedTunableNumber("Intake/AlignerMotor/TroughOutVoltage", 0.0)),
     OUT(
         new LoggedTunableNumber("Intake/IntakeMotor/OutVoltage", 8.0),

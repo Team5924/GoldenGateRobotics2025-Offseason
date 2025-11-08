@@ -24,7 +24,6 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -111,7 +110,6 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
     intakePivotKraken.getConfigurator().apply(krakenConfig, 1.0);
     intakePivotKraken.getConfigurator().apply(controllerConfigs, 1.0);
 
-
     // // Motion magic
     // final MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
     // motionMagicConfigs.MotionMagicAcceleration = motionAcceleration.get();
@@ -143,7 +141,7 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
 
   @Override
   public void setVoltage(double volts) {
-    if (atSoftStop(volts)) return;
+    // if (atSoftStop(volts)) return;
     intakePivotKraken.setControl(voltageControl.withOutput(volts));
   }
 

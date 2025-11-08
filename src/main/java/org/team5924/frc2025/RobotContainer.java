@@ -241,7 +241,8 @@ public class RobotContainer {
     // operator y -> shoot
 
     // operator left joystick -> control intake pivot
-    intakePivot.setDefaultCommand(new RunIntakePivot(intakePivot, operatorController::getLeftY));
+    intakePivot.setDefaultCommand(
+        new RunIntakePivot(intakePivot, () -> operatorController.getLeftY()));
 
     // hold right trigger -> deploy ground intake
     operatorController
