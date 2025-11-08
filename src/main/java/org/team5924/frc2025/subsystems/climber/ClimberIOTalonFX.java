@@ -97,24 +97,6 @@ public class ClimberIOTalonFX implements ClimberIO {
       climbTalon.setPosition(0);
     }
 
-    // CANcoder
-    {
-      // cancoder = new CANcoder(Constants.CLIMBER_CANCODER_ID, Constants.CLIMBER_BUS);
-
-      // // Configure
-      // MagnetSensorConfigs config = new MagnetSensorConfigs();
-      // config.MagnetOffset = Constants.CLIMBER_CANCODER_MAGNET_OFFSET;
-      // config.SensorDirection = Constants.CLIMBER_CANCODER_SENSOR_DIRECTION;
-      // config.AbsoluteSensorDiscontinuityPoint =
-      //     Constants.CLIMBER_CANCODER_SENSOR_DISCONTINUITY_POINT;
-      // cancoder.getConfigurator().apply(config);
-
-      // cancoderPosition = cancoder.getAbsolutePosition();
-      // cancoderSupplyVoltage = cancoder.getSupplyVoltage();
-
-      // BaseStatusSignal.setUpdateFrequencyForAll(50, cancoderPosition, cancoderSupplyVoltage);
-    }
-
     // Grab motor
     {
       grabTalon = new TalonFX(Constants.GRABBER_CAN_ID, Constants.CLIMBER_BUS);
@@ -144,8 +126,7 @@ public class ClimberIOTalonFX implements ClimberIO {
           grabTorqueCurrent,
           grabTempCelsius);
 
-      // Disables status signals not called for update above
-      // grabTalon.setPosition(0);
+      grabTalon.setPosition(0);
     }
   }
 
@@ -172,13 +153,6 @@ public class ClimberIOTalonFX implements ClimberIO {
     }
 
     {
-      // inputs.cancoderConnected =
-      //     BaseStatusSignal.refreshAll(cancoderPosition, cancoderSupplyVoltage).isOK();
-      // inputs.cancoderPosition = Units.rotationsToRadians(cancoderPosition.getValueAsDouble());
-      // inputs.cancoderSupplyVoltage = cancoderSupplyVoltage.getValueAsDouble();
-    }
-
-    {
       inputs.grabMotorConnected =
           BaseStatusSignal.refreshAll(
                   grabPosition,
@@ -199,7 +173,8 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   @Override
   public void runClimbVolts(double volts) {
-    if (atSoftStop(volts)) return; // TODO: test that this function works as intended
+    if (Constants.CLIMBER_USE_SOFT_STOPS && !atSoftStop(volts))
+      return; // TODO: test that this function works as intended
     climbTalon.setControl(voltageOut.withOutput(volts));
   }
 
@@ -207,9 +182,9 @@ public class ClimberIOTalonFX implements ClimberIO {
     double currentAngle =
         Units.rotationsToRadians(climbPosition.getValueAsDouble()) / climbReduction;
     return (currentAngle >= Constants.CLIMBER_MAX_RADS
-            && volts < 0) // motor moving in positive rads, stop at upper bound
+            && volts <= 0) // motor moving in positive rads, stop at upper bound
         || (currentAngle <= Constants.CLIMBER_MIN_RADS
-            && volts > 0); // motor moving in negative rads, stop at lower bound
+            && volts >= 0); // motor moving in negative rads, stop at lower bound
   }
 
   @Override

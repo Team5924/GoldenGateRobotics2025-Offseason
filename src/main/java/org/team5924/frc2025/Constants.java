@@ -68,6 +68,7 @@ public final class Constants {
   public static final double CLIMBER_MAX_RADS = Math.toRadians(100);
 
   public static final boolean CLIMBER_REQUIRE_AT_GOAL = false;
+  public static final boolean CLIMBER_USE_SOFT_STOPS = true;
 
   /* Climber cancoder */
   // public static final int CLIMBER_CANCODER_ID = 41;
