@@ -107,4 +107,9 @@ public final class Constants {
   public static final NeutralModeValue INTAKE_PIVOT_BRAKE = NeutralModeValue.Brake;
   public static final double MOTOR_TO_INTAKE_PIVOT_REDUCTION =
       1.0 / ((12.0 / 40.0) * (18.0 / 46.0) * (18.0 / 60.0) * (12.0 / 32.0));
+
+  public static final double INTAKE_PIVOT_MIN_RADS = -Math.PI; // TODO: test and set these values
+  public static final double INTAKE_PIVOT_MAX_RADS = Math.PI;
+
+  public static final double INTAKE_PIVOT_JOYSTICK_DEADZONE = 0.05;
 }

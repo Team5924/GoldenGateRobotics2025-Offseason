@@ -18,11 +18,15 @@ package org.team5924.frc2025.subsystems.pivot;
 
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.function.DoubleSupplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 import org.team5924.frc2025.Constants;
 import org.team5924.frc2025.RobotState;
+import org.team5924.frc2025.subsystems.pivot.IntakePivot.IntakePivotState;
 import org.team5924.frc2025.util.Elastic.Notification;
 import org.team5924.frc2025.util.Elastic.Notification.NotificationLevel;
 import org.team5924.frc2025.util.LoggedTunableNumber;
@@ -40,7 +44,10 @@ public class IntakePivot extends SubsystemBase {
     INTAKE_FLOOR(new LoggedTunableNumber("IntakePivotFloorRads", Math.toRadians(126.0))),
     SCORE_TROUGH(new LoggedTunableNumber("IntakePivotTroughScoreRads", Math.toRadians(25.639507))),
     MOVING(new LoggedTunableNumber("IntakePivotMoving", 0)),
-    OPERATOR_CONTROL(new LoggedTunableNumber("IntakePivotOperatorRads", 0));
+
+    // speed at which the intake pivot moves when controlled by the operator (in volts)
+    OPERATOR_CONTROL(
+        new LoggedTunableNumber("IntakePivotOperatorRads", 3)); // TODO: test and update
 
     private final LoggedTunableNumber rads;
 
@@ -54,6 +61,8 @@ public class IntakePivot extends SubsystemBase {
   private final Alert intakePivotMotorDisconnected;
 
   private final Notification intakePivotMotorDisconnectedNotification;
+
+  private double joystickInput;
 
   public IntakePivot(IntakePivotIO io) {
     this.io = io;
@@ -75,10 +84,31 @@ public class IntakePivot extends SubsystemBase {
 
     intakePivotMotorDisconnected.set(!pivotInput.intakePivotMotorConnected);
 
+    handleOperatorControl();
+
     /* if (!pivotInput.intakePivotMotorConnected){
         Elastic.sendNotification(intakePivotMotorDisconnectedNotification);
     } */
 
+  }
+
+  public Command transitionToOperatorControlState(DoubleSupplier input) {
+    return Commands.run(
+        () -> {
+          joystickInput = input.getAsDouble();
+          if (Math.abs(joystickInput) > Constants.INTAKE_PIVOT_JOYSTICK_DEADZONE)
+            ;
+          setGoalState(IntakePivotState.OPERATOR_CONTROL);
+        });
+  }
+
+  private void handleOperatorControl() {
+    if (!goalState.equals(IntakePivotState.OPERATOR_CONTROL)) return;
+    if (Math.abs(joystickInput) <= Constants.INTAKE_PIVOT_JOYSTICK_DEADZONE) {
+      RobotState.getInstance().setIntakePivotState(IntakePivotState.MOVING);
+    }
+
+    setVoltage(IntakePivotState.OPERATOR_CONTROL.rads.getAsDouble() * joystickInput);
   }
 
   public double getIntakePivotPosRads() {

@@ -18,7 +18,6 @@ package org.team5924.frc2025;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -123,15 +122,14 @@ public class RobotContainer {
               intake.setGoalState(IntakeState.TROUGH_OUT);
               intakePivot.setGoalState(IntakePivotState.SCORE_TROUGH);
             }));
-           
 
     NamedCommands.registerCommand(
         "Stop Shooter",
-            Commands.runOnce(
-                () -> {
-                  intake.setGoalState(IntakeState.OFF);
-                  intakePivot.setGoalState(IntakePivotState.MOVING);
-                }));
+        Commands.runOnce(
+            () -> {
+              intake.setGoalState(IntakeState.OFF);
+              RobotState.getInstance().setIntakePivotState(IntakePivotState.MOVING);
+            }));
 
     // Set up auto routines
     boolean isCompetition = true;
@@ -181,7 +179,7 @@ public class RobotContainer {
             () -> -driveController.getLeftX(),
             () -> -driveController.getRightX()));
 
-    // Nope. It's slow mode now.
+    // SLOW MODE YIPE
     driveController
         .a()
         .whileTrue(
@@ -234,6 +232,10 @@ public class RobotContainer {
     // driver hold right trigger/release -> ground intake down + spin/up
     // operator y -> shoot
 
+    // operator left joystick -> control intake pivot
+    intakePivot.setDefaultCommand(
+        intakePivot.transitionToOperatorControlState(() -> operatorController.getRightY()));
+
     // hold right trigger -> deploy ground intake
     driveController
         .rightTrigger()
@@ -251,7 +253,7 @@ public class RobotContainer {
             Commands.runOnce(
                 () -> {
                   intake.setGoalState(IntakeState.OFF);
-                  intakePivot.setGoalState(IntakePivotState.MOVING);
+                  RobotState.getInstance().setIntakePivotState(IntakePivotState.MOVING);
                 }));
 
     // operator press y -> score trough
@@ -271,7 +273,7 @@ public class RobotContainer {
             Commands.runOnce(
                 () -> {
                   intake.setGoalState(IntakeState.OFF);
-                  intakePivot.setGoalState(IntakePivotState.MOVING);
+                  RobotState.getInstance().setIntakePivotState(IntakePivotState.MOVING);
                 }));
   }
 

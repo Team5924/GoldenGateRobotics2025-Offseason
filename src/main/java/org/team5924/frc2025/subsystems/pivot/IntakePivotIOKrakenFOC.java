@@ -29,6 +29,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -50,7 +51,8 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
   private final StatusSignal<Temperature> intakePivotTempCelsius;
 
   // PID for the Motor
-  LoggedTunableNumber intakePivotMotorkP = new LoggedTunableNumber("IntakePivotMotorkP", 0);
+  LoggedTunableNumber intakePivotMotorkP =
+      new LoggedTunableNumber("IntakePivotMotorkP", 0); // TODO: tune these pleaese
   LoggedTunableNumber intakePivotMotorkI = new LoggedTunableNumber("IntakePivotMotorkI", 0);
   LoggedTunableNumber intakePivotMotorkD = new LoggedTunableNumber("IntakePivotMotorkD", 0);
   LoggedTunableNumber intakePivotMotorkS = new LoggedTunableNumber("IntakePivotMotorkS", 0);
@@ -109,7 +111,8 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
                 intakePivotTempCelsius)
             .isOK();
 
-    input.intakePivotPositionRads = intakePivotPosition.getValue().in(Radians);
+    input.intakePivotPositionRads =
+        intakePivotPosition.getValue().in(Radians) / Constants.MOTOR_TO_INTAKE_PIVOT_REDUCTION;
     input.intakePivotVelocityRadsPerSec = intakePivotVelocity.getValue().in(RadiansPerSecond);
     input.intakePivotAppliedVolts = intakePivotAppliedVolts.getValue().in(Volts);
     input.intakePivotSupplyCurrentAmps = intakePivotSupplyCurrent.getValue().in(Amps);
@@ -119,7 +122,18 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
 
   @Override
   public void setVoltage(double volts) {
+    if (atSoftStop(volts)) return;
     intakePivotKraken.setControl(voltageControl.withOutput(volts));
+  }
+
+  public boolean atSoftStop(double volts) {
+    double currentAngle =
+        Units.rotationsToRadians(intakePivotPosition.getValueAsDouble())
+            / Constants.MOTOR_TO_INTAKE_PIVOT_REDUCTION;
+    return (currentAngle >= Constants.INTAKE_PIVOT_MAX_RADS
+            && volts < 0) // motor moving in positive rads, stop at upper bound
+        || (currentAngle <= Constants.INTAKE_PIVOT_MIN_RADS
+            && volts > 0); // motor moving in negative rads, stop at lower bound
   }
 
   @Override
