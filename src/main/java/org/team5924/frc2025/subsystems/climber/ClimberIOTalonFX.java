@@ -94,7 +94,6 @@ public class ClimberIOTalonFX implements ClimberIO {
           climbTorqueCurrent,
           climbTempCelsius);
 
-      // Disables status signals not called for update above
       climbTalon.setPosition(0);
     }
 
@@ -200,7 +199,17 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   @Override
   public void runClimbVolts(double volts) {
+    if (atSoftStop(volts)) return; // TODO: test that this function works as intended
     climbTalon.setControl(voltageOut.withOutput(volts));
+  }
+
+  public boolean atSoftStop(double volts) {
+    double currentAngle =
+        Units.rotationsToRadians(climbPosition.getValueAsDouble()) / climbReduction;
+    return (currentAngle >= Constants.CLIMBER_MAX_RADS
+            && volts < 0) // motor moving in positive rads, stop at upper bound
+        || (currentAngle <= Constants.CLIMBER_MIN_RADS
+            && volts > 0); // motor moving in negative rads, stop at lower bound
   }
 
   @Override

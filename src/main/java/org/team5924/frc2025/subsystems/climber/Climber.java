@@ -95,8 +95,7 @@ public class Climber extends SubsystemBase {
         } else {
           io.runClimbVolts(state.forwardsVoltage.getAsDouble());
         }
-        if (isHoldingCage()) { // TODO: might have to comment this out and transition to hanging
-          // manually
+        if (isHoldingCage()) {
           setState(ClimberState.HANGING);
         }
         io.runGrabVolts(12.0);

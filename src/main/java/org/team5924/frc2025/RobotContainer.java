@@ -189,17 +189,33 @@ public class RobotContainer {
     // climber -> deploy down, spinn + drive into cage, lifts up inside
     //      controlled w/ operator dpad
 
+    // dPad up -> deploy climber forward
     operatorController
         .povUp()
-        .onTrue(Commands.runOnce(() -> climber.setState(Climber.ClimberState.LINEUP_FORWARD)));
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  climber.setHoldingCageManual(false);
+                  climber.setState(Climber.ClimberState.LINEUP_FORWARD);
+                }));
 
+    // dPad down -> lift climber up
+    operatorController.povDown().onTrue(Commands.runOnce(() -> climber.setHoldingCageManual(true)));
+
+    // x -> undo deploy climber
     operatorController
-        .povDown()
-        .onTrue(Commands.runOnce(() -> climber.setState(Climber.ClimberState.HANGING)));
+        .x()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  climber.setHoldingCageManual(false);
+                  climber.setState(Climber.ClimberState.STOPPED);
+                }));
 
     // driver hold right trigger/release -> ground intake down + spin/up
     // operator y -> shoot
 
+    // hold right trigger -> deploy ground intake
     driveController
         .rightTrigger()
         .onTrue(
@@ -209,6 +225,7 @@ public class RobotContainer {
                   intakePivot.setGoalState(IntakePivotState.INTAKE_FLOOR);
                 }));
 
+    // release right trigger -> ground intake up
     driveController
         .rightTrigger()
         .onFalse(
@@ -218,6 +235,7 @@ public class RobotContainer {
                   intakePivot.setGoalState(IntakePivotState.MOVING);
                 }));
 
+    // operator press y -> score trough
     operatorController
         .y()
         .onTrue(
@@ -227,6 +245,7 @@ public class RobotContainer {
                   intakePivot.setGoalState(IntakePivotState.SCORE_TROUGH);
                 }));
 
+    // operator release y -> back to normal state
     operatorController
         .y()
         .onFalse(
