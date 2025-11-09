@@ -69,9 +69,8 @@ public class Intake extends SubsystemBase {
 
     // updateState();
 
-    io.runVolts(
-        RobotState.getInstance().getIntakeState().intakeVoltage.getAsDouble(),
-        RobotState.getInstance().getIntakeState().alignerVoltage.getAsDouble());
+    io.runVolts(RobotState.getInstance().getIntakeState().intakeVoltage.getAsDouble(), 0);
+    // RobotState.getInstance().getIntakeState().alignerVoltage.getAsDouble());
 
     Logger.recordOutput("RobotState/IntakeState", RobotState.getInstance().getIntakeState());
   }
@@ -82,10 +81,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void updateState() {
-    if (isOperatorControlling()) return;
-    if (false) // !inputs.beamBreakUnbroken)
-    RobotState.getInstance().setIntakeState(IntakeState.SLOW_IN);
-    else RobotState.getInstance().setIntakeState(IntakeState.OFF);
+    if (!isOperatorControlling()) RobotState.getInstance().setIntakeState(IntakeState.OFF);
   }
 
   public void setGoalState(IntakeState state) {
