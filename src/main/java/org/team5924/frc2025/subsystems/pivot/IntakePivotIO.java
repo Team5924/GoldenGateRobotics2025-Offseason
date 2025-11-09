@@ -29,6 +29,12 @@ public interface IntakePivotIO {
     public double intakePivotTorqueCurrentAmps = 0.0;
     public double intakePivotTempCelsius = 0.0;
 
+    public double intakePivotSetpoint = 0.0;
+
+    public double motionMagicVelocityTarget = 0.0;
+    public double motionMagicPositionTarget = 0.0;
+    public double acceleration = 0.0;
+
     /* If CANcoder installed
 
     public boolean intakePivotCANcoderConnected = true;

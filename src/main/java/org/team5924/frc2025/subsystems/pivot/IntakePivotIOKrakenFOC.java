@@ -23,24 +23,40 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Alert;
+import org.littletonrobotics.junction.Logger;
 import org.team5924.frc2025.Constants;
 import org.team5924.frc2025.util.LoggedTunableNumber;
 
 public class IntakePivotIOKrakenFOC implements IntakePivotIO {
   private final TalonFX intakePivotKraken;
   // private final CANcoder intakePivotCANcoder;
+
+  private final Alert initalMotorConfigAlert =
+      new Alert(
+          "Initial intake pivot motor config error! Restart robot code to clear.",
+          Alert.AlertType.kError);
+  private final Alert updateMotorConfigAlert =
+      new Alert("Update intake pivot motor config error!", Alert.AlertType.kWarning);
 
   // Motor Status Signals
   private final StatusSignal<Angle> intakePivotPosition;
@@ -49,6 +65,11 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
   private final StatusSignal<Current> intakePivotSupplyCurrent;
   private final StatusSignal<Current> intakePivotTorqueCurrent;
   private final StatusSignal<Temperature> intakePivotTempCelsius;
+
+  private StatusSignal<Double> closedLoopReferenceSlope;
+  double prevClosedLoopReferenceSlope = 0.0;
+  double prevReferenceSlopeTimestamp = 0.0;
+  double setpoint;
 
   // PID for the Motor  // TODO: tune these pleaese
   LoggedTunableNumber intakePivotMotorkP = new LoggedTunableNumber("IntakePivot/MotorkP", 5);
@@ -69,8 +90,12 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
   // Refresh on what this does, cuz im lowk dumb rn
   private final VoltageOut voltageControl =
       new VoltageOut(0).withUpdateFreqHz(0.0).withEnableFOC(true);
-  private final PositionVoltage positionControl =
-      new PositionVoltage(0).withUpdateFreqHz(0.0).withEnableFOC(true);
+  private final MotionMagicVoltage magicMotionVoltage =
+      new MotionMagicVoltage(0).withEnableFOC(true);
+
+  private TalonFXConfigurator intakePivotKrakenConfig;
+  private MotionMagicConfigs motionMagicConfigs;
+  private Slot0Configs controllerConfigs;
 
   /*  for the CANcoder
   LoggedTunableNumber intakePivotCANcoderMagnetOffsetRads =
@@ -81,6 +106,7 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
   public IntakePivotIOKrakenFOC() {
     intakePivotKraken = new TalonFX(Constants.INTAKE_PIVOT_CAN_ID, Constants.INTAKE_PIVOT_OUT_BUS);
 
+    this.intakePivotKrakenConfig = intakePivotKraken.getConfigurator();
     // Config
     final TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
     krakenConfig.CurrentLimits.SupplyCurrentLimit = Constants.INTAKE_PIVOT_CURRENT_LIMIT;
@@ -91,7 +117,7 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
 
     // Kraken PID Slot Configs
 
-    final Slot0Configs controllerConfigs = new Slot0Configs();
+    controllerConfigs = new Slot0Configs();
     controllerConfigs.kP = intakePivotMotorkP.getAsDouble();
     controllerConfigs.kI = intakePivotMotorkI.getAsDouble();
     controllerConfigs.kD = intakePivotMotorkD.getAsDouble();
@@ -107,16 +133,47 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
     intakePivotTorqueCurrent = intakePivotKraken.getTorqueCurrent();
     intakePivotTempCelsius = intakePivotKraken.getDeviceTemp();
 
-    intakePivotKraken.getConfigurator().apply(krakenConfig, 1.0);
-    intakePivotKraken.getConfigurator().apply(controllerConfigs, 1.0);
+    // Motion magic
+    motionMagicConfigs = new MotionMagicConfigs();
+    motionMagicConfigs.MotionMagicAcceleration = motionAcceleration.get();
+    motionMagicConfigs.MotionMagicCruiseVelocity = motionCruiseVelocity.get();
+    motionMagicConfigs.MotionMagicJerk = motionJerk.get();
 
-    // // Motion magic
-    // final MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
-    // motionMagicConfigs.MotionMagicAcceleration = motionAcceleration.get();
-    // motionMagicConfigs.MotionMagicCruiseVelocity = motionCruiseVelocity.get();
-    // motionMagicConfigs.MotionMagicJerk = motionJerk.get();
+    OpenLoopRampsConfigs openLoopRampsConfigs = new OpenLoopRampsConfigs();
+    openLoopRampsConfigs.DutyCycleOpenLoopRampPeriod = 0.02;
+    openLoopRampsConfigs.TorqueOpenLoopRampPeriod = 0.02;
+    openLoopRampsConfigs.VoltageOpenLoopRampPeriod = 0.02;
 
-    // intakePivotKraken.getConfigurator().apply(motionMagicConfigs);
+    ClosedLoopRampsConfigs closedLoopRampsConfigs = new ClosedLoopRampsConfigs();
+    closedLoopRampsConfigs.DutyCycleClosedLoopRampPeriod = 0.02;
+    closedLoopRampsConfigs.TorqueClosedLoopRampPeriod = 0.02;
+    closedLoopRampsConfigs.VoltageClosedLoopRampPeriod = 0.02;
+
+    FeedbackConfigs feedbackConfigs = new FeedbackConfigs();
+    feedbackConfigs.SensorToMechanismRatio = Constants.MOTOR_TO_INTAKE_PIVOT_REDUCTION;
+    feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    // feedbackConfigs.FeedbackRemoteSensorID = Constants.ELEVATOR_CANCODER_ID;
+    // feedbackConfigs.SensorToMechanismRatio = Constants.CANCODER_TO_ELEVATOR_REDUCTION;
+    feedbackConfigs.RotorToSensorRatio = Constants.MOTOR_TO_INTAKE_PIVOT_REDUCTION;
+
+    // Apply Configs
+    StatusCode[] statusArray = new StatusCode[6];
+
+    statusArray[0] = intakePivotKrakenConfig.apply(krakenConfig);
+    statusArray[1] = intakePivotKrakenConfig.apply(controllerConfigs);
+    statusArray[2] = intakePivotKrakenConfig.apply(motionMagicConfigs);
+    statusArray[3] = intakePivotKrakenConfig.apply(openLoopRampsConfigs);
+    statusArray[4] = intakePivotKrakenConfig.apply(closedLoopRampsConfigs);
+    statusArray[5] = intakePivotKrakenConfig.apply(feedbackConfigs);
+
+    boolean isErrorPresent = false;
+    for (StatusCode s : statusArray) if (!s.isOK()) isErrorPresent = true;
+    initalMotorConfigAlert.set(isErrorPresent);
+    Logger.recordOutput("Elevator/InitConfReport", statusArray);
+
+    closedLoopReferenceSlope = intakePivotKraken.getClosedLoopReference();
+
+    intakePivotKraken.setPosition(0.0);
   }
 
   @Override
@@ -128,7 +185,8 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
                 intakePivotAppliedVolts,
                 intakePivotSupplyCurrent,
                 intakePivotTorqueCurrent,
-                intakePivotTempCelsius)
+                intakePivotTempCelsius,
+                closedLoopReferenceSlope)
             .isOK();
 
     input.intakePivotPositionRads = intakePivotPosition.getValue().in(Radians);
@@ -137,6 +195,21 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
     input.intakePivotSupplyCurrentAmps = intakePivotSupplyCurrent.getValue().in(Amps);
     input.intakePivotTorqueCurrentAmps = intakePivotTorqueCurrent.getValue().in(Amps);
     input.intakePivotTempCelsius = intakePivotTempCelsius.getValue().in(Celsius);
+
+    input.motionMagicVelocityTarget = (intakePivotKraken.getClosedLoopReferenceSlope().getValue());
+    input.motionMagicPositionTarget = intakePivotKraken.getClosedLoopReference().getValue();
+
+    double currentTime = closedLoopReferenceSlope.getTimestamp().getTime();
+    double timeDiff = currentTime - prevReferenceSlopeTimestamp;
+    if (timeDiff > 0.0) {
+      input.acceleration =
+          (input.motionMagicVelocityTarget - prevClosedLoopReferenceSlope) / timeDiff;
+    }
+
+    prevClosedLoopReferenceSlope = input.motionMagicVelocityTarget;
+    prevReferenceSlopeTimestamp = currentTime;
+
+    input.intakePivotSetpoint = setpoint;
   }
 
   @Override
@@ -157,7 +230,40 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
 
   @Override
   public void setPosition(double rads) {
-    intakePivotKraken.setControl(positionControl.withPosition(rads));
+    intakePivotKraken.setControl(magicMotionVoltage.withPosition(rads));
+  }
+
+  public void updateTunableNumbers() {
+    if (intakePivotMotorkA.hasChanged(hashCode())
+        || intakePivotMotorkS.hasChanged(hashCode())
+        || intakePivotMotorkV.hasChanged(hashCode())
+        || intakePivotMotorkP.hasChanged(hashCode())
+        || intakePivotMotorkI.hasChanged(hashCode())
+        || intakePivotMotorkD.hasChanged(hashCode())
+        || intakePivotMotorkG.hasChanged(hashCode())
+        || motionAcceleration.hasChanged(hashCode())
+        || motionCruiseVelocity.hasChanged(hashCode())) {
+      controllerConfigs.kA = intakePivotMotorkA.get();
+      controllerConfigs.kS = intakePivotMotorkS.get();
+      controllerConfigs.kV = intakePivotMotorkV.get();
+      controllerConfigs.kP = intakePivotMotorkP.get();
+      controllerConfigs.kI = intakePivotMotorkI.get();
+      controllerConfigs.kD = intakePivotMotorkD.get();
+      controllerConfigs.kG = intakePivotMotorkG.get();
+
+      motionMagicConfigs.MotionMagicAcceleration = motionAcceleration.get();
+      motionMagicConfigs.MotionMagicCruiseVelocity = motionCruiseVelocity.get();
+
+      StatusCode[] statusArray = new StatusCode[2];
+
+      statusArray[0] = intakePivotKrakenConfig.apply(controllerConfigs);
+      statusArray[1] = intakePivotKrakenConfig.apply(motionMagicConfigs);
+
+      boolean isErrorPresent = false;
+      for (StatusCode s : statusArray) if (!s.isOK()) isErrorPresent = true;
+      updateMotorConfigAlert.set(isErrorPresent);
+      Logger.recordOutput("Elevator/Leader/UpdateConfReport", statusArray);
+    }
   }
 
   @Override
