@@ -29,7 +29,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.DigitalInput;
 import org.team5924.frc2025.Constants;
 
 public class IntakeIOKrakenFOC implements IntakeIO {
@@ -41,25 +40,26 @@ public class IntakeIOKrakenFOC implements IntakeIO {
   private final StatusSignal<Current> intakeTorqueCurrent;
   private final StatusSignal<Temperature> intakeTempCelsius;
 
-  private final TalonFX alignerTalon;
-  private final StatusSignal<Angle> alignerPosition;
-  private final StatusSignal<AngularVelocity> alignerVelocity;
-  private final StatusSignal<Voltage> alignerAppliedVoltage;
-  private final StatusSignal<Current> alignerSupplyCurrent;
-  private final StatusSignal<Current> alignerTorqueCurrent;
-  private final StatusSignal<Temperature> alignerTempCelsius;
+  // private final TalonFX alignerTalon;
+  // private final StatusSignal<Angle> alignerPosition;
+  // private final StatusSignal<AngularVelocity> alignerVelocity;
+  // private final StatusSignal<Voltage> alignerAppliedVoltage;
+  // private final StatusSignal<Current> alignerSupplyCurrent;
+  // private final StatusSignal<Current> alignerTorqueCurrent;
+  // private final StatusSignal<Temperature> alignerTempCelsius;
 
-  private final DigitalInput beamBreakSensor;
+  // private final DigitalInput beamBreakSensor;
 
   private static final int intakeId = Constants.INTAKE_CAN_ID;
   private static final int alignerId = Constants.ALIGNER_CAN_ID;
   private static final String bus = Constants.INTAKE_OUT_BUS;
   private static final int currentLimitAmps = Constants.INTAKE_CURRENT_LIMIT;
-  private static final boolean invert = Constants.INTAKE_INVERT;
+  private static final boolean intakeInvert = Constants.INTAKE_INVERT;
   private static final boolean intakeBrake = Constants.INTAKE_BRAKE;
-  private static final boolean alignerBrake = Constants.ALIGNER_BRAKE;
+  // private static final boolean alignerBrake = Constants.ALIGNER_BRAKE;
   private static final double intakeReduction = Constants.INTAKE_REDUCTION;
-  private static final double alignerReduction = Constants.ALIGNER_REDUCTION;
+  // private static final double alignerReduction = Constants.ALIGNER_REDUCTION;
+  // private static final boolean alignerInvert = Constants.ALIGNER_INVERT;
 
   private final VoltageOut voltageOut = new VoltageOut(0.0).withEnableFOC(true).withUpdateFreqHz(0);
 
@@ -71,7 +71,7 @@ public class IntakeIOKrakenFOC implements IntakeIO {
       // Configure TalonFX
       TalonFXConfiguration config = new TalonFXConfiguration();
       config.MotorOutput.Inverted =
-          invert ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+          intakeInvert ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
       config.MotorOutput.NeutralMode =
           intakeBrake ? NeutralModeValue.Brake : NeutralModeValue.Coast;
       config.CurrentLimits.SupplyCurrentLimit = currentLimitAmps;
@@ -98,43 +98,41 @@ public class IntakeIOKrakenFOC implements IntakeIO {
       intakeTalon.optimizeBusUtilization(0, 1.0);
     }
 
-    // aligner motor
-    {
-      alignerTalon = new TalonFX(alignerId, bus);
+    // // aligner motor
+    // {
+    //   alignerTalon = new TalonFX(alignerId, bus);
 
-      // Configure TalonFX
-      TalonFXConfiguration config = new TalonFXConfiguration();
-      config.MotorOutput.Inverted =
-          invert ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
-      config.MotorOutput.NeutralMode =
-          alignerBrake ? NeutralModeValue.Brake : NeutralModeValue.Coast;
-      config.CurrentLimits.SupplyCurrentLimit = currentLimitAmps;
-      config.CurrentLimits.SupplyCurrentLimitEnable = true;
-      alignerTalon.getConfigurator().apply(config);
+    //   // Configure TalonFX
+    //   TalonFXConfiguration config = new TalonFXConfiguration();
+    //   config.MotorOutput.Inverted =
+    //       alignerInvert
+    //           ? InvertedValue.Clockwise_Positive
+    //           : InvertedValue.CounterClockwise_Positive;
+    //   config.MotorOutput.NeutralMode =
+    //       alignerBrake ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+    //   config.CurrentLimits.SupplyCurrentLimit = currentLimitAmps;
+    //   config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    //   alignerTalon.getConfigurator().apply(config);
 
-      // Get select status signals and set update frequency
-      alignerPosition = alignerTalon.getPosition();
-      alignerVelocity = alignerTalon.getVelocity();
-      alignerAppliedVoltage = alignerTalon.getMotorVoltage();
-      alignerSupplyCurrent = alignerTalon.getSupplyCurrent();
-      alignerTorqueCurrent = alignerTalon.getTorqueCurrent();
-      alignerTempCelsius = alignerTalon.getDeviceTemp();
-      BaseStatusSignal.setUpdateFrequencyForAll(
-          50.0,
-          alignerPosition,
-          alignerVelocity,
-          alignerAppliedVoltage,
-          alignerSupplyCurrent,
-          alignerTorqueCurrent,
-          alignerTempCelsius);
+    //   // Get select status signals and set update frequency
+    //   alignerPosition = alignerTalon.getPosition();
+    //   alignerVelocity = alignerTalon.getVelocity();
+    //   alignerAppliedVoltage = alignerTalon.getMotorVoltage();
+    //   alignerSupplyCurrent = alignerTalon.getSupplyCurrent();
+    //   alignerTorqueCurrent = alignerTalon.getTorqueCurrent();
+    //   alignerTempCelsius = alignerTalon.getDeviceTemp();
+    //   BaseStatusSignal.setUpdateFrequencyForAll(
+    //       50.0,
+    //       alignerPosition,
+    //       alignerVelocity,
+    //       alignerAppliedVoltage,
+    //       alignerSupplyCurrent,
+    //       alignerTorqueCurrent,
+    //       alignerTempCelsius);
 
-      // Disables status signals not called for update above
-      alignerTalon.optimizeBusUtilization(0, 1.0);
-    }
-
-    {
-      beamBreakSensor = new DigitalInput(Constants.INTAKE_BEAM_BREAK_ID);
-    }
+    //   // Disables status signals not called for update above
+    //   alignerTalon.optimizeBusUtilization(0, 1.0);
+    // }
   }
 
   @Override
@@ -157,30 +155,28 @@ public class IntakeIOKrakenFOC implements IntakeIO {
     inputs.intakeTorqueCurrentAmps = intakeTorqueCurrent.getValueAsDouble();
     inputs.intakeTempCelsius = intakeTempCelsius.getValueAsDouble();
 
-    inputs.alignerMotorConnected =
-        BaseStatusSignal.refreshAll(
-                alignerPosition,
-                alignerVelocity,
-                alignerAppliedVoltage,
-                alignerSupplyCurrent,
-                alignerTorqueCurrent,
-                alignerTempCelsius)
-            .isOK();
-    inputs.alignerPositionRads =
-        Units.rotationsToRadians(alignerPosition.getValueAsDouble()) / intakeReduction;
-    inputs.alignerVelocityRadsPerSec =
-        Units.rotationsToRadians(alignerVelocity.getValueAsDouble()) / intakeReduction;
-    inputs.alignerAppliedVoltage = alignerAppliedVoltage.getValueAsDouble();
-    inputs.alignerSupplyCurrentAmps = alignerSupplyCurrent.getValueAsDouble();
-    inputs.alignerTorqueCurrentAmps = alignerTorqueCurrent.getValueAsDouble();
-    inputs.alignerTempCelsius = alignerTempCelsius.getValueAsDouble();
-
-    inputs.beamBreakUnbroken = beamBreakSensor.get();
+    // inputs.alignerMotorConnected =
+    //     BaseStatusSignal.refreshAll(
+    //             alignerPosition,
+    //             alignerVelocity,
+    //             alignerAppliedVoltage,
+    //             alignerSupplyCurrent,
+    //             alignerTorqueCurrent,
+    //             alignerTempCelsius)
+    //         .isOK();
+    // inputs.alignerPositionRads =
+    //     Units.rotationsToRadians(alignerPosition.getValueAsDouble()) / alignerReduction;
+    // inputs.alignerVelocityRadsPerSec =
+    //     Units.rotationsToRadians(alignerVelocity.getValueAsDouble()) / alignerReduction;
+    // inputs.alignerAppliedVoltage = alignerAppliedVoltage.getValueAsDouble();
+    // inputs.alignerSupplyCurrentAmps = alignerSupplyCurrent.getValueAsDouble();
+    // inputs.alignerTorqueCurrentAmps = alignerTorqueCurrent.getValueAsDouble();
+    // inputs.alignerTempCelsius = alignerTempCelsius.getValueAsDouble();
   }
 
   @Override
   public void runVolts(double intakeVolts, double alignerVolts) {
     intakeTalon.setControl(voltageOut.withOutput(intakeVolts));
-    alignerTalon.setControl(voltageOut.withOutput(alignerVolts));
+    // alignerTalon.setControl(voltageOut.withOutput(alignerVolts));
   }
 }

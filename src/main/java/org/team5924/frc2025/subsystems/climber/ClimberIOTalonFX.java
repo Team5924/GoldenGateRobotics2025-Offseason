@@ -20,12 +20,10 @@ import static edu.wpi.first.units.Units.Radians;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -45,9 +43,9 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final StatusSignal<Current> climbTorqueCurrent;
   private final StatusSignal<Temperature> climbTempCelsius;
 
-  private final CANcoder cancoder;
-  private final StatusSignal<Angle> cancoderPosition;
-  private final StatusSignal<Voltage> cancoderSupplyVoltage;
+  // private final CANcoder cancoder;
+  // private final StatusSignal<Angle> cancoderPosition;
+  // private final StatusSignal<Voltage> cancoderSupplyVoltage;
 
   private final TalonFX grabTalon;
   private final StatusSignal<Angle> grabPosition;
@@ -96,26 +94,25 @@ public class ClimberIOTalonFX implements ClimberIO {
           climbTorqueCurrent,
           climbTempCelsius);
 
-      // Disables status signals not called for update above
       climbTalon.setPosition(0);
     }
 
     // CANcoder
     {
-      cancoder = new CANcoder(Constants.CLIMBER_CANCODER_ID, Constants.CLIMBER_BUS);
+      // cancoder = new CANcoder(Constants.CLIMBER_CANCODER_ID, Constants.CLIMBER_BUS);
 
-      // Configure
-      MagnetSensorConfigs config = new MagnetSensorConfigs();
-      config.MagnetOffset = Constants.CLIMBER_CANCODER_MAGNET_OFFSET;
-      config.SensorDirection = Constants.CLIMBER_CANCODER_SENSOR_DIRECTION;
-      config.AbsoluteSensorDiscontinuityPoint =
-          Constants.CLIMBER_CANCODER_SENSOR_DISCONTINUITY_POINT;
-      cancoder.getConfigurator().apply(config);
+      // // Configure
+      // MagnetSensorConfigs config = new MagnetSensorConfigs();
+      // config.MagnetOffset = Constants.CLIMBER_CANCODER_MAGNET_OFFSET;
+      // config.SensorDirection = Constants.CLIMBER_CANCODER_SENSOR_DIRECTION;
+      // config.AbsoluteSensorDiscontinuityPoint =
+      //     Constants.CLIMBER_CANCODER_SENSOR_DISCONTINUITY_POINT;
+      // cancoder.getConfigurator().apply(config);
 
-      cancoderPosition = cancoder.getAbsolutePosition();
-      cancoderSupplyVoltage = cancoder.getSupplyVoltage();
+      // cancoderPosition = cancoder.getAbsolutePosition();
+      // cancoderSupplyVoltage = cancoder.getSupplyVoltage();
 
-      BaseStatusSignal.setUpdateFrequencyForAll(50, cancoderPosition, cancoderSupplyVoltage);
+      // BaseStatusSignal.setUpdateFrequencyForAll(50, cancoderPosition, cancoderSupplyVoltage);
     }
 
     // Grab motor
@@ -148,7 +145,7 @@ public class ClimberIOTalonFX implements ClimberIO {
           grabTempCelsius);
 
       // Disables status signals not called for update above
-      grabTalon.setPosition(0);
+      // grabTalon.setPosition(0);
     }
   }
 
@@ -175,10 +172,10 @@ public class ClimberIOTalonFX implements ClimberIO {
     }
 
     {
-      inputs.cancoderConnected =
-          BaseStatusSignal.refreshAll(cancoderPosition, cancoderSupplyVoltage).isOK();
-      inputs.cancoderPosition = Units.rotationsToRadians(cancoderPosition.getValueAsDouble());
-      inputs.cancoderSupplyVoltage = cancoderSupplyVoltage.getValueAsDouble();
+      // inputs.cancoderConnected =
+      //     BaseStatusSignal.refreshAll(cancoderPosition, cancoderSupplyVoltage).isOK();
+      // inputs.cancoderPosition = Units.rotationsToRadians(cancoderPosition.getValueAsDouble());
+      // inputs.cancoderSupplyVoltage = cancoderSupplyVoltage.getValueAsDouble();
     }
 
     {
@@ -202,7 +199,17 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   @Override
   public void runClimbVolts(double volts) {
+    if (atSoftStop(volts)) return; // TODO: test that this function works as intended
     climbTalon.setControl(voltageOut.withOutput(volts));
+  }
+
+  public boolean atSoftStop(double volts) {
+    double currentAngle =
+        Units.rotationsToRadians(climbPosition.getValueAsDouble()) / climbReduction;
+    return (currentAngle >= Constants.CLIMBER_MAX_RADS
+            && volts < 0) // motor moving in positive rads, stop at upper bound
+        || (currentAngle <= Constants.CLIMBER_MIN_RADS
+            && volts > 0); // motor moving in negative rads, stop at lower bound
   }
 
   @Override

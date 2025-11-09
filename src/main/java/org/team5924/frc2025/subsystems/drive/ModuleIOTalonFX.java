@@ -44,7 +44,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import java.util.Queue;
-import org.team5924.frc2025.generated.TunerConstantsGamma;
+import org.team5924.frc2025.generated.TunerConstants;
 
 /**
  * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller, and
@@ -102,12 +102,9 @@ public class ModuleIOTalonFX implements ModuleIO {
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
           constants) {
     this.constants = constants;
-    driveTalon =
-        new TalonFX(constants.DriveMotorId, TunerConstantsGamma.DrivetrainConstants.CANBusName);
-    turnTalon =
-        new TalonFX(constants.SteerMotorId, TunerConstantsGamma.DrivetrainConstants.CANBusName);
-    cancoder =
-        new CANcoder(constants.EncoderId, TunerConstantsGamma.DrivetrainConstants.CANBusName);
+    driveTalon = new TalonFX(constants.DriveMotorId, TunerConstants.DrivetrainConstants.CANBusName);
+    turnTalon = new TalonFX(constants.SteerMotorId, TunerConstants.DrivetrainConstants.CANBusName);
+    cancoder = new CANcoder(constants.EncoderId, TunerConstants.DrivetrainConstants.CANBusName);
 
     // Configure drive motor
     var driveConfig = constants.DriveMotorInitialConfigs;

@@ -38,8 +38,8 @@ public interface IntakeIO {
     public double alignerTorqueCurrentAmps = 0.0;
     public double alignerTempCelsius = 0.0;
 
-    public boolean beamBreakConnected = true;
-    public boolean beamBreakUnbroken = false;
+    // public boolean beamBreakConnected = true;
+    // public boolean beamBreakUnbroken = false;
   }
 
   public default void updateInputs(IntakeIOInputs inputs) {}

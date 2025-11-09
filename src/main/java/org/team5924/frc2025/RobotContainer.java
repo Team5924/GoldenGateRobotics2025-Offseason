@@ -17,6 +17,7 @@
 package org.team5924.frc2025;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -28,8 +29,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.team5924.frc2025.commands.drive.DriveCommands;
-import org.team5924.frc2025.generated.TunerConstantsGamma;
+import org.team5924.frc2025.commands.intakePivot.RunIntakePivot;
+import org.team5924.frc2025.generated.TunerConstants;
 import org.team5924.frc2025.subsystems.climber.Climber;
+import org.team5924.frc2025.subsystems.climber.Climber.ClimberState;
 import org.team5924.frc2025.subsystems.climber.ClimberIO;
 import org.team5924.frc2025.subsystems.climber.ClimberIOTalonFX;
 import org.team5924.frc2025.subsystems.drive.Drive;
@@ -39,9 +42,11 @@ import org.team5924.frc2025.subsystems.drive.ModuleIO;
 import org.team5924.frc2025.subsystems.drive.ModuleIOSim;
 import org.team5924.frc2025.subsystems.drive.ModuleIOTalonFX;
 import org.team5924.frc2025.subsystems.pivot.IntakePivot;
+import org.team5924.frc2025.subsystems.pivot.IntakePivot.IntakePivotState;
 import org.team5924.frc2025.subsystems.pivot.IntakePivotIO;
 import org.team5924.frc2025.subsystems.pivot.IntakePivotIOKrakenFOC;
 import org.team5924.frc2025.subsystems.rollers.intake.Intake;
+import org.team5924.frc2025.subsystems.rollers.intake.Intake.IntakeState;
 import org.team5924.frc2025.subsystems.rollers.intake.IntakeIO;
 import org.team5924.frc2025.subsystems.rollers.intake.IntakeIOKrakenFOC;
 
@@ -74,10 +79,10 @@ public class RobotContainer {
         drive =
             new Drive(
                 new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstantsGamma.FrontLeft),
-                new ModuleIOTalonFX(TunerConstantsGamma.FrontRight),
-                new ModuleIOTalonFX(TunerConstantsGamma.BackLeft),
-                new ModuleIOTalonFX(TunerConstantsGamma.BackRight));
+                new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                new ModuleIOTalonFX(TunerConstants.FrontRight),
+                new ModuleIOTalonFX(TunerConstants.BackLeft),
+                new ModuleIOTalonFX(TunerConstants.BackRight));
         climber = new Climber(new ClimberIOTalonFX());
         intake = new Intake(new IntakeIOKrakenFOC());
         intakePivot = new IntakePivot(new IntakePivotIOKrakenFOC());
@@ -88,10 +93,10 @@ public class RobotContainer {
         drive =
             new Drive(
                 new GyroIO() {},
-                new ModuleIOSim(TunerConstantsGamma.FrontLeft),
-                new ModuleIOSim(TunerConstantsGamma.FrontRight),
-                new ModuleIOSim(TunerConstantsGamma.BackLeft),
-                new ModuleIOSim(TunerConstantsGamma.BackRight));
+                new ModuleIOSim(TunerConstants.FrontLeft),
+                new ModuleIOSim(TunerConstants.FrontRight),
+                new ModuleIOSim(TunerConstants.BackLeft),
+                new ModuleIOSim(TunerConstants.BackRight));
         climber = new Climber(new ClimberIO() {});
         intake = new Intake(new IntakeIO() {});
         intakePivot = new IntakePivot(new IntakePivotIO() {});
@@ -118,10 +123,25 @@ public class RobotContainer {
     // Build an auto chooser. This will use Commands.none() as the default option.
     // As an example, this will only show autos that start with "comp" while at
     // competition as defined by the programmer
-    autoChooser =
-        AutoBuilder.buildAutoChooserWithOptionsModifier(
-            (stream) ->
-                isCompetition ? stream.filter(auto -> auto.getName().startsWith("2")) : stream);
+    autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier((stream) -> stream);
+    // (stream) ->
+    //     isCompetition ? stream.filter(auto -> auto.getName().startsWith("2")) : stream);
+
+    NamedCommands.registerCommand(
+        "Run Shooter",
+        Commands.runOnce(
+            () -> {
+              intake.setGoalState(IntakeState.TROUGH_OUT);
+              intakePivot.setGoalState(IntakePivotState.SCORE_TROUGH);
+            }));
+
+    NamedCommands.registerCommand(
+        "Stop Shooter",
+        Commands.runOnce(
+            () -> {
+              intake.setGoalState(IntakeState.OFF);
+              RobotState.getInstance().setIntakePivotState(IntakePivotState.MOVING);
+            }));
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -141,7 +161,7 @@ public class RobotContainer {
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    // Configure the button bindings
+    // Configure the button bindingsa
     configureButtonBindings();
   }
 
@@ -160,7 +180,7 @@ public class RobotContainer {
             () -> -driveController.getLeftX(),
             () -> -driveController.getRightX()));
 
-    // Nope. It's slow mode now.
+    // SLOW MODE YIPE
     driveController
         .a()
         .whileTrue(
@@ -184,113 +204,86 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    // TODO: add bindings for the climber!!!!!
-
     // climber -> deploy down, spinn + drive into cage, lifts up inside
-    // operator -> dpad
+    //      controlled w/ operator dpad
 
-    // TODO intake
-    // TODO intake pivot
+    // dPad up -> deploy climber forward
+    operatorController
+        .povUp()
+        .onTrue(Commands.runOnce(() -> climber.setState(ClimberState.LINEUP)));
+
+    // dPad down -> lift climber up
+    operatorController
+        .povDown()
+        .onTrue(Commands.runOnce(() -> climber.setState(ClimberState.HANGING)));
+
+    // x -> undo deploy climber
+    operatorController
+        .x()
+        .onTrue(Commands.runOnce(() -> climber.setState(Climber.ClimberState.STOPPED)));
 
     // driver hold right trigger/release -> ground intake down + spin/up
     // operator y -> shoot
 
-    // driveController
-    //     .leftBumper()
-    //     .whileTrue(
-    //         new DeferredCommand(() -> DriveCommands.driveToReef(drive, true), Set.of(drive)));
+    // operator left joystick -> control intake pivot
+    intakePivot.setDefaultCommand(
+        new RunIntakePivot(intakePivot, () -> operatorController.getLeftY()));
 
-    // driveController
-    //     .rightBumper()
-    //     .whileTrue(
-    //         new DeferredCommand(() -> DriveCommands.driveToReef(drive, false), Set.of(drive)));
-
-    // driveController
-    //     .rightTrigger()
-    //     .whileTrue(
-    //         DriveCommands.turnToRightCoralStation(
-    //             drive, () -> -driveController.getLeftY(), () -> -driveController.getLeftX()));
-
-    // driveController
-    //     .leftTrigger()
-    //     .whileTrue(
-    //         DriveCommands.turnToLeftCoralStation(
-    //             drive, () -> -driveController.getLeftY(), () -> -driveController.getLeftX()));
-
-    // driveController.rightTrigger().onTrue(DriveCommands.lockOnCoralStation(drive, true));
-    // driveController.leftTrigger().onTrue(DriveCommands.lockOnCoralStation(drive, false));
-    // driveController
-    //     .rightTrigger()
-    //     .or(driveController.leftTrigger())
-    //     .onFalse(DriveCommands.unlockRotation(drive));
-
-    // driveController.rightStick().onTrue(Commands.runOnce(() -> drive.toggleSnapToHeading()));
-
-    // // Coral In and Out
-
-    // driveController.y().onTrue(new TeleopShoot(coralInAndOut).withTimeout(Seconds.of(1)));
-    // driveController
-    //     .leftTrigger()
-    //     .onFalse(
-    //         Commands.runOnce(() ->
-    // coralInAndOut.setGoalState(CoralInAndOut.CoralState.NO_CORAL)));
-
+    // // hold right trigger -> deploy ground intake
     // operatorController
-    //     .rightTrigger()
+    //     .leftTrigger()
     //     .onTrue(
-    //         Commands.runOnce(() ->
-    // coralInAndOut.setGoalState(CoralInAndOut.CoralState.INTAKING)));
+    //         Commands.runOnce(
+    //             () -> {
+    //                 intake.setGoalState(IntakeState.FAST_IN);
+    //                 //   intakePivot.setGoalState(IntakePivotState.INTAKE_FLOOR);
+    //             }));
+
+    // // release right trigger -> ground intake up
     // operatorController
-    //     .rightTrigger()
+    //     .leftTrigger()
     //     .onFalse(
     //         Commands.runOnce(
-    //             () ->
-    // coralInAndOut.setGoalState(CoralInAndOut.CoralState.STORED_CORAL_IN_INTAKE)));
+    //             () -> {
+    //                 intake.setGoalState(IntakeState.OFF);
+    //                 //   intakePivot.setGoalState(IntakePivotState.STOW);
+    //             }));
 
-    // // Elevator
-    // elevator.setDefaultCommand(new RunElevator(elevator, operatorController::getLeftY));
-    // operatorController
-    //     .a()
-    //     .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.STOW)));
-    // operatorController
-    //     .b()
-    //     .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.L2)));
-    // operatorController
-    //     .x()
-    //     .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.L3)));
-    // operatorController
-    //     .y()
-    //     .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.L4)));
-    // operatorController
-    //     .leftBumper()
-    //     .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.MANUAL)));
-    // operatorController
-    //     .rightBumper()
-    //     .onTrue(Commands.runOnce(() -> elevator.setGoalState(Elevator.ElevatorState.INTAKE)));
+    // hold right trigger -> deploy ground intake
+    operatorController
+        .rightTrigger()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  intake.setGoalState(IntakeState.IN);
+                  //   intakePivot.setGoalState(IntakePivotState.INTAKE_FLOOR);
+                }));
 
-    // // Vision
-    // // vision.setDefaultCommand(new RunVisionPoseEstimation(drive,
-    // vision).ignoringDisable(true));
-    // // vision.setDefaultCommand(new RunVisionPoseEstimation(drive,
-    // vision).ignoringDisable(true));
+    // release right trigger -> ground intake up
+    operatorController
+        .rightTrigger()
+        .onFalse(
+            Commands.runOnce(
+                () -> {
+                  intake.setGoalState(IntakeState.OFF);
+                  //   intakePivot.setGoalState(IntakePivotState.STOW);
+                }));
 
-    // // Climber
-    // // Dpad Down
-    // // driveController
-    // //     .pov(180)
-    // //     .onTrue(Commands.runOnce(() -> climber.setGoalState(Climber.ClimberState.CLIMB)));
+    // operator press y -> move to score trough
+    operatorController
+        .y()
+        .onTrue(Commands.runOnce(() -> intakePivot.setGoalState(IntakePivotState.SCORE_TROUGH)));
 
-    // // // Dpad Up
-    // // driveController
-    // //     .pov(0)
-    // //     .onTrue(Commands.runOnce(() ->
-    // // climber.setGoalState(Climber.ClimberState.REVERSE_CLIMB)));
+    // operator release y -> back to normal rotation
+    operatorController
+        .y()
+        .onFalse(Commands.runOnce(() -> intakePivot.setGoalState(IntakePivotState.STOW)));
 
-    // // // No Dpad Up or Dpad Down
-    // // driveController
-    // //     .pov(180)
-    // //     .or(driveController.pov(0))
-    // //     .onFalse(Commands.runOnce(() -> climber.handleNoInputState()));
+    // operator press/release b -> turn on/off intake to score trough
+    operatorController
+        .b()
+        .onTrue(Commands.runOnce(() -> intake.setGoalState(IntakeState.TROUGH_OUT)));
+    operatorController.b().onFalse(Commands.runOnce(() -> intake.setGoalState(IntakeState.OFF)));
   }
 
   /**

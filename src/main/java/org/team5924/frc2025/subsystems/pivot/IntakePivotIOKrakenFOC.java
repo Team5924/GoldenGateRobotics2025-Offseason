@@ -29,6 +29,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -49,11 +50,21 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
   private final StatusSignal<Current> intakePivotTorqueCurrent;
   private final StatusSignal<Temperature> intakePivotTempCelsius;
 
-  // PID for the Motor
-  LoggedTunableNumber intakePivotMotorkP = new LoggedTunableNumber("IntakePivotMotorkP", 0);
-  LoggedTunableNumber intakePivotMotorkI = new LoggedTunableNumber("IntakePivotMotorkI", 0);
-  LoggedTunableNumber intakePivotMotorkD = new LoggedTunableNumber("IntakePivotMotorkD", 0);
-  LoggedTunableNumber intakePivotMotorkS = new LoggedTunableNumber("IntakePivotMotorkS", 0);
+  // PID for the Motor  // TODO: tune these pleaese
+  LoggedTunableNumber intakePivotMotorkP = new LoggedTunableNumber("IntakePivot/MotorkP", 5);
+  LoggedTunableNumber intakePivotMotorkI = new LoggedTunableNumber("IntakePivot/MotorkI", 0);
+  LoggedTunableNumber intakePivotMotorkD = new LoggedTunableNumber("IntakePivot/MotorkD", 0);
+  LoggedTunableNumber intakePivotMotorkS = new LoggedTunableNumber("IntakePivot/MotorkS", 0);
+  LoggedTunableNumber intakePivotMotorkG = new LoggedTunableNumber("IntakePivot/MotorkG", 0.11);
+  LoggedTunableNumber intakePivotMotorkV = new LoggedTunableNumber("IntakePivot/MotorkV", 10.08);
+  LoggedTunableNumber intakePivotMotorkA = new LoggedTunableNumber("IntakePivot/MotorkA", 0.03);
+
+  // TODO: tone these yaep
+  LoggedTunableNumber motionAcceleration =
+      new LoggedTunableNumber("IntakePivot/MotionAcceleration", 400);
+  LoggedTunableNumber motionCruiseVelocity =
+      new LoggedTunableNumber("IntakePivot/MotionCruiseVelocity", 400);
+  LoggedTunableNumber motionJerk = new LoggedTunableNumber("IntakePivot/MotionJerk", 1000);
 
   // Refresh on what this does, cuz im lowk dumb rn
   private final VoltageOut voltageControl =
@@ -85,6 +96,9 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
     controllerConfigs.kI = intakePivotMotorkI.getAsDouble();
     controllerConfigs.kD = intakePivotMotorkD.getAsDouble();
     controllerConfigs.kS = intakePivotMotorkS.getAsDouble();
+    controllerConfigs.kG = intakePivotMotorkG.getAsDouble();
+    controllerConfigs.kV = intakePivotMotorkV.getAsDouble();
+    controllerConfigs.kA = intakePivotMotorkA.getAsDouble();
 
     intakePivotPosition = intakePivotKraken.getPosition();
     intakePivotVelocity = intakePivotKraken.getVelocity();
@@ -95,6 +109,14 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
 
     intakePivotKraken.getConfigurator().apply(krakenConfig, 1.0);
     intakePivotKraken.getConfigurator().apply(controllerConfigs, 1.0);
+
+    // // Motion magic
+    // final MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
+    // motionMagicConfigs.MotionMagicAcceleration = motionAcceleration.get();
+    // motionMagicConfigs.MotionMagicCruiseVelocity = motionCruiseVelocity.get();
+    // motionMagicConfigs.MotionMagicJerk = motionJerk.get();
+
+    // intakePivotKraken.getConfigurator().apply(motionMagicConfigs);
   }
 
   @Override
@@ -119,7 +141,18 @@ public class IntakePivotIOKrakenFOC implements IntakePivotIO {
 
   @Override
   public void setVoltage(double volts) {
+    // if (atSoftStop(volts)) return;
     intakePivotKraken.setControl(voltageControl.withOutput(volts));
+  }
+
+  public boolean atSoftStop(double volts) {
+    double currentAngle =
+        Units.rotationsToRadians(intakePivotPosition.getValueAsDouble())
+            / Constants.MOTOR_TO_INTAKE_PIVOT_REDUCTION;
+    return (currentAngle >= Constants.INTAKE_PIVOT_MAX_RADS
+            && volts < 0) // motor moving in positive rads, stop at upper bound
+        || (currentAngle <= Constants.INTAKE_PIVOT_MIN_RADS
+            && volts > 0); // motor moving in negative rads, stop at lower bound
   }
 
   @Override

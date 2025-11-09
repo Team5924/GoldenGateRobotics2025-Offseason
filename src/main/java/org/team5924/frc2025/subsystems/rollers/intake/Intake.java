@@ -26,12 +26,15 @@ public class Intake extends SubsystemBase {
   public enum IntakeState {
     IN( // used for ground intake
         new LoggedTunableNumber("Intake/IntakeMotor/InVoltage", -6.0),
-        new LoggedTunableNumber("Intake/AlignerMotor/InVoltage", -8.0)),
+        new LoggedTunableNumber("Intake/AlignerMotor/InVoltage", 8.0)),
+    FAST_IN( // algae
+        new LoggedTunableNumber("Intake/IntakeMotor/InVoltage", -12.0),
+        new LoggedTunableNumber("Intake/AlignerMotor/InVoltage", 8.0)),
     SLOW_IN( // used for source intake (?) and holding inside
         new LoggedTunableNumber("Intake/IntakeMotor/SlowInVoltage", -2.0),
-        new LoggedTunableNumber("Intake/AlignerMotor/SlowInVoltage", -3.0)),
+        new LoggedTunableNumber("Intake/AlignerMotor/SlowInVoltage", 3.0)),
     TROUGH_OUT(
-        new LoggedTunableNumber("Intake/IntakeMotor/TroughOutVoltage", 3.25),
+        new LoggedTunableNumber("Intake/IntakeMotor/TroughOutVoltage", 12),
         new LoggedTunableNumber("Intake/AlignerMotor/TroughOutVoltage", 0.0)),
     OUT(
         new LoggedTunableNumber("Intake/IntakeMotor/OutVoltage", 8.0),
@@ -66,9 +69,11 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    io.runVolts(
-        RobotState.getInstance().getIntakeState().intakeVoltage.getAsDouble(),
-        RobotState.getInstance().getIntakeState().alignerVoltage.getAsDouble());
+
+    // updateState();
+
+    io.runVolts(RobotState.getInstance().getIntakeState().intakeVoltage.getAsDouble(), 0);
+    // RobotState.getInstance().getIntakeState().alignerVoltage.getAsDouble());
 
     Logger.recordOutput("RobotState/IntakeState", RobotState.getInstance().getIntakeState());
   }
@@ -79,8 +84,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void updateState() {
-    if (isOperatorControlling() && !inputs.beamBreakUnbroken)
-      RobotState.getInstance().setIntakeState(IntakeState.SLOW_IN);
+    if (!isOperatorControlling()) RobotState.getInstance().setIntakeState(IntakeState.OFF);
   }
 
   public void setGoalState(IntakeState state) {

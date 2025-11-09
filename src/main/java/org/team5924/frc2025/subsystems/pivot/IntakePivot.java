@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import lombok.Getter;
+import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
 import org.team5924.frc2025.Constants;
 import org.team5924.frc2025.RobotState;
@@ -37,10 +38,14 @@ public class IntakePivot extends SubsystemBase {
 
   // Intake Preset Positions
   public enum IntakePivotState {
-    INTAKE_FLOOR(new LoggedTunableNumber("IntakePivotFloorRads", Math.toRadians(126.0))),
-    SCORE_TROUGH(new LoggedTunableNumber("IntakePivotTroughScoreRads", Math.toRadians(25.639507))),
-    MOVING(new LoggedTunableNumber("IntakePivotMoving", 0)),
-    OPERATOR_CONTROL(new LoggedTunableNumber("IntakePivotOperatorRads", 0));
+    INTAKE_FLOOR(new LoggedTunableNumber("IntakePivot/FloorRads", Math.toRadians(126.0))),
+    SCORE_TROUGH(new LoggedTunableNumber("IntakePivot/TroughScoreRads", Math.toRadians(25.639507))),
+    STOW(new LoggedTunableNumber("IntakePivot/Stow", Math.toRadians(0))), // TODO: find this
+    MOVING(new LoggedTunableNumber("IntakePivot/Moving", 0)),
+
+    // speed at which the intake pivot moves when controlled by the operator (in volts)
+    OPERATOR_CONTROL(
+        new LoggedTunableNumber("IntakePivot/OperatorRads", 4.5)); // TODO: test and update
 
     private final LoggedTunableNumber rads;
 
@@ -54,6 +59,8 @@ public class IntakePivot extends SubsystemBase {
   private final Alert intakePivotMotorDisconnected;
 
   private final Notification intakePivotMotorDisconnectedNotification;
+
+  @Setter private double joystickY;
 
   public IntakePivot(IntakePivotIO io) {
     this.io = io;
@@ -71,9 +78,14 @@ public class IntakePivot extends SubsystemBase {
     Logger.processInputs("IntakePivot", pivotInput);
 
     Logger.recordOutput("IntakePivot/GoalState", goalState.toString());
+    Logger.recordOutput("IntakePivot/CurrentState", RobotState.getInstance().getIntakePivotState());
+    Logger.recordOutput("IntakePivot/CurrentRads", getIntakePivotPosRads());
     Logger.recordOutput("IntakePivot/TargetRads", goalState.rads);
+    Logger.recordOutput("IntakePivot/IsAtSetpoint", isAtSetpoint());
 
     intakePivotMotorDisconnected.set(!pivotInput.intakePivotMotorConnected);
+
+    handleOperatorControl();
 
     /* if (!pivotInput.intakePivotMotorConnected){
         Elastic.sendNotification(intakePivotMotorDisconnectedNotification);
@@ -81,8 +93,19 @@ public class IntakePivot extends SubsystemBase {
 
   }
 
+  private void handleOperatorControl() {
+    if (!goalState.equals(IntakePivotState.OPERATOR_CONTROL)) return;
+    if (Math.abs(joystickY) <= Constants.INTAKE_PIVOT_JOYSTICK_DEADZONE) {
+      // RobotState.getInstance().setIntakePivotState(IntakePivotState.MOVING);
+      io.setVoltage(0);
+      return;
+    }
+
+    setVoltage(IntakePivotState.OPERATOR_CONTROL.rads.getAsDouble() * joystickY);
+  }
+
   public double getIntakePivotPosRads() {
-    return pivotInput.intakePivotPositionRads / Constants.MOTOR_TO_INTAKE_PIVOT_REDUCTION;
+    return pivotInput.intakePivotPositionRads;
   }
 
   public boolean isAtSetpoint() {
