@@ -33,10 +33,10 @@ public class Climber extends SubsystemBase {
 
     LINEUP( // lines up with grabber enabled
         new LoggedTunableNumber("Climber/LineupForwardAngle", Math.toRadians(0.0)),
-        new LoggedTunableNumber("Climber/LineupForwardVoltage", -1.0)), // -4
+        new LoggedTunableNumber("Climber/LineupForwardVoltage", -4.0)), // -4
     HANGING( // after grabbing onto cage, goes back up
         new LoggedTunableNumber("Climber/HangingAngle", Math.toRadians(99.0)),
-        new LoggedTunableNumber("Climber/HangingVoltage", 1.0)); // 12
+        new LoggedTunableNumber("Climber/HangingVoltage", 4.0)); // 12
 
     public final LoggedTunableNumber angle;
     public final LoggedTunableNumber forwardsVoltage;
