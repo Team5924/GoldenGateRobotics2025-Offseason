@@ -27,6 +27,9 @@ public class Intake extends SubsystemBase {
     IN( // used for ground intake
         new LoggedTunableNumber("Intake/IntakeMotor/InVoltage", -6.0),
         new LoggedTunableNumber("Intake/AlignerMotor/InVoltage", 8.0)),
+    FAST_IN( // algae
+        new LoggedTunableNumber("Intake/IntakeMotor/InVoltage", -12.0),
+        new LoggedTunableNumber("Intake/AlignerMotor/InVoltage", 8.0)),
     SLOW_IN( // used for source intake (?) and holding inside
         new LoggedTunableNumber("Intake/IntakeMotor/SlowInVoltage", -2.0),
         new LoggedTunableNumber("Intake/AlignerMotor/SlowInVoltage", 3.0)),
@@ -69,9 +72,8 @@ public class Intake extends SubsystemBase {
 
     // updateState();
 
-    io.runVolts(
-        RobotState.getInstance().getIntakeState().intakeVoltage.getAsDouble(),
-        RobotState.getInstance().getIntakeState().alignerVoltage.getAsDouble());
+    io.runVolts(RobotState.getInstance().getIntakeState().intakeVoltage.getAsDouble(), 0);
+    // RobotState.getInstance().getIntakeState().alignerVoltage.getAsDouble());
 
     Logger.recordOutput("RobotState/IntakeState", RobotState.getInstance().getIntakeState());
   }
@@ -82,10 +84,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void updateState() {
-    if (isOperatorControlling()) return;
-    if (false) // !inputs.beamBreakUnbroken)
-    RobotState.getInstance().setIntakeState(IntakeState.SLOW_IN);
-    else RobotState.getInstance().setIntakeState(IntakeState.OFF);
+    if (!isOperatorControlling()) RobotState.getInstance().setIntakeState(IntakeState.OFF);
   }
 
   public void setGoalState(IntakeState state) {
