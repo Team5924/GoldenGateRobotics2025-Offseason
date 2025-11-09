@@ -27,6 +27,9 @@ public class Intake extends SubsystemBase {
     IN( // used for ground intake
         new LoggedTunableNumber("Intake/IntakeMotor/InVoltage", -6.0),
         new LoggedTunableNumber("Intake/AlignerMotor/InVoltage", 8.0)),
+    FAST_IN( // algae
+        new LoggedTunableNumber("Intake/IntakeMotor/InVoltage", -12.0),
+        new LoggedTunableNumber("Intake/AlignerMotor/InVoltage", 8.0)),
     SLOW_IN( // used for source intake (?) and holding inside
         new LoggedTunableNumber("Intake/IntakeMotor/SlowInVoltage", -2.0),
         new LoggedTunableNumber("Intake/AlignerMotor/SlowInVoltage", 3.0)),

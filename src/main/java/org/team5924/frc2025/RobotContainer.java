@@ -229,6 +229,26 @@ public class RobotContainer {
     intakePivot.setDefaultCommand(
         new RunIntakePivot(intakePivot, () -> operatorController.getLeftY()));
 
+    // // hold right trigger -> deploy ground intake
+    // operatorController
+    //     .leftTrigger()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //             () -> {
+    //                 intake.setGoalState(IntakeState.FAST_IN);
+    //                 //   intakePivot.setGoalState(IntakePivotState.INTAKE_FLOOR);
+    //             }));
+
+    // // release right trigger -> ground intake up
+    // operatorController
+    //     .leftTrigger()
+    //     .onFalse(
+    //         Commands.runOnce(
+    //             () -> {
+    //                 intake.setGoalState(IntakeState.OFF);
+    //                 //   intakePivot.setGoalState(IntakePivotState.STOW);
+    //             }));
+
     // hold right trigger -> deploy ground intake
     operatorController
         .rightTrigger()
