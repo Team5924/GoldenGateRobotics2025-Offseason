@@ -33,6 +33,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.Logger;
 import org.team5924.frc2025.Constants;
+import org.team5924.frc2025.subsystems.climber.Climber.ClimberState;
 
 public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX climbTalon;
@@ -94,7 +95,8 @@ public class ClimberIOTalonFX implements ClimberIO {
           climbTorqueCurrent,
           climbTempCelsius);
 
-      climbTalon.setPosition(0);
+      // climbTalon.setPosition(0);
+      climbTalon.setPosition(ClimberState.STOPPED.angle.getAsDouble());
     }
 
     // Grab motor
@@ -181,10 +183,14 @@ public class ClimberIOTalonFX implements ClimberIO {
   public boolean atSoftStop(double volts) {
     double currentAngle =
         Units.rotationsToRadians(climbPosition.getValueAsDouble()) / climbReduction;
+    // return (currentAngle >= Constants.CLIMBER_MAX_RADS
+    //         && volts <= 0) // motor moving in positive rads, stop at upper bound
+    //     || (currentAngle <= Constants.CLIMBER_MIN_RADS
+    //         && volts >= 0); // motor moving in negative rads, stop at lower bound
     return (currentAngle >= Constants.CLIMBER_MAX_RADS
-            && volts <= 0) // motor moving in positive rads, stop at upper bound
+            && volts >= 0) // motor moving in positive rads, stop at upper bound
         || (currentAngle <= Constants.CLIMBER_MIN_RADS
-            && volts >= 0); // motor moving in negative rads, stop at lower bound
+            && volts <= 0); // motor moving in negative rads, stop at lower bound
   }
 
   @Override
