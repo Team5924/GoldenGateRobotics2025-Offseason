@@ -106,7 +106,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void setState(ClimberState newState) {
-    if (Constants.CLIMBER_REQUIRE_AT_GOAL) {
+    if (Constants.Climber.REQUIRE_AT_GOAL) {
       RobotState.getInstance().setClimberState(newState);
       return;
     }
@@ -134,6 +134,6 @@ public class Climber extends SubsystemBase {
   }
 
   private static double clamp(double angle) {
-    return MathUtil.clamp(angle, Constants.CLIMBER_MIN_RADS, Constants.CLIMBER_MAX_RADS);
+    return MathUtil.clamp(angle, Constants.Climber.MIN_RADS, Constants.Climber.MAX_RADS);
   }
 }

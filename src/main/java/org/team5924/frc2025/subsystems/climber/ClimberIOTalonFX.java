@@ -20,7 +20,6 @@ import static edu.wpi.first.units.Units.Radians;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -65,17 +64,9 @@ public class ClimberIOTalonFX implements ClimberIO {
   public ClimberIOTalonFX() {
     // Climb motor
     {
-      climbReduction = Constants.CLIMBER_REDUCTION;
-      climbTalon = new TalonFX(Constants.CLIMBER_CAN_ID, Constants.CLIMBER_BUS);
-
-      // Configure TalonFX
-      TalonFXConfiguration config = new TalonFXConfiguration();
-      config.MotorOutput.Inverted = Constants.CLIMBER_INVERT;
-      config.MotorOutput.NeutralMode = Constants.CLIMBER_NEUTRAL_MODE;
-      config.CurrentLimits.SupplyCurrentLimit = Constants.CLIMBER_SUPPLY_CURRENT_LIMIT;
-      config.CurrentLimits.StatorCurrentLimit = Constants.CLIMBER_STATOR_CURRENT_LIMIT;
-      config.CurrentLimits.SupplyCurrentLimitEnable = true;
-      climbTalon.getConfigurator().apply(config);
+      climbReduction = Constants.Climber.REDUCTION;
+      climbTalon = new TalonFX(Constants.Climber.CAN_ID, Constants.Climber.BUS);
+      climbTalon.getConfigurator().apply(Constants.Climber.CONFIG);
 
       // Get select status signals and set update frequency
       climbPosition = climbTalon.getPosition();
@@ -99,14 +90,14 @@ public class ClimberIOTalonFX implements ClimberIO {
 
     // CANcoder
     {
-      // cancoder = new CANcoder(Constants.CLIMBER_CANCODER_ID, Constants.CLIMBER_BUS);
+      // cancoder = new CANcoder(Constants.Climber.CANCODER_ID, Constants.Climber.BUS);
 
       // // Configure
       // MagnetSensorConfigs config = new MagnetSensorConfigs();
-      // config.MagnetOffset = Constants.CLIMBER_CANCODER_MAGNET_OFFSET;
-      // config.SensorDirection = Constants.CLIMBER_CANCODER_SENSOR_DIRECTION;
+      // config.MagnetOffset = Constants.Climber.CANCODER_MAGNET_OFFSET;
+      // config.SensorDirection = Constants.Climber.CANCODER_SENSOR_DIRECTION;
       // config.AbsoluteSensorDiscontinuityPoint =
-      //     Constants.CLIMBER_CANCODER_SENSOR_DISCONTINUITY_POINT;
+      //     Constants.Climber.CANCODER_SENSOR_DISCONTINUITY_POINT;
       // cancoder.getConfigurator().apply(config);
 
       // cancoderPosition = cancoder.getAbsolutePosition();
@@ -117,15 +108,8 @@ public class ClimberIOTalonFX implements ClimberIO {
 
     // Grab motor
     {
-      grabTalon = new TalonFX(Constants.GRABBER_CAN_ID, Constants.CLIMBER_BUS);
-
-      // Configure TalonFX
-      TalonFXConfiguration config = new TalonFXConfiguration();
-      config.MotorOutput.Inverted = Constants.GRABBER_INVERT;
-      config.CurrentLimits.SupplyCurrentLimit = Constants.GRABBER_SUPPLY_CURRENT_LIMIT;
-      config.CurrentLimits.StatorCurrentLimit = Constants.GRABBER_STATOR_CURRENT_LIMIT;
-      config.CurrentLimits.SupplyCurrentLimitEnable = true;
-      grabTalon.getConfigurator().apply(config);
+      grabTalon = new TalonFX(Constants.Grabber.CAN_ID, Constants.Climber.BUS);
+      grabTalon.getConfigurator().apply(Constants.Grabber.CONFIG);
 
       // Get select status signals and set update frequency
       grabPosition = grabTalon.getPosition();
@@ -206,9 +190,9 @@ public class ClimberIOTalonFX implements ClimberIO {
   public boolean atSoftStop(double volts) {
     double currentAngle =
         Units.rotationsToRadians(climbPosition.getValueAsDouble()) / climbReduction;
-    return (currentAngle >= Constants.CLIMBER_MAX_RADS
+    return (currentAngle >= Constants.Climber.MAX_RADS
             && volts < 0) // motor moving in positive rads, stop at upper bound
-        || (currentAngle <= Constants.CLIMBER_MIN_RADS
+        || (currentAngle <= Constants.Climber.MIN_RADS
             && volts > 0); // motor moving in negative rads, stop at lower bound
   }
 
@@ -224,7 +208,7 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   @Override
   public void setClimbAngle(double rads) throws IllegalArgumentException {
-    if (rads < Constants.CLIMBER_MIN_RADS || rads > Constants.CLIMBER_MAX_RADS) {
+    if (rads < Constants.Climber.MIN_RADS || rads > Constants.Climber.MAX_RADS) {
       String message =
           "Cannot set climber angle to "
               + rads
@@ -232,7 +216,7 @@ public class ClimberIOTalonFX implements ClimberIO {
       Logger.recordOutput("Climber/InvalidAngle", message);
       throw new IllegalArgumentException(message);
     }
-    rads = Math.max(Constants.CLIMBER_MIN_RADS, Math.min(rads, Constants.CLIMBER_MAX_RADS));
+    rads = Math.max(Constants.Climber.MIN_RADS, Math.min(rads, Constants.Climber.MAX_RADS));
     climbTalon.setControl(positionOut.withPosition(Radians.of(rads)));
   }
 

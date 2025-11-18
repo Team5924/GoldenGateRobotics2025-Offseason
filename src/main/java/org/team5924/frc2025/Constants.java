@@ -16,6 +16,9 @@
 
 package org.team5924.frc2025;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -56,31 +59,48 @@ public final class Constants {
 
   /* General */
   public static final double LOOP_PERIODIC_SECONDS = 0.02;
-  /* Climber */
-  public static final int CLIMBER_CAN_ID = 40;
-  public static final String CLIMBER_BUS = "drive";
-  public static final int CLIMBER_SUPPLY_CURRENT_LIMIT = 60;
-  public static final int CLIMBER_STATOR_CURRENT_LIMIT = 60;
-  public static final InvertedValue CLIMBER_INVERT = InvertedValue.CounterClockwise_Positive;
-  public static final NeutralModeValue CLIMBER_NEUTRAL_MODE = NeutralModeValue.Brake;
-  public static final double CLIMBER_REDUCTION = 60;
-  public static final double CLIMBER_MIN_RADS = Math.toRadians(-55);
-  public static final double CLIMBER_MAX_RADS = Math.toRadians(100);
 
-  public static final boolean CLIMBER_REQUIRE_AT_GOAL = false;
+  public final class Climber {
+    public static final int CAN_ID = 40;
+    public static final String BUS = "drive";
+    public static final double REDUCTION = 60;
+    public static final double MIN_RADS = Math.toRadians(-55);
+    public static final double MAX_RADS = Math.toRadians(100);
 
-  /* Climber cancoder */
-  // public static final int CLIMBER_CANCODER_ID = 41;
-  // public static final double CLIMBER_CANCODER_MAGNET_OFFSET = -0.244384765625;
-  // public static final SensorDirectionValue CLIMBER_CANCODER_SENSOR_DIRECTION =
-  //     SensorDirectionValue.Clockwise_Positive;
-  // public static final double CLIMBER_CANCODER_SENSOR_DISCONTINUITY_POINT = 0.5;
+    public static final TalonFXConfiguration CONFIG
+      = new TalonFXConfiguration()
+        .withCurrentLimits(
+          new CurrentLimitsConfigs()
+            .withSupplyCurrentLimit(60)
+            .withStatorCurrentLimit(60))
+        .withMotorOutput(
+          new MotorOutputConfigs()
+            .withInverted(InvertedValue.CounterClockwise_Positive)
+            .withNeutralMode(NeutralModeValue.Brake));
 
-  /* Grabber */
-  public static final int GRABBER_CAN_ID = 41;
-  public static final int GRABBER_SUPPLY_CURRENT_LIMIT = 35;
-  public static final int GRABBER_STATOR_CURRENT_LIMIT = 35;
-  public static final InvertedValue GRABBER_INVERT = InvertedValue.Clockwise_Positive;
+    public static final boolean REQUIRE_AT_GOAL = false;
+
+    /* Climber cancoder */
+    // public static final int CANCODER_ID = 41;
+    // public static final double CANCODER_MAGNET_OFFSET = -0.244384765625;
+    // public static final SensorDirectionValue CANCODER_SENSOR_DIRECTION =
+    //     SensorDirectionValue.Clockwise_Positive;
+    // public static final double CANCODER_SENSOR_DISCONTINUITY_POINT = 0.5;
+  }
+
+  public final class Grabber {
+    /* Grabber */
+    public static final int CAN_ID = 41;
+    public static final TalonFXConfiguration CONFIG
+      = new TalonFXConfiguration()
+        .withCurrentLimits(
+          new CurrentLimitsConfigs()
+            .withSupplyCurrentLimit(35)
+            .withStatorCurrentLimit(35))
+        .withMotorOutput(
+          new MotorOutputConfigs()
+            .withInverted(InvertedValue.Clockwise_Positive));
+  }
 
   /* Intake */
   public static final int INTAKE_CAN_ID = 30;
