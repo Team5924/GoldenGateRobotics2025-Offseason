@@ -89,7 +89,6 @@ public final class Constants {
   }
 
   public final class Grabber {
-    /* Grabber */
     public static final int CAN_ID = 41;
     public static final TalonFXConfiguration CONFIG
       = new TalonFXConfiguration()
