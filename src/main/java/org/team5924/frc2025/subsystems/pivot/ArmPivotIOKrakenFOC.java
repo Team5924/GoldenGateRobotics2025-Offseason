@@ -1,7 +1,20 @@
-package org.team5924.frc2025.subsystems.pivot;
+/*
+ * ArmPivotIOKrakenFOC.java
+ */
 
-import org.team5924.frc2025.Constants;
-import org.team5924.frc2025.util.LoggedTunableNumber;
+/* 
+ * Copyright (C) 2024-2025 Team 5924 - Golden Gate Robotics and/or its affiliates.
+ *
+ * This file, and the associated project, are offered under the GNU General
+ * Public License v3.0. A copy of this license can be found in LICENSE.md
+ * at the root of this project.
+ *
+ * If this file has been separated from the original project, you should have
+ * received a copy of the GNU General Public License along with it.
+ * If you did not, see <https://www.gnu.org/licenses>.
+ */
+
+package org.team5924.frc2025.subsystems.pivot;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Celsius;
@@ -21,99 +34,99 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import org.team5924.frc2025.Constants;
+import org.team5924.frc2025.util.LoggedTunableNumber;
 
-public class ArmPivotIOKrakenFOC implements ArmPivotIO{
-    private TalonFX armPivotKraken;
-    private CANcoder armPivotCANcoder;
+public class ArmPivotIOKrakenFOC implements ArmPivotIO {
+  private TalonFX armPivotKraken;
+  private CANcoder armPivotCANcoder;
 
-    private final StatusSignal<Angle> armPivotCANcoderAbsolutePositionRotations;
-    private final StatusSignal<Angle> armPivotCANcoderRelativePositionRotations;
-    private final StatusSignal<Angle> armPivotPosition;
-    private final StatusSignal<AngularVelocity> armPivotVelocity;
-    private final StatusSignal<Voltage> armPivotAppliedVolts;
-    private final StatusSignal<Current> armPivotSupplyCurrent;
-    private final StatusSignal<Current> armPivotTorqueCurrent;
-    private final StatusSignal<Temperature> armPivotTempCelsius;
+  private final StatusSignal<Angle> armPivotCANcoderAbsolutePositionRotations;
+  private final StatusSignal<Angle> armPivotCANcoderRelativePositionRotations;
+  private final StatusSignal<Angle> armPivotPosition;
+  private final StatusSignal<AngularVelocity> armPivotVelocity;
+  private final StatusSignal<Voltage> armPivotAppliedVolts;
+  private final StatusSignal<Current> armPivotSupplyCurrent;
+  private final StatusSignal<Current> armPivotTorqueCurrent;
+  private final StatusSignal<Temperature> armPivotTempCelsius;
 
-    private final VoltageOut voltageControl =
+  private final VoltageOut voltageControl =
       new VoltageOut(0).withUpdateFreqHz(0.0).withEnableFOC(true);
-    private final PositionVoltage positionControl =
+  private final PositionVoltage positionControl =
       new PositionVoltage(0).withUpdateFreqHz(0.0).withEnableFOC(true);
 
-    private final LoggedTunableNumber armPivotMotorkP = new LoggedTunableNumber("ArmPivotMotorkP", 0);
-    private final LoggedTunableNumber armPivotMotorkI = new LoggedTunableNumber("ArmPivotMotorkI", 0);
-    private final LoggedTunableNumber armPivotMotorkD = new LoggedTunableNumber("ArmPivotMotorkD", 0);
-    private final LoggedTunableNumber armPivotMotorkS = new LoggedTunableNumber("ArmPivotMotorkS", 0);
-    private final LoggedTunableNumber armPivotCANcoderMagnetOffsetRads =
+  private final LoggedTunableNumber armPivotMotorkP = new LoggedTunableNumber("ArmPivotMotorkP", 0);
+  private final LoggedTunableNumber armPivotMotorkI = new LoggedTunableNumber("ArmPivotMotorkI", 0);
+  private final LoggedTunableNumber armPivotMotorkD = new LoggedTunableNumber("ArmPivotMotorkD", 0);
+  private final LoggedTunableNumber armPivotMotorkS = new LoggedTunableNumber("ArmPivotMotorkS", 0);
+  private final LoggedTunableNumber armPivotCANcoderMagnetOffsetRads =
       new LoggedTunableNumber("ArmPivotCANcoderOffsetRads", 0);
-    private final LoggedTunableNumber armPivotSensorDiscontinuityPoint =
+  private final LoggedTunableNumber armPivotSensorDiscontinuityPoint =
       new LoggedTunableNumber("ArmPivotSensorDiscontinuityPoint", .5);
 
+  public ArmPivotIOKrakenFOC() {
+    armPivotKraken = new TalonFX(Constants.ARM_PIVOT_CAN_ID);
+    armPivotCANcoder = new CANcoder(Constants.ARM_PIVOT_CANCODER_ID);
 
-    public ArmPivotIOKrakenFOC(){
-        armPivotKraken = new TalonFX(Constants.ARM_PIVOT_CAN_ID);
-        armPivotCANcoder = new CANcoder(Constants.ARM_PIVOT_CANCODER_ID);
+    CANcoderConfiguration armPivotCANcoderConfiguration = new CANcoderConfiguration();
+    armPivotCANcoderConfiguration.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(
+        armPivotSensorDiscontinuityPoint.getAsDouble());
+    armPivotCANcoderConfiguration.MagnetSensor.SensorDirection =
+        SensorDirectionValue.Clockwise_Positive;
+    armPivotCANcoderConfiguration.MagnetSensor.MagnetOffset =
+        Units.radiansToRotations(armPivotCANcoderMagnetOffsetRads.getAsDouble());
+    armPivotCANcoder.getConfigurator().apply(armPivotCANcoderConfiguration, 1);
 
-        CANcoderConfiguration armPivotCANcoderConfiguration = new CANcoderConfiguration();
-        armPivotCANcoderConfiguration.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(
-          armPivotSensorDiscontinuityPoint.getAsDouble());
-        armPivotCANcoderConfiguration.MagnetSensor.SensorDirection = 
-          SensorDirectionValue.Clockwise_Positive;
-        armPivotCANcoderConfiguration.MagnetSensor.MagnetOffset = 
-          Units.radiansToRotations(armPivotCANcoderMagnetOffsetRads.getAsDouble());
-        armPivotCANcoder.getConfigurator().apply(armPivotCANcoderConfiguration, 1);
+    // Motor General Config
 
-        //Motor General Config
+    // TODO: Change These If Incorrect
+    final TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
+    krakenConfig.CurrentLimits.SupplyCurrentLimit = 60.0;
+    krakenConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    krakenConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    krakenConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    krakenConfig.Feedback.SensorToMechanismRatio = Constants.MOTOR_TO_ARM_PIVOT_REDUCTION;
 
-        //TODO: Change These If Incorrect
-        final TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
-        krakenConfig.CurrentLimits.SupplyCurrentLimit = 60.0;
-        krakenConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        krakenConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-        krakenConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        krakenConfig.Feedback.SensorToMechanismRatio = Constants.MOTOR_TO_ARM_PIVOT_REDUCTION;
+    final Slot0Configs controllerConfig = new Slot0Configs();
+    controllerConfig.kP = armPivotMotorkP.getAsDouble();
+    controllerConfig.kI = armPivotMotorkI.getAsDouble();
+    controllerConfig.kD = armPivotMotorkD.getAsDouble();
+    controllerConfig.kS = armPivotMotorkS.getAsDouble();
+    armPivotKraken.getConfigurator().apply(krakenConfig,1.0);
+    armPivotKraken.getConfigurator().apply(controllerConfig, 1.0);
 
-        final Slot0Configs controllerConfig = new Slot0Configs();
-        controllerConfig.kP = armPivotMotorkP.getAsDouble();
-        controllerConfig.kI = armPivotMotorkI.getAsDouble();
-        controllerConfig.kD = armPivotMotorkD.getAsDouble();
-        controllerConfig.kS = armPivotMotorkS.getAsDouble();
-        armPivotKraken.getConfigurator().apply(krakenConfig);
-        armPivotKraken.getConfigurator().apply(controllerConfig, 1.0);
+    armPivotCANcoderAbsolutePositionRotations = armPivotCANcoder.getAbsolutePosition();
+    armPivotCANcoderRelativePositionRotations = armPivotCANcoder.getPosition();
 
-        armPivotCANcoderAbsolutePositionRotations = armPivotCANcoder.getAbsolutePosition();
-        armPivotCANcoderRelativePositionRotations = armPivotCANcoder.getPosition();
+    armPivotPosition = armPivotKraken.getPosition();
+    armPivotVelocity = armPivotKraken.getVelocity();
+    armPivotAppliedVolts = armPivotKraken.getMotorVoltage();
+    armPivotSupplyCurrent = armPivotKraken.getSupplyCurrent();
+    armPivotTorqueCurrent = armPivotKraken.getTorqueCurrent();
+    armPivotTempCelsius = armPivotKraken.getDeviceTemp();
 
-        armPivotPosition = armPivotKraken.getPosition();
-        armPivotVelocity = armPivotKraken.getVelocity();
-        armPivotAppliedVolts = armPivotKraken.getMotorVoltage();
-        armPivotSupplyCurrent = armPivotKraken.getSupplyCurrent();
-        armPivotTorqueCurrent = armPivotKraken.getTorqueCurrent();
-        armPivotTempCelsius = armPivotKraken.getDeviceTemp();
-    
-        BaseStatusSignal.setUpdateFrequencyForAll(
-            100.0,
-            armPivotPosition,
-            armPivotVelocity,
-            armPivotAppliedVolts,
-            armPivotSupplyCurrent,
-            armPivotTorqueCurrent,
-            armPivotTempCelsius);
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        100.0,
+        armPivotPosition,
+        armPivotVelocity,
+        armPivotAppliedVolts,
+        armPivotSupplyCurrent,
+        armPivotTorqueCurrent,
+        armPivotTempCelsius);
 
-        BaseStatusSignal.setUpdateFrequencyForAll(
-            500,
-            armPivotCANcoderAbsolutePositionRotations,
-            armPivotCANcoderRelativePositionRotations);
-    }
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        500.0, 
+        armPivotCANcoderAbsolutePositionRotations,
+        armPivotCANcoderRelativePositionRotations);
+  }
 
-    @Override
+  @Override
   public void updateInputs(ArmPivotIOInputs inputs) {
     inputs.armPivotMotorConnected =
         BaseStatusSignal.refreshAll(
@@ -124,6 +137,12 @@ public class ArmPivotIOKrakenFOC implements ArmPivotIO{
                 armPivotTorqueCurrent,
                 armPivotTempCelsius)
             .isOK();
+
+    inputs.armPivotCANcoderConnected =
+        BaseStatusSignal.refreshAll(
+            armPivotCANcoderAbsolutePositionRotations,
+            armPivotCANcoderRelativePositionRotations
+        ).isOK();
 
     inputs.armPivotPositionRads = armPivotPosition.getValue().in(Radians);
     inputs.armPivotVelocityRadsPerSec = armPivotVelocity.getValue().in(RadiansPerSecond);
@@ -140,11 +159,12 @@ public class ArmPivotIOKrakenFOC implements ArmPivotIO{
   }
 
   @Override
-  public void setVoltage(double volts){
+  public void setVoltage(double volts) {
     armPivotKraken.setControl(voltageControl.withOutput(volts));
   }
+
   @Override
-  public void setPosition(double rads){
-    armPivotKraken.setControl(positionControl.withPosition(rads));
+  public void setPosition(double rads) {
+    armPivotKraken.setControl(positionControl.withPosition(Units.radiansToRotations(rads)));
   }
 }

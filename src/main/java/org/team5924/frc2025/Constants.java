@@ -99,8 +99,10 @@ public final class Constants {
 
   /* # Arm Pivot # */
   public static final int ARM_PIVOT_CAN_ID = 0; // TODO: update value
-  public static final double MOTOR_TO_ARM_PIVOT_REDUCTION = 0; // TODO: update value
+  public static final double MOTOR_TO_ARM_PIVOT_REDUCTION = (60/12) * (60/20) * (54/12); // TODO: update value
+
   public static final int ARM_PIVOT_CANCODER_ID = 0; // TODO: update value
+  public static final double SENSOR_TO_MECHANISM_REDUCTION = (60/12) * (60/20) * (60/24) * (36/18) * (36/18);
 
   /* Coral Handoff */
   public static final int CORAL_HANDOFF_CAN_ID = 32;
