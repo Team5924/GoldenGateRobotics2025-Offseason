@@ -1,3 +1,19 @@
+/*
+ * ElevatorIOTalonFX.java
+ */
+
+/* 
+ * Copyright (C) 2024-2025 Team 5924 - Golden Gate Robotics and/or its affiliates.
+ *
+ * This file, and the associated project, are offered under the GNU General
+ * Public License v3.0. A copy of this license can be found in LICENSE.md
+ * at the root of this project.
+ *
+ * If this file has been separated from the original project, you should have
+ * received a copy of the GNU General Public License along with it.
+ * If you did not, see <https://www.gnu.org/licenses>.
+ */
+
 package org.team5924.frc2025.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.Amps;
@@ -25,7 +41,6 @@ import com.ctre.phoenix6.hardware.core.CoreCANdi;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.S1StateValue;
 import com.ctre.phoenix6.signals.S2StateValue;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -33,7 +48,6 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
-
 import org.littletonrobotics.junction.Logger;
 import org.team5924.frc2025.Constants;
 import org.team5924.frc2025.util.LoggedTunableNumber;
@@ -46,7 +60,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final CoreCANdi elevatorCANdi;
 
   /* Configurators */
-  private TalonFXConfigurator leaderTalonConfig;
+  private TalonFXConfigurator talonConfig;
 
   /* Configs */
   private final Slot0Configs slot0Configs;
@@ -63,8 +77,10 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   LoggedTunableNumber kD = new LoggedTunableNumber("Elevator/kD", 0.07);
   LoggedTunableNumber kG = new LoggedTunableNumber("Elevator/kG", 0.34);
 
-  LoggedTunableNumber motionAcceleration = new LoggedTunableNumber("Elevator/MotionAcceleration", 400);
-  LoggedTunableNumber motionCruiseVelocity = new LoggedTunableNumber("Elevator/MotionCruiseVelocity", 400);
+  LoggedTunableNumber motionAcceleration =
+      new LoggedTunableNumber("Elevator/MotionAcceleration", 400);
+  LoggedTunableNumber motionCruiseVelocity =
+      new LoggedTunableNumber("Elevator/MotionCruiseVelocity", 400);
   LoggedTunableNumber motionJerk = new LoggedTunableNumber("Elevator/MotionJerk", 1000);
 
   /* Status Signals */
@@ -97,13 +113,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final Alert candiPin2FloatAlert =
       new Alert("Elevator CANdiPin2 is floating. Check connection.", Alert.AlertType.kWarning);
 
-
   public ElevatorIOTalonFX() {
-    TalonFXConfigurator talonConfig = new TalonFXConfigurator(null);
     talon = new TalonFX(Constants.ELEVATOR_CAN_ID);
     elevatorCANdi = new CANdi(Constants.ELEVATOR_CANDI_ID);
 
-    leaderTalonConfig = talon.getConfigurator();
+    talonConfig = talon.getConfigurator();
 
     slot0Configs = new Slot0Configs();
     slot0Configs.kP = kP.get();
@@ -132,9 +146,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     FeedbackConfigs feedbackConfigs = new FeedbackConfigs();
     feedbackConfigs.SensorToMechanismRatio = Constants.MOTOR_TO_ELEVATOR_REDUCTION;
     feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-    // feedbackConfigs.FeedbackRemoteSensorID = Constants.ELEVATOR_CANCODER_ID;
-    // feedbackConfigs.SensorToMechanismRatio = Constants.CANCODER_TO_ELEVATOR_REDUCTION;
-    feedbackConfigs.RotorToSensorRatio = Constants.MOTOR_TO_ELEVATOR_REDUCTION;
 
     canCoderConfig = new CANcoderConfiguration();
     canCoderConfig.MagnetSensor.MagnetOffset = Constants.ELEVATOR_CANCODER_OFFSET;
@@ -174,7 +185,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         tempCelsius,
         closedLoopReferenceSlope);
 
-
     voltageControl =
         new VoltageOut(0)
             .withUpdateFreqHz(0.0)
@@ -211,24 +221,18 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     inputs.realPos = getHeight();
     inputs.realVel = getVelocity();
 
-    inputs.targetVel =
-        rotationsToMeters(talon.getClosedLoopReferenceSlope().getValue());     
-    inputs.targetPos =
-        rotationsToMeters(talon.getClosedLoopReference().getValue());
+    inputs.targetVel = rotationsToMeters(talon.getClosedLoopReferenceSlope().getValue());
+    inputs.targetPos = rotationsToMeters(talon.getClosedLoopReference().getValue());
 
     inputs.setpointMeters = setpoint;
 
     double currentTime = closedLoopReferenceSlope.getTimestamp().getTime();
     double timeDiff = currentTime - prevReferenceSlopeTimestamp;
     if (timeDiff > 0.0) {
-      inputs.realAccl =
-          (inputs.targetVel - prevClosedLoopReferenceSlope) / timeDiff;
+      inputs.realAccl = (inputs.targetVel - prevClosedLoopReferenceSlope) / timeDiff;
     }
-    prevClosedLoopReferenceSlope = inputs.targetVel;   //Hi h
+    prevClosedLoopReferenceSlope = inputs.targetVel;
     prevReferenceSlopeTimestamp = currentTime;
-
-    inputs.minSoftStop = elevatorCANdi.getS1Closed().getValue();
-    inputs.maxSoftStop = elevatorCANdi.getS2Closed().getValue();
   }
 
   @Override
@@ -263,8 +267,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
       StatusCode[] statusArray = new StatusCode[4];
 
-      statusArray[0] = leaderTalonConfig.apply(slot0Configs);
-      statusArray[1] = leaderTalonConfig.apply(motionMagicConfigs);;
+      statusArray[0] = talonConfig.apply(slot0Configs);
+      statusArray[1] = talonConfig.apply(motionMagicConfigs);
+      ;
 
       boolean isErrorPresent = false;
       for (StatusCode s : statusArray) if (!s.isOK()) isErrorPresent = true;

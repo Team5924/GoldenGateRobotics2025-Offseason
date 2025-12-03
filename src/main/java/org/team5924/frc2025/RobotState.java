@@ -57,10 +57,6 @@ public class RobotState {
       IntakePivotState.MOVING; // Intake Default State Subject to Change
 
   /* ### Elevator ### */
-  @Getter @Setter
-  private ElevatorState elevatorState =
-      ElevatorState.MOVING;
-  @Getter @Setter
-  private double elevatorPositionMeters = 0;
-  
+  @Getter @Setter private ElevatorState elevatorState = ElevatorState.MOVING;
+  @Getter @Setter private double elevatorPositionMeters = 0;
 }
