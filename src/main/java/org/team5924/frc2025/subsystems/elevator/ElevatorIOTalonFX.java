@@ -253,7 +253,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         || kD.hasChanged(hashCode())
         || kG.hasChanged(hashCode())
         || motionAcceleration.hasChanged(hashCode())
-        || motionCruiseVelocity.hasChanged(hashCode())) {
+        || motionCruiseVelocity.hasChanged(hashCode())
+        || motionJerk.hasChanged(hashCode())) {
       slot0Configs.kA = kA.get();
       slot0Configs.kS = kS.get();
       slot0Configs.kV = kV.get();
@@ -264,12 +265,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
       motionMagicConfigs.MotionMagicAcceleration = motionAcceleration.get();
       motionMagicConfigs.MotionMagicCruiseVelocity = motionCruiseVelocity.get();
+      motionMagicConfigs.MotionMagicJerk = motionJerk.get();
 
-      StatusCode[] statusArray = new StatusCode[4];
+      StatusCode[] statusArray = new StatusCode[2];
 
       statusArray[0] = talonConfig.apply(slot0Configs);
       statusArray[1] = talonConfig.apply(motionMagicConfigs);
-      ;
 
       boolean isErrorPresent = false;
       for (StatusCode s : statusArray) if (!s.isOK()) isErrorPresent = true;
