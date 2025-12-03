@@ -21,10 +21,11 @@ public interface ElevatorIO {
     public double realVel = 0.0;
     public double realAccl = 0.0;
 
-    /* Target Elevator Data */
+    /* Motion Target Elevator Data */
     public double targetPos = 0.0;
     public double targetVel = 0.0;
-    public double targetAccl = 0.0;
+
+    public double setpointMeters = 0.0;
 
     public boolean minSoftStop = false;
     public boolean maxSoftStop = false;

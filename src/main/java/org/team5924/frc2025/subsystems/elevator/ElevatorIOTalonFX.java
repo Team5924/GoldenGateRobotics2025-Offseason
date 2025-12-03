@@ -12,15 +12,11 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANdi;
@@ -40,7 +36,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 import org.littletonrobotics.junction.Logger;
 import org.team5924.frc2025.Constants;
-import org.team5924.frc2025.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
 import org.team5924.frc2025.util.LoggedTunableNumber;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
@@ -191,7 +186,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             .withLimitForwardMotion(elevatorCANdi.getS2Closed().getValue());
 
     talon.setPosition(0.0);
-
   }
 
   @Override
@@ -214,25 +208,24 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     inputs.torqueCurrentAmps = torqueCurrent.getValue().in(Amps);
     inputs.tempCelsius = tempCelsius.getValue().in(Celsius);
 
-    // TODO: fix this later sometime
-    // inputs.posMeters = getHeight();
-    // inputs.velMetersPerSecond = getVelocity();
+    inputs.realPos = getHeight();
+    inputs.realVel = getVelocity();
 
-    // inputs.motionMagicVelocityTarget =
-    //     rotationsToMeters(talon.getClosedLoopReferenceSlope().getValue());
-    // inputs.motionMagicPositionTarget =
-    //     rotationsToMeters(talon.getClosedLoopReference().getValue());
+    inputs.targetVel =
+        rotationsToMeters(talon.getClosedLoopReferenceSlope().getValue());     
+    inputs.targetPos =
+        rotationsToMeters(talon.getClosedLoopReference().getValue());
 
-    // inputs.setpointMeters = setpoint;
+    inputs.setpointMeters = setpoint;
 
-    // double currentTime = closedLoopReferenceSlope.getTimestamp().getTime();
-    // double timeDiff = currentTime - prevReferenceSlopeTimestamp;
-    // if (timeDiff > 0.0) {
-    //   inputs.acceleration =
-    //       (inputs.motionMagicVelocityTarget - prevClosedLoopReferenceSlope) / timeDiff;
-    // }
-    // prevClosedLoopReferenceSlope = inputs.motionMagicVelocityTarget;
-    // prevReferenceSlopeTimestamp = currentTime;
+    double currentTime = closedLoopReferenceSlope.getTimestamp().getTime();
+    double timeDiff = currentTime - prevReferenceSlopeTimestamp;
+    if (timeDiff > 0.0) {
+      inputs.realAccl =
+          (inputs.targetVel - prevClosedLoopReferenceSlope) / timeDiff;
+    }
+    prevClosedLoopReferenceSlope = inputs.targetVel;   //Hi h
+    prevReferenceSlopeTimestamp = currentTime;
 
     inputs.minSoftStop = elevatorCANdi.getS1Closed().getValue();
     inputs.maxSoftStop = elevatorCANdi.getS2Closed().getValue();
