@@ -112,9 +112,7 @@ public class Elevator extends SubsystemBase {
   }
 
   private double getElevatorPositionMeters() {
-    return inputs.positionRads
-        * Constants.ELEVATOR_SPROCKET_RADIUS.in(Meters)
-        / Constants.MOTOR_TO_ELEVATOR_REDUCTION;
+    return inputs.realPos;
   }
 
   public void setGoalState(ElevatorState goalState) {
