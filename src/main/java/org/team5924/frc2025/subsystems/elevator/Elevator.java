@@ -84,7 +84,8 @@ public class Elevator extends SubsystemBase {
         
     }
 
-    public void periodic(ElevatorIOInputsAutoLogged inputs){
+    public void periodic(){
+        io.updateInputs(inputs);
         io.updateInputs(inputs);
         Logger.processInputs("Elevator", inputs);
         
