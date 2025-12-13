@@ -44,15 +44,40 @@ public interface ElevatorIO {
     public double setpointMeters = 0.0;
   }
 
+
+  /**
+   * Updates the inputs object with the latest data from hardware
+   *
+   * @param inputs Inputs to update
+   */
   public default void updateInputs(ElevatorIOInputs inputs) {}
 
+  /**
+   * Runs updates periodically for logged tunable numbers, alerts
+   */
   public default void periodicUpdates() {}
 
+  /**
+   * Sets te height of the elevator using MotionMagic
+   * 
+   * @param heightMeters the height at which to set the robot
+   */
   public default void setHeight(double heightMeters) {}
 
+  /**
+   * Runs the elevator at the specified voltage
+   *
+   * @param volts Voltage to apply
+   */
   public default void setVoltage(double volts) {}
 
+  /**
+   * enables the soft stop
+   */
   public default void setSoftStopOn() {}
 
+  /**
+   * disables the soft stop
+   */
   public default void setSoftStopOff() {}
 }

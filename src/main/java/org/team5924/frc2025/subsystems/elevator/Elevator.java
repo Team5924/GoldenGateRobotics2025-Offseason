@@ -39,17 +39,17 @@ public class Elevator extends SubsystemBase {
   public final SysIdRoutine upSysId;
   public final SysIdRoutine downSysId;
 
-  private final LoggedTunableNumber sysIdTime = new LoggedTunableNumber("Elevator/SysIdTime", 10);
+  private final LoggedTunableNumber upSysIdTime = new LoggedTunableNumber("Elevator/SysIdDownTime", 10);
+  private final LoggedTunableNumber downSysIdTime = new LoggedTunableNumber("Elevator/SysIdUpTime", 10);
 
-  public enum ElevatorState {
-    IDLE(new LoggedTunableNumber("Elevator/IdleHeight", 0.0)),
-    DOWN(new LoggedTunableNumber("Elevator/DownHeight", 0.0)),
+  public enum ElevatorState { // all default values set to 0
+    DOWN(new LoggedTunableNumber("Elevator/DownHeight", 0.0)), // default state
     HANDOFF(new LoggedTunableNumber("Elevator/CoralHandoffHeight", 0.0)),
     LOLIPOP(new LoggedTunableNumber("Elevator/LolipopIntakeHeight", 0.0)),
-    L2(new LoggedTunableNumber("Elevator/L2Height", 0.0)),
-    L3(new LoggedTunableNumber("Elevator/L3Height", 0.0)),
-    L4(new LoggedTunableNumber("Elevator/L4Height", 0.0)),
-    SCORE_L2(new LoggedTunableNumber("Elevator/ScoreL2Height", 0.0)),
+    PRE_L2(new LoggedTunableNumber("Elevator/L2Height", 0.0)), // before scoring L2
+    PRE_L3(new LoggedTunableNumber("Elevator/L3Height", 0.0)),
+    PRE_L4(new LoggedTunableNumber("Elevator/L4Height", 0.0)),
+    SCORE_L2(new LoggedTunableNumber("Elevator/ScoreL2Height", 0.0)), // while scoring L2
     SCORE_L3(new LoggedTunableNumber("Elevator/ScoreL3Height", 0.0)),
     SCORE_L4(new LoggedTunableNumber("Elevator/ScoreL4Height", 0.0)),
     ALGAE_LOW(new LoggedTunableNumber("Elevator/AlgaeLowHeight", 0.0)),
@@ -73,25 +73,25 @@ public class Elevator extends SubsystemBase {
 
   public Elevator(ElevatorIO io) {
     this.io = io;
-    this.goalState = ElevatorState.IDLE;
+    this.goalState = ElevatorState.DOWN;
     RobotState.getInstance().setElevatorState(this.goalState);
-    elevatorMotorDisconnected = new Alert("Elevator Motor Disconnected!", Alert.AlertType.kWarning);
+    elevatorMotorDisconnected = new Alert("Elevator Motor Disconnected!", Alert.AlertType.kError);
 
     upSysId =
         new SysIdRoutine(
             new SysIdRoutine.Config(
                 Volts.of(.75).per(Seconds),
                 Volts.of(1),
-                Seconds.of(sysIdTime.getAsDouble()),
+                Seconds.of(upSysIdTime.getAsDouble()),
                 (state) -> Logger.recordOutput("Elevator/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism((voltage) -> setVoltage(voltage.in(Volts)), null, this));
 
     downSysId =
         new SysIdRoutine(
             new SysIdRoutine.Config(
-                Volts.of(2).per(Seconds),
-                Volts.of(2),
-                Seconds.of(sysIdTime.getAsDouble()),
+                Volts.of(.75).per(Seconds),
+                Volts.of(1),
+                Seconds.of(downSysIdTime.getAsDouble()),
                 (state) -> Logger.recordOutput("Elevator/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism((voltage) -> setVoltage(voltage.in(Volts)), null, this));
   }
@@ -100,7 +100,7 @@ public class Elevator extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator", inputs);
 
-    Logger.recordOutput("Elevator/Height", goalState.heightMeters.get());
+    Logger.recordOutput("Elevator/GoalHeight", goalState.heightMeters.get());
     Logger.recordOutput("Elevator/GoalState", goalState.toString());
     Logger.recordOutput("Elevator/ElevatorState", RobotState.getInstance().getElevatorState());
 
@@ -121,8 +121,8 @@ public class Elevator extends SubsystemBase {
       case MANUAL:
         RobotState.getInstance().setElevatorState(ElevatorState.MANUAL);
         break;
-      case MOVING:
-        DriverStation.reportError(
+      case MOVING: // moving state should only be directly set by elevator subsystem
+        DriverStation.reportWarning(
             "MOVING is an intermediate state and cannot be set as a goal state!", null);
         break;
       default:

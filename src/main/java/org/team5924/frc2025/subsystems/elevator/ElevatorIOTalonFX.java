@@ -70,12 +70,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   /* Gains */
   LoggedTunableNumber kA = new LoggedTunableNumber("Elevator/kA", 0.00);
-  LoggedTunableNumber kS = new LoggedTunableNumber("Elevator/kS", 0.13);
-  LoggedTunableNumber kV = new LoggedTunableNumber("Elevator/kV", .44);
-  LoggedTunableNumber kP = new LoggedTunableNumber("Elevator/kP", 7);
+  LoggedTunableNumber kS = new LoggedTunableNumber("Elevator/kS", 0.00);
+  LoggedTunableNumber kV = new LoggedTunableNumber("Elevator/kV", 0.00);
+  LoggedTunableNumber kP = new LoggedTunableNumber("Elevator/kP", 1);
   LoggedTunableNumber kI = new LoggedTunableNumber("Elevator/kI", 0);
-  LoggedTunableNumber kD = new LoggedTunableNumber("Elevator/kD", 0.07);
-  LoggedTunableNumber kG = new LoggedTunableNumber("Elevator/kG", 0.34);
+  LoggedTunableNumber kD = new LoggedTunableNumber("Elevator/kD", 0.01);
+  LoggedTunableNumber kG = new LoggedTunableNumber("Elevator/kG", 0.00);
 
   LoggedTunableNumber motionAcceleration =
       new LoggedTunableNumber("Elevator/MotionAcceleration", 400);
@@ -95,6 +95,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   double prevClosedLoopReferenceSlope = 0.0;
   double prevReferenceSlopeTimestamp = 0.0;
 
+  /* Controllers  */
   private final VoltageOut voltageControl;
   private final MotionMagicVoltage magicMotionVoltage;
 
@@ -133,18 +134,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     motionMagicConfigs.MotionMagicCruiseVelocity = motionCruiseVelocity.get();
     motionMagicConfigs.MotionMagicJerk = motionJerk.get();
 
-    OpenLoopRampsConfigs openLoopRampsConfigs = new OpenLoopRampsConfigs();
-    openLoopRampsConfigs.DutyCycleOpenLoopRampPeriod = 0.02;
-    openLoopRampsConfigs.TorqueOpenLoopRampPeriod = 0.02;
-    openLoopRampsConfigs.VoltageOpenLoopRampPeriod = 0.02;
-
-    ClosedLoopRampsConfigs closedLoopRampsConfigs = new ClosedLoopRampsConfigs();
-    closedLoopRampsConfigs.DutyCycleClosedLoopRampPeriod = 0.02;
-    closedLoopRampsConfigs.TorqueClosedLoopRampPeriod = 0.02;
-    closedLoopRampsConfigs.VoltageClosedLoopRampPeriod = 0.02;
-
     FeedbackConfigs feedbackConfigs = new FeedbackConfigs();
-    feedbackConfigs.SensorToMechanismRatio = Constants.MOTOR_TO_ELEVATOR_REDUCTION;
     feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
     canCoderConfig = new CANcoderConfiguration();
@@ -156,8 +146,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     statusArray[0] = talonConfig.apply(Constants.ELEVATOR_CONFIG);
     statusArray[1] = talonConfig.apply(slot0Configs);
     statusArray[2] = talonConfig.apply(motionMagicConfigs);
-    statusArray[3] = talonConfig.apply(openLoopRampsConfigs);
-    statusArray[4] = talonConfig.apply(closedLoopRampsConfigs);
+    statusArray[3] = talonConfig.apply(Constants.ELEVATOR_OPEN_LOOP_RAMPS_CONFIGS);
+    statusArray[4] = talonConfig.apply(Constants.ELEVATOR_CLOSED_LOOP_RAMPS_CONFIGS);
     statusArray[5] = talonConfig.apply(feedbackConfigs);
     statusArray[6] = elevatorCANdi.getConfigurator().apply(Constants.ELEVATOR_CANDI_CONFIGS);
 

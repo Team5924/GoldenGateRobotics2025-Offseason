@@ -19,9 +19,11 @@ package org.team5924.frc2025;
 import static edu.wpi.first.units.Units.Inches;
 
 import com.ctre.phoenix6.configs.CANdiConfiguration;
+import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.DigitalInputsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -146,6 +148,18 @@ public final class Constants {
               new DigitalInputsConfigs()
                   .withS1CloseState(S1CloseStateValue.CloseWhenLow)
                   .withS2CloseState(S2CloseStateValue.CloseWhenLow));
+
+    public static final OpenLoopRampsConfigs ELEVATOR_OPEN_LOOP_RAMPS_CONFIGS =
+        new OpenLoopRampsConfigs()
+            .withDutyCycleOpenLoopRampPeriod(0.02)
+            .withTorqueOpenLoopRampPeriod(0.02)
+            .withVoltageOpenLoopRampPeriod(0.02);
+
+    public static final ClosedLoopRampsConfigs ELEVATOR_CLOSED_LOOP_RAMPS_CONFIGS =
+        new ClosedLoopRampsConfigs()
+            .withDutyCycleClosedLoopRampPeriod(0.02)
+            .withTorqueClosedLoopRampPeriod(0.02)
+            .withVoltageClosedLoopRampPeriod(0.02);
 
   public static final double MOTOR_TO_ELEVATOR_REDUCTION = 4.00;
   public static final Distance ELEVATOR_SPROCKET_RADIUS = Inches.of(0.6405);
