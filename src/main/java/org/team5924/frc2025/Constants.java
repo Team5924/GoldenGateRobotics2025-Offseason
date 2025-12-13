@@ -16,10 +16,22 @@
 
 package org.team5924.frc2025;
 
+import static edu.wpi.first.units.Units.Inches;
+
+import com.ctre.phoenix6.configs.CANdiConfiguration;
+import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.DigitalInputsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.S1CloseStateValue;
+import com.ctre.phoenix6.signals.S2CloseStateValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -115,4 +127,41 @@ public final class Constants {
   public static final double INTAKE_PIVOT_MAX_RADS = Math.toRadians(128.0);
 
   public static final double INTAKE_PIVOT_JOYSTICK_DEADZONE = 0.05;
+
+  /* Elevator */
+  public static final String ELEVATOR_CANDI_BUS = "rio";
+  public static final int ELEVATOR_CAN_ID = 50;
+  public static final int ELEVATOR_CANDI_ID = 51;
+  public static final TalonFXConfiguration ELEVATOR_CONFIG =
+      new TalonFXConfiguration()
+          .withCurrentLimits(
+              new CurrentLimitsConfigs().withSupplyCurrentLimit(80).withStatorCurrentLimit(80))
+          .withMotorOutput(
+              new MotorOutputConfigs()
+                  .withInverted(InvertedValue.Clockwise_Positive)
+                  .withPeakForwardDutyCycle(1)
+                  .withPeakReverseDutyCycle(-1));
+
+  public static final CANdiConfiguration ELEVATOR_CANDI_CONFIGS =
+      new CANdiConfiguration()
+          .withDigitalInputs(
+              new DigitalInputsConfigs()
+                  .withS1CloseState(S1CloseStateValue.CloseWhenLow)
+                  .withS2CloseState(S2CloseStateValue.CloseWhenLow));
+
+    public static final OpenLoopRampsConfigs ELEVATOR_OPEN_LOOP_RAMPS_CONFIGS =
+        new OpenLoopRampsConfigs()
+            .withDutyCycleOpenLoopRampPeriod(0.02)
+            .withTorqueOpenLoopRampPeriod(0.02)
+            .withVoltageOpenLoopRampPeriod(0.02);
+
+    public static final ClosedLoopRampsConfigs ELEVATOR_CLOSED_LOOP_RAMPS_CONFIGS =
+        new ClosedLoopRampsConfigs()
+            .withDutyCycleClosedLoopRampPeriod(0.02)
+            .withTorqueClosedLoopRampPeriod(0.02)
+            .withVoltageClosedLoopRampPeriod(0.02);
+
+  public static final double MOTOR_TO_ELEVATOR_REDUCTION = 4.00;
+  public static final Distance ELEVATOR_SPROCKET_RADIUS = Inches.of(0.6405);
+  public static final double ELEVATOR_CANCODER_OFFSET = 0.00;
 }

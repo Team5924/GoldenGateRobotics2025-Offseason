@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.team5924.frc2025.subsystems.climber.Climber.ClimberState;
+import org.team5924.frc2025.subsystems.elevator.Elevator.ElevatorState;
 import org.team5924.frc2025.subsystems.pivot.IntakePivot.IntakePivotState;
 import org.team5924.frc2025.subsystems.rollers.intake.Intake.IntakeState;
 
@@ -54,4 +55,8 @@ public class RobotState {
   @Getter @Setter
   private IntakePivotState intakePivotState =
       IntakePivotState.MOVING; // Intake Default State Subject to Change
+
+  /* ### Elevator ### */
+  @Getter @Setter private ElevatorState elevatorState = ElevatorState.MOVING;
+  @Getter @Setter private double elevatorPositionMeters = 0;
 }
